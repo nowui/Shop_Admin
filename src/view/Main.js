@@ -83,7 +83,7 @@ class Main extends Component {
           collapsed={this.state.collapsed}
         >
           <div className={this.state.collapsed ? '' : style.layoutSider}>
-            <div className="logo"><h1 onClick={this.handleLogo.bind(this)}>{this.state.collapsed ? '协同' : '佛山协同小学'}</h1>
+            <div className="logo"><h1 onClick={this.handleLogo.bind(this)}>{this.state.collapsed ? '商城' : '微信商城'}</h1>
             </div>
             <Menu
               theme="dark"

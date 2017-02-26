@@ -1,7 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import TinyMCE from 'react-tinymce';
 
-import ModalImage from './ModalImage'
+import ImageHelp from './ImageHelp'
+import constant from '../constant/constant';
 
 let editor;
 
@@ -34,7 +35,7 @@ class InputHtml extends Component {
     let html = '';
 
     for (let i = 0; i < list.length; i++) {
-      html += '<img src="' + list[i].url + '" />';
+      html += '<img src="' + constant.host + list[i].url + '" />';
     }
 
     this.editor.insertContent(html);
@@ -72,7 +73,7 @@ class InputHtml extends Component {
             }.bind(this)
           }}
         />
-        <ModalImage is_visible={false} handleSubmitReturn={this.handleSubmitReturn.bind(this)} ref="image"/>
+        <ImageHelp is_visible={false} handleSubmitReturn={this.handleSubmitReturn.bind(this)} ref="image"/>
       </div>
     );
   }

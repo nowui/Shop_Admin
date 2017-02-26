@@ -23,11 +23,7 @@ app.model(require('./model/log'));
 app.model(require('./model/resource'));
 app.model(require('./model/file'));
 
-app.model(require('./model/clazz'));
-app.model(require('./model/student'));
-app.model(require('./model/teacher'));
-app.model(require('./model/course'));
-app.model(require('./model/config'));
+app.model(require('./model/brand'));
 
 // 4. Router
 app.router(require('./router'));

@@ -98,7 +98,7 @@ class Login extends Component {
           }}>
             <Button type="primary" htmlType="submit" className={style.loginButton}
                     loading={this.state.is_load}
-                    onClick={this.handleSubmit.bind(this)}>登录课程选课系统</Button>
+                    onClick={this.handleSubmit.bind(this)}>登录微信商城</Button>
           </FormItem>
         </Spin>
       </Card>

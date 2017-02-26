@@ -13,11 +13,7 @@ import LogIndex from './view/log/LogIndex';
 import ResourceIndex from './view/resource/ResourceIndex';
 import FileIndex from './view/file/FileIndex';
 
-import ClazzIndex from './view/clazz/ClazzIndex';
-import StudentIndex from './view/student/StudentIndex';
-import TeacherIndex from './view/teacher/TeacherIndex';
-import CourseIndex from './view/course/CourseIndex';
-import ConfigIndex from './view/config/ConfigIndex';
+import BrandIndex from './view/brand/BrandIndex';
 
 import database from './util/database';
 
@@ -34,7 +30,7 @@ function RouterConfig({history}) {
   return (
     <Router history={history}>
       <Route path="/">
-        <IndexRedirect to="course/index"/>
+        <IndexRedirect to="code/index"/>
         <Route path="login" component={Login}/>
         <Route component={Main} onEnter={validate}>
           <Route path="dashboard/index" component={DashboardIndex}/>
@@ -48,11 +44,7 @@ function RouterConfig({history}) {
           <Route path="resource/index" component={ResourceIndex}/>
           <Route path="file/index" component={FileIndex}/>
 
-          <Route path="clazz/index" component={ClazzIndex}/>
-          <Route path="student/index" component={StudentIndex}/>
-          <Route path="teacher/index" component={TeacherIndex}/>
-          <Route path="course/index" component={CourseIndex}/>
-          <Route path="config/index" component={ConfigIndex}/>
+          <Route path="brand/index" component={BrandIndex}/>
         </Route>
       </Route>
     </Router>
