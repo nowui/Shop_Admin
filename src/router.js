@@ -15,6 +15,7 @@ import FileIndex from './view/file/FileIndex';
 
 import BrandIndex from './view/brand/BrandIndex';
 import ProductIndex from './view/product/ProductIndex';
+import DeliveryIndex from './view/delivery/DeliveryIndex';
 
 import database from './util/database';
 
@@ -47,6 +48,7 @@ function RouterConfig({history}) {
 
           <Route path="brand/index" component={BrandIndex}/>
           <Route path="product/index" component={ProductIndex}/>
+          <Route path="delivery/index" component={DeliveryIndex}/>
         </Route>
       </Route>
     </Router>

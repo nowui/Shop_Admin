@@ -25,6 +25,7 @@ app.model(require('./model/file'));
 
 app.model(require('./model/brand'));
 app.model(require('./model/product'));
+app.model(require('./model/delivery'));
 
 // 4. Router
 app.router(require('./router'));
