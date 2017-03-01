@@ -47,6 +47,7 @@ class CodeIndex extends Component {
     request = http({
       url: '/code/list',
       data: {
+        table_schema: 'Shop',
         code_name: code_name,
         page_index: page_index,
         page_size: this.props.code.page_size
