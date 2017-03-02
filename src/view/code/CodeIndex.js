@@ -95,6 +95,7 @@ class CodeIndex extends Component {
     request = http({
       url: '/code/save',
       data: {
+        table_schema: 'Shop',
         table_name: table_name
       },
       success: function (json) {

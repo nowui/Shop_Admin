@@ -2,15 +2,14 @@ import constant from '../constant/constant';
 
 export default {
 
-  namespace: 'student',
+  namespace: 'member',
 
   state: {
     is_load: false,
     is_detail: false,
     action: '',
-    student_id: '',
-    student_name: '',
-    clazz_id: '',
+    member_id: '',
+    member_name: '',
     list: [],
     total: 0,
     page_index: 1,

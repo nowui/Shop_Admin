@@ -3,14 +3,14 @@ import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
-import ClazzDetail from './ClazzDetail';
+import MemberDetail from './MemberDetail';
 import constant from '../../constant/constant';
 import http from '../../util/http';
 import style from '../style.css';
 
 let request;
 
-class ClazzIndex extends Component {
+class MemberIndex extends Component {
   constructor(props) {
     super(props);
 
@@ -26,19 +26,19 @@ class ClazzIndex extends Component {
   }
 
   handleSearch() {
-    let clazz_name = this.props.form.getFieldValue('clazz_name');
+    let member_name = this.props.form.getFieldValue('member_name');
     let page_index = 1;
 
-    this.handleList(clazz_name, page_index);
+    this.handleList(member_name, page_index);
   }
 
   handleLoad(page_index) {
-    let clazz_name = this.props.clazz.clazz_name;
+    let member_name = this.props.member.member_name;
 
-    this.handleList(clazz_name, page_index);
+    this.handleList(member_name, page_index);
   }
 
-  handleList(clazz_name, page_index) {
+  handleList(member_name, page_index) {
     if (this.handleStart({
         is_load: true
       })) {
@@ -46,21 +46,21 @@ class ClazzIndex extends Component {
     }
 
     request = http({
-      url: '/clazz/admin/list',
+      url: '/member/admin/list',
       data: {
-        clazz_name: clazz_name,
+        member_name: member_name,
         page_index: page_index,
-        page_size: this.props.clazz.page_size
+        page_size: this.props.member.page_size
       },
       success: function (json) {
         for (let i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].clazz_id;
+          json.data[i].key = json.data[i].member_id;
         }
 
         this.props.dispatch({
-          type: 'clazz/fetch',
+          type: 'member/fetch',
           data: {
-            clazz_name: clazz_name,
+            member_name: member_name,
             total: json.total,
             list: json.data,
             page_index: page_index
@@ -75,7 +75,7 @@ class ClazzIndex extends Component {
 
   handleChangeSize(page_index, page_size) {
     this.props.dispatch({
-      type: 'clazz/fetch',
+      type: 'member/fetch',
       data: {
         page_size: page_size
       }
@@ -88,7 +88,7 @@ class ClazzIndex extends Component {
 
   handleSave() {
     this.props.dispatch({
-      type: 'clazz/fetch',
+      type: 'member/fetch',
       data: {
         is_detail: true,
         action: 'save'
@@ -96,20 +96,20 @@ class ClazzIndex extends Component {
     });
   }
 
-  handleUpdate(clazz_id) {
+  handleUpdate(member_id) {
     if (this.handleStart({
         is_load: true,
         is_detail: true,
         action: 'update',
-        clazz_id: clazz_id
+        member_id: member_id
       })) {
       return;
     }
 
     request = http({
-      url: '/clazz/admin/find',
+      url: '/member/admin/find',
       data: {
-        clazz_id: clazz_id
+        member_id: member_id
       },
       success: function (json) {
         this.refs.detail.setFieldsValue(json.data);
@@ -120,7 +120,7 @@ class ClazzIndex extends Component {
     }).post();
   }
 
-  handleDelete(clazz_id) {
+  handleDelete(member_id) {
     if (this.handleStart({
         is_load: true
       })) {
@@ -128,15 +128,15 @@ class ClazzIndex extends Component {
     }
 
     request = http({
-      url: '/clazz/delete',
+      url: '/member/delete',
       data: {
-        clazz_id: clazz_id
+        member_id: member_id
       },
       success: function (json) {
         message.success(constant.success);
 
         setTimeout(function () {
-            this.handleLoad(this.props.clazz.page_index);
+            this.handleLoad(this.props.member.page_index);
         }.bind(this), constant.timeout);
       }.bind(this),
       complete: function () {
@@ -152,12 +152,12 @@ class ClazzIndex extends Component {
       return;
     }
 
-    if (this.props.clazz.action == 'update') {
-      data.clazz_id = this.props.clazz.clazz_id;
+    if (this.props.member.action == 'update') {
+      data.member_id = this.props.member.member_id;
     }
 
     request = http({
-      url: '/clazz/' + this.props.clazz.action,
+      url: '/member/' + this.props.member.action,
       data: data,
       success: function (json) {
         message.success(constant.success);
@@ -165,7 +165,7 @@ class ClazzIndex extends Component {
         this.handleCancel();
 
         setTimeout(function () {
-            this.handleLoad(this.props.clazz.page_index);
+            this.handleLoad(this.props.member.page_index);
         }.bind(this), constant.timeout);
       }.bind(this),
       complete: function () {
@@ -176,7 +176,7 @@ class ClazzIndex extends Component {
 
   handleCancel() {
     this.props.dispatch({
-      type: 'clazz/fetch',
+      type: 'member/fetch',
       data: {
         is_detail: false
       }
@@ -186,12 +186,12 @@ class ClazzIndex extends Component {
   }
 
   handleStart(data) {
-    if (this.props.clazz.is_load) {
+    if (this.props.member.is_load) {
       return true;
     }
 
     this.props.dispatch({
-      type: 'clazz/fetch',
+      type: 'member/fetch',
       data: data
     });
 
@@ -200,7 +200,7 @@ class ClazzIndex extends Component {
 
   handleFinish() {
     this.props.dispatch({
-      type: 'clazz/fetch',
+      type: 'member/fetch',
       data: {
         is_load: false
       }
@@ -211,7 +211,7 @@ class ClazzIndex extends Component {
     request.cancel();
 
     this.props.dispatch({
-      type: 'clazz/fetch',
+      type: 'member/fetch',
       data: {
         is_detail: false
       }
@@ -224,21 +224,17 @@ class ClazzIndex extends Component {
 
     const columns = [{
       title: '名称',
-      dataIndex: 'clazz_name'
-    }, {
-      width: 90,
-      title: '选课限制人数',
-      dataIndex: 'clazz_course_apply_limit'
+      dataIndex: 'member_name'
     }, {
       width: 90,
       title: constant.action,
       dataIndex: '',
       render: (text, record, index) => (
         <span>
-          <a onClick={this.handleUpdate.bind(this, record.clazz_id)}>{constant.update}</a>
+          <a onClick={this.handleUpdate.bind(this, record.member_id)}>{constant.update}</a>
           <span className={style.divider}/>
           <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
-                      cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.clazz_id)}>
+                      cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.member_id)}>
             <a>{constant.delete}</a>
           </Popconfirm>
         </span>
@@ -246,9 +242,9 @@ class ClazzIndex extends Component {
     }];
 
     const pagination = {
-      total: this.props.clazz.total,
-      current: this.props.clazz.page_index,
-      pageSize: this.props.clazz.page_size,
+      total: this.props.member.total,
+      current: this.props.member.page_index,
+      pageSize: this.props.member.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
       onChange: this.handleLoad.bind(this)
@@ -259,11 +255,11 @@ class ClazzIndex extends Component {
         <div key="0">
           <Row className={style.layoutContentHeader}>
             <Col span={8}>
-              <h1>班级列表</h1>
+              <h1>会员列表</h1>
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
-                      loading={this.props.clazz.is_load}
+                      loading={this.props.member.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
               <Button type="primary" icon="plus-circle" size="default"
                       onClick={this.handleSave.bind(this)}>{constant.save}</Button>
@@ -274,7 +270,7 @@ class ClazzIndex extends Component {
               <Col span={8}>
                 <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="名称">
                   {
-                    getFieldDecorator('clazz_name', {
+                    getFieldDecorator('member_name', {
                       initialValue: ''
                     })(
                       <Input type="text" placeholder="请输入名称" className={style.formItemInput}/>
@@ -289,11 +285,12 @@ class ClazzIndex extends Component {
             </Row>
           </Form>
           <Table className={style.layoutContentHeaderTable}
-                 loading={this.props.clazz.is_load && !this.props.clazz.is_detail} columns={columns}
-                 dataSource={this.props.clazz.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 loading={this.props.member.is_load && !this.props.member.is_detail} columns={columns}
+                 dataSource={this.props.member.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>
-          <ClazzDetail is_load={this.props.clazz.is_load}
-                      is_detail={this.props.clazz.is_detail}
+          <MemberDetail is_load={this.props.member.is_load}
+                      is_detail={this.props.member.is_detail}
+                        action={this.props.member.action}
                       handleSubmit={this.handleSubmit.bind(this)}
                       handleCancel={this.handleCancel.bind(this)}
                       ref="detail"/>
@@ -303,10 +300,10 @@ class ClazzIndex extends Component {
   }
 }
 
-ClazzIndex.propTypes = {};
+MemberIndex.propTypes = {};
 
-ClazzIndex = Form.create({})(ClazzIndex);
+MemberIndex = Form.create({})(MemberIndex);
 
-export default connect(({clazz}) => ({
-  clazz,
-}))(ClazzIndex);
+export default connect(({member}) => ({
+  member,
+}))(MemberIndex);

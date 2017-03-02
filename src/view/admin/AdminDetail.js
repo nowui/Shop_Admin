@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Modal, Form, Row, Col, Spin, Button, Input, Checkbox} from 'antd';
+import {Modal, Form, Spin, Button, Input, Checkbox} from 'antd';
 
 import constant from '../../constant/constant';
 import style from '../style.css';
