@@ -136,7 +136,7 @@ class MemberIndex extends Component {
         message.success(constant.success);
 
         setTimeout(function () {
-            this.handleLoad(this.props.member.page_index);
+          this.handleLoad(this.props.member.page_index);
         }.bind(this), constant.timeout);
       }.bind(this),
       complete: function () {
@@ -165,7 +165,7 @@ class MemberIndex extends Component {
         this.handleCancel();
 
         setTimeout(function () {
-            this.handleLoad(this.props.member.page_index);
+          this.handleLoad(this.props.member.page_index);
         }.bind(this), constant.timeout);
       }.bind(this),
       complete: function () {
@@ -234,7 +234,8 @@ class MemberIndex extends Component {
           <a onClick={this.handleUpdate.bind(this, record.member_id)}>{constant.update}</a>
           <span className={style.divider}/>
           <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
-                      cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.member_id)}>
+                      cancelText={constant.popconfirm_cancel}
+                      onConfirm={this.handleDelete.bind(this, record.member_id)}>
             <a>{constant.delete}</a>
           </Popconfirm>
         </span>
@@ -289,11 +290,11 @@ class MemberIndex extends Component {
                  dataSource={this.props.member.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>
           <MemberDetail is_load={this.props.member.is_load}
-                      is_detail={this.props.member.is_detail}
+                        is_detail={this.props.member.is_detail}
                         action={this.props.member.action}
-                      handleSubmit={this.handleSubmit.bind(this)}
-                      handleCancel={this.handleCancel.bind(this)}
-                      ref="detail"/>
+                        handleSubmit={this.handleSubmit.bind(this)}
+                        handleCancel={this.handleCancel.bind(this)}
+                        ref="detail"/>
         </div>
       </QueueAnim>
     );

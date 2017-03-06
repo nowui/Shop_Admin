@@ -33,7 +33,7 @@ function RouterConfig({history}) {
   return (
     <Router history={history}>
       <Route path="/">
-        <IndexRedirect to="code/index"/>
+        <IndexRedirect to="product/index"/>
         <Route path="login" component={Login}/>
         <Route component={Main} onEnter={validate}>
           <Route path="dashboard/index" component={DashboardIndex}/>
