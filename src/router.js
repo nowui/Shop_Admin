@@ -17,6 +17,7 @@ import BrandIndex from './view/brand/BrandIndex';
 import ProductIndex from './view/product/ProductIndex';
 import DeliveryIndex from './view/delivery/DeliveryIndex';
 import MemberIndex from './view/member/MemberIndex';
+import MemberLevelIndex from './view/member/MemberLevelIndex';
 
 import database from './util/database';
 
@@ -51,6 +52,7 @@ function RouterConfig({history}) {
           <Route path="product/index" component={ProductIndex}/>
           <Route path="delivery/index" component={DeliveryIndex}/>
           <Route path="member/index" component={MemberIndex}/>
+          <Route path="member/level/index" component={MemberLevelIndex}/>
         </Route>
       </Route>
     </Router>
