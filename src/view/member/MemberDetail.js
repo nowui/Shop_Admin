@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Modal, Form, Spin, Button, Input, Checkbox} from 'antd';
+import {Modal, Form, Spin, Button, Input, Checkbox, Select} from 'antd';
 
 import constant from '../../constant/constant';
 import style from '../style.css';
@@ -55,6 +55,7 @@ class MemberDetail extends Component {
 
   render() {
     const FormItem = Form.Item;
+    const Option = Select.Option;
     const {getFieldDecorator} = this.props.form;
 
     return (
@@ -76,7 +77,17 @@ class MemberDetail extends Component {
               getFieldDecorator('member_level_id', {
                 initialValue: ''
               })(
-                <Input type="text" placeholder={constant.placeholder + '会员等级'}/>
+                <Select style={{
+                  width: '100%'
+                }} placeholder="请选择会员等级">
+                  {
+                    this.props.member_level_list.map(function (item) {
+                      return (
+                        <Option key={item.member_level_id} value={item.member_level_id}>{item.member_level_name}</Option>
+                      )
+                    })
+                  }
+                </Select>
               )
             }
           </FormItem>
@@ -151,6 +162,7 @@ MemberDetail.propTypes = {
   is_load: React.PropTypes.bool.isRequired,
   is_detail: React.PropTypes.bool.isRequired,
   action: React.PropTypes.string.isRequired,
+  member_level_list: React.PropTypes.array.isRequired,
   handleSubmit: React.PropTypes.func.isRequired,
   handleCancel: React.PropTypes.func.isRequired
 };

@@ -16,7 +16,8 @@ class ProductIndex extends Component {
 
     this.state = {
       category_list: [],
-      brand_list: []
+      brand_list: [],
+      member_level_list: []
     }
   }
 
@@ -26,6 +27,8 @@ class ProductIndex extends Component {
     this.handleCategoryList();
 
     this.handleBrandList();
+
+    this.handleMemberLevelList();
   }
 
   componentWillUnmount() {
@@ -54,6 +57,21 @@ class ProductIndex extends Component {
       success: function (json) {
         this.setState({
           brand_list: json.data
+        });
+      }.bind(this),
+      complete: function () {
+
+      }.bind(this)
+    }).post();
+  }
+
+  handleMemberLevelList() {
+    http({
+      url: '/member/level/category/list',
+      data: {},
+      success: function (json) {
+        this.setState({
+          member_level_list: json.data
         });
       }.bind(this),
       complete: function () {
@@ -330,6 +348,7 @@ class ProductIndex extends Component {
                          is_detail={this.props.product.is_detail}
                          category_list={this.state.category_list}
                          brand_list={this.state.brand_list}
+                         member_level_list={this.state.member_level_list}
                          handleSubmit={this.handleSubmit.bind(this)}
                          handleCancel={this.handleCancel.bind(this)}
                          ref="detail"/>

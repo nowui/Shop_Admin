@@ -24,7 +24,24 @@ class ProductDetail extends Component {
   handleSetFieldsValue(values) {
     this.props.form.setFieldsValue(values);
 
+    let sku_list = values.sku_list;
+
+    for (let i = 0; i < sku_list.length; i++) {
+      let sku = sku_list[i];
+
+      if (sku.product_attribute = '[]') {
+        let product_price = JSON.parse(sku.product_price);
+        for (let j = 0; j < product_price.length; j++) {
+          let object = {};
+          object['product_price_list.' + product_price[j].member_level_id] = product_price[j].product_price;
+          this.props.form.setFieldsValue(object);
+        }
+      }
+    }
+
     this.refs.product_image.handleSetList(JSON.parse(values.product_image));
+
+    this.refs.product_image_list.handleSetList(JSON.parse(values.product_image_list));
 
     this.refs.product_content.handleSetContent(values.product_content);
   }
@@ -37,7 +54,37 @@ class ProductDetail extends Component {
 
       values.product_image = JSON.stringify(this.refs.product_image.handleGetList());
 
+      values.product_image_list = JSON.stringify(this.refs.product_image_list.handleGetList());
+
       values.product_content = this.refs.product_content.handleGetContent();
+
+      let sku_list = [];
+
+      let product_price = [];
+
+      product_price.push({
+        member_level_id: '',
+        member_level_name: '产品价格',
+        product_price: values.product_price
+      });
+
+      for (let i = 0; i < this.props.member_level_list.length; i++) {
+        product_price.push({
+          member_level_id: this.props.member_level_list[i].member_level_id,
+          member_level_name: this.props.member_level_list[i].member_level_name,
+          product_price: this.props.form.getFieldValue('product_price_list.' + this.props.member_level_list[i].member_level_id)
+        });
+      }
+
+      delete values.product_price_list;
+
+      sku_list.push({
+        product_attribute: JSON.stringify([]),
+        product_price: JSON.stringify(product_price),
+        product_stock: values.product_stock
+      });
+
+      values.sku_list = sku_list;
 
       this.props.handleSubmit(values);
     });
@@ -51,6 +98,8 @@ class ProductDetail extends Component {
     this.props.form.resetFields();
 
     this.refs.product_image.handleReset();
+
+    this.refs.product_image_list.handleReset();
 
     this.refs.product_content.handleReset();
   }
@@ -143,16 +192,42 @@ class ProductDetail extends Component {
             {
               getFieldDecorator('product_price', {
                 rules: [{
+                  type: 'number',
                   required: true,
                   message: constant.required
                 }],
                 initialValue: ''
               })(
                 <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + '商品价格'}
-              min={0} max={999999} step={0.01}/>
+                             min={0} max={999999} step={0.01}/>
               )
             }
           </FormItem>
+
+          {
+            this.props.member_level_list.map(function (item) {
+              return (
+                <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                          style={{width: constant.detail_form_item_width}} label={item.member_level_name + '价格'}
+                          key={item.member_level_id}>
+                  {
+                    getFieldDecorator('product_price_list.' + item.member_level_id, {
+                      rules: [{
+                        type: 'number',
+                        required: true,
+                        message: constant.required
+                      }],
+                      initialValue: ''
+                    })(
+                      <InputNumber type="text" className={style.formItemInput}
+                                   placeholder={constant.placeholder + '商品价格'}
+                                   min={0} max={999999} step={0.01}/>
+                    )
+                  }
+                </FormItem>
+              )
+            })
+          }
 
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_width}} label="商品库存">
@@ -234,6 +309,11 @@ class ProductDetail extends Component {
           </FormItem>
 
           <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
+                    style={{width: constant.detail_form_item_full_width}} label="商品图片">
+            <InputImage ref="product_image_list"/>
+          </FormItem>
+
+          <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_full_width}} label="商品介绍">
             <InputHtml ref="product_content"/>
           </FormItem>
@@ -249,6 +329,7 @@ ProductDetail.propTypes = {
   is_detail: React.PropTypes.bool.isRequired,
   category_list: React.PropTypes.array.isRequired,
   brand_list: React.PropTypes.array.isRequired,
+  member_level_list: React.PropTypes.array.isRequired,
   handleSubmit: React.PropTypes.func.isRequired,
   handleCancel: React.PropTypes.func.isRequired
 };

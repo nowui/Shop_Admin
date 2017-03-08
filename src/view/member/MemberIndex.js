@@ -14,15 +14,34 @@ class MemberIndex extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      member_level_list: []
+    }
   }
 
   componentDidMount() {
     this.handleSearch();
+
+    this.handleMemberLevelList();
   }
 
   componentWillUnmount() {
     this.handleReset();
+  }
+
+  handleMemberLevelList() {
+    http({
+      url: '/member/level/category/list',
+      data: {},
+      success: function (json) {
+        this.setState({
+          member_level_list: json.data
+        });
+      }.bind(this),
+      complete: function () {
+
+      }.bind(this)
+    }).post();
   }
 
   handleSearch() {
@@ -292,6 +311,7 @@ class MemberIndex extends Component {
           <MemberDetail is_load={this.props.member.is_load}
                         is_detail={this.props.member.is_detail}
                         action={this.props.member.action}
+                        member_level_list={this.state.member_level_list}
                         handleSubmit={this.handleSubmit.bind(this)}
                         handleCancel={this.handleCancel.bind(this)}
                         ref="detail"/>
