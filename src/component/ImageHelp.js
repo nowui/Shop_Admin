@@ -196,16 +196,24 @@ class ImageHelp extends Component {
   handleSubmit() {
     let list = [];
 
+    let index = 0;
+
+    console.log(this.props.limit);
+
     for (let i = 0; i < this.state.list.length; i++) {
       let item = this.state.list[i];
 
       if (item.select) {
-        list.push({
-          id: item.id,
-          url: item.url,
-          status: false,
-          select: item.select
-        });
+        if (index < this.props.limit) {
+          index++;
+
+          list.push({
+            id: item.id,
+            url: item.url,
+            status: false,
+            select: item.select
+          });
+        }
       }
     }
 
@@ -295,6 +303,7 @@ class ImageHelp extends Component {
 }
 
 ImageHelp.propTypes = {
+  limit: React.PropTypes.number,
   handleSubmitReturn: React.PropTypes.func.isRequired
 };
 

@@ -305,12 +305,12 @@ class ProductDetail extends Component {
 
           <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_full_width}} label="商品图片">
-            <InputImage ref="product_image"/>
+            <InputImage limit={1} ref="product_image"/>
           </FormItem>
 
           <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_full_width}} label="商品图片">
-            <InputImage ref="product_image_list"/>
+            <InputImage limit={5} ref="product_image_list"/>
           </FormItem>
 
           <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}

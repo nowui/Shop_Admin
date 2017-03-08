@@ -162,7 +162,9 @@ class InputImage extends Component {
       if (isNotExit) {
         //list[i] = list[i].replace(Helper.host, '');
 
-        array.push(list[i]);
+        if (array.length < this.props.limit) {
+          array.push(list[i]);
+        }
       }
     }
 
@@ -189,28 +191,40 @@ class InputImage extends Component {
             return (
               <div key={item.url} className={style.item}>
                 <img className={style.itemImage} src={constant.host + item.url}/>
-                <div onMouseOver={this.handleMouseOver.bind(this, item.url)} onMouseOut={this.handleMouseOut.bind(this)}>
+                <div onMouseOver={this.handleMouseOver.bind(this, item.url)}
+                     onMouseOut={this.handleMouseOut.bind(this)}>
                   <div className={mask}></div>
-                  <i className={"anticon anticon-eye-o " + style.itemPreviewIcon} style={{display: item.status ? 'inline' : 'none'}} onClick={this.handlePreview.bind(this, item.url)}/>
-                  <i className={"anticon anticon-delete " + style.itemRemoveIcon} style={{display: item.status ? 'inline' : 'none'}} onClick={this.handleDelete.bind(this, item.url)}/>
+                  <i className={"anticon anticon-eye-o " + style.itemPreviewIcon}
+                     style={{display: item.status ? 'inline' : 'none'}}
+                     onClick={this.handlePreview.bind(this, item.url)}/>
+                  <i className={"anticon anticon-delete " + style.itemRemoveIcon}
+                     style={{display: item.status ? 'inline' : 'none'}}
+                     onClick={this.handleDelete.bind(this, item.url)}/>
                 </div>
               </div>
             )
           }.bind(this))
         }
-        <div className={style.button} onClick={this.handleUpload.bind(this)}>
-          <i className={"anticon anticon-plus " + style.buttonIcon}/>
-          <div className={"ant-upload-text " + style.buttonText}>添加图片</div>
-        </div>
+        {
+          this.state.list.length < this.props.limit ?
+            <div className={style.button} onClick={this.handleUpload.bind(this)}>
+              <i className={"anticon anticon-plus " + style.buttonIcon}/>
+              <div className={"ant-upload-text " + style.buttonText}>添加图片</div>
+            </div>
+            :
+            ''
+        }
         <Modal visible={this.state.is_preview} footer={null} onCancel={this.handleCancel.bind(this)}>
-          <img alt="example" style={{ width: '100%' }} src={this.state.image} />
+          <img alt="example" style={{width: '100%'}} src={this.state.image}/>
         </Modal>
-        <ImageHelp handleSubmitReturn={this.handleSubmitReturn.bind(this)} ref="image"/>
+        <ImageHelp limit={this.props.limit} handleSubmitReturn={this.handleSubmitReturn.bind(this)} ref="image"/>
       </div>
     );
   }
 }
 
-InputImage.propTypes = {};
+InputImage.propTypes = {
+  limit: React.PropTypes.number
+};
 
 export default InputImage;
