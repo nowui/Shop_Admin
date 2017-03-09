@@ -132,7 +132,7 @@ class Main extends Component {
             {this.props.children}
           </Content>
           <Footer className={style.layoutFooter}>
-            Copyright ©2017 Created by ChuangShi Information Technolony Co.,Ltd.
+            Copyright ©2017 Created by XingXiao
           </Footer>
         </Layout>
       </Layout>

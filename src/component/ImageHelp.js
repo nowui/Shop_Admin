@@ -303,7 +303,7 @@ class ImageHelp extends Component {
 }
 
 ImageHelp.propTypes = {
-  limit: React.PropTypes.number,
+  limit: React.PropTypes.number.isRequired,
   handleSubmitReturn: React.PropTypes.func.isRequired
 };
 

@@ -64,7 +64,7 @@ class ProductDetail extends Component {
 
       product_price.push({
         member_level_id: '',
-        member_level_name: '产品价格',
+        member_level_name: '',
         product_price: values.product_price
       });
 
