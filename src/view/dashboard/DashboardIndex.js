@@ -890,7 +890,7 @@ class DashboardIndex extends Component {
         <div key="0">
           <Row className={style.layoutContentHeader}>
             <Col span={8}>
-              <h1>仪表盘</h1>
+              <div className={style.layoutContentHeaderTitle}>仪表盘</div>
             </Col>
           </Row>
           <Row className={style.boxes}>

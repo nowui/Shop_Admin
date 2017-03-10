@@ -188,6 +188,21 @@ class ProductDetail extends Component {
           </FormItem>
 
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                    style={{width: constant.detail_form_item_width}} label="市场价格">
+            {
+              getFieldDecorator('product_market_price', {
+                rules: [{
+                  type: 'number'
+                }],
+                initialValue: 0.00
+              })(
+                <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + '市场价格'}
+                             min={0} max={999999} step={0.01}/>
+              )
+            }
+          </FormItem>
+
+          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_width}} label="商品价格">
             {
               getFieldDecorator('product_price', {
@@ -196,7 +211,7 @@ class ProductDetail extends Component {
                   required: true,
                   message: constant.required
                 }],
-                initialValue: ''
+                initialValue: 0.00
               })(
                 <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + '商品价格'}
                              min={0} max={999999} step={0.01}/>
@@ -217,7 +232,7 @@ class ProductDetail extends Component {
                         required: true,
                         message: constant.required
                       }],
-                      initialValue: ''
+                      initialValue: 0.00
                     })(
                       <InputNumber type="text" className={style.formItemInput}
                                    placeholder={constant.placeholder + '商品价格'}
@@ -309,7 +324,7 @@ class ProductDetail extends Component {
           </FormItem>
 
           <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_full_width}} label="商品图片">
+                    style={{width: constant.detail_form_item_full_width}} label="图片列表">
             <InputImage limit={5} ref="product_image_list"/>
           </FormItem>
 

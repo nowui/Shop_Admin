@@ -271,7 +271,7 @@ class AuthorizationIndex extends Component {
         <div key="0">
           <Row className={style.layoutContentHeader}>
             <Col span={8}>
-              <h1>授权列表</h1>
+              <div className={style.layoutContentHeaderTitle}>授权列表</div>
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default"

@@ -83,7 +83,7 @@
 }
 
 .notificationMessage {
-  color: #595959;
+  color: #333333;
 }
 
 .user {
@@ -91,7 +91,7 @@
   font-size: 22px;
   top: 22px;
   right: 70px;
-  color: #595959;
+  color: #333333;
 }
 
 .logout {
@@ -99,7 +99,7 @@
   font-size: 22px;
   top: 22px;
   right: 18px;
-  color: #595959;
+  color: #333333;
 }
 
 .layout {
@@ -108,11 +108,11 @@
 }
 
 .layoutHeader {
-  padding: 0px;
   height: 60px;
   line-height: 60px;
   padding: 0px !important;
-  background: #ffffff !important;
+  background: #ececec !important;
+  border-bottom: 1px solid #c0bfc4;
 }
 
 .layoutSider {
@@ -135,6 +135,11 @@
 .layoutContentHeader {
   height: 60px;
   line-height: 60px;
+}
+
+.layoutContentHeaderTitle {
+  font-size: 20px;
+  font-weight: bold;
 }
 
 .layoutContentHeaderMenu {

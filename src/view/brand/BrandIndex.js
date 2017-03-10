@@ -255,7 +255,7 @@ class BrandIndex extends Component {
         <div key="0">
           <Row className={style.layoutContentHeader}>
             <Col span={8}>
-              <h1>品牌列表</h1>
+              <div className={style.layoutContentHeaderTitle}>品牌列表</div>
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}

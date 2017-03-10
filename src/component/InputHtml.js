@@ -73,7 +73,7 @@ class InputHtml extends Component {
             }.bind(this)
           }}
         />
-        <ImageHelp is_visible={false} handleSubmitReturn={this.handleSubmitReturn.bind(this)} ref="image"/>
+        <ImageHelp is_visible={false} limit={0} handleSubmitReturn={this.handleSubmitReturn.bind(this)} ref="image"/>
       </div>
     );
   }

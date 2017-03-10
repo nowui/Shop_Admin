@@ -227,4 +227,8 @@ InputImage.propTypes = {
   limit: React.PropTypes.number
 };
 
+InputImage.defaultProps = {
+  limit: 0
+};
+
 export default InputImage;

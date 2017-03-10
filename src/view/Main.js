@@ -45,6 +45,31 @@ class Main extends Component {
     });
   }
 
+  handleOpenChange(openKeys) {
+    const state = this.state;
+    const latestOpenKey = openKeys.find(key => !(state.openKeys.indexOf(key) > -1));
+    const latestCloseKey = state.openKeys.find(key => !(openKeys.indexOf(key) > -1));
+
+    let nextOpenKeys = [];
+    if (latestOpenKey) {
+      nextOpenKeys = this.getAncestorKeys(latestOpenKey).concat(latestOpenKey);
+    }
+    if (latestCloseKey) {
+      nextOpenKeys = this.getAncestorKeys(latestCloseKey);
+    }
+
+    this.setState({
+      openKeys: nextOpenKeys,
+    });
+  }
+
+  getAncestorKeys = (key) => {
+    const map = {
+      sub3: [],
+    };
+    return map[key] || [];
+  }
+
   handleClick(item) {
     this.setState({
       selectedKeys: [item.key]
@@ -83,13 +108,14 @@ class Main extends Component {
           collapsed={this.state.collapsed}
         >
           <div className={this.state.collapsed ? '' : style.layoutSider}>
-            <div className="logo"><h1 onClick={this.handleLogo.bind(this)}>{this.state.collapsed ? '商城' : '微信商城'}</h1>
+            <div className="logo"><h1 onClick={this.handleLogo.bind(this)}>{this.state.collapsed ? '商城' : '微信商城系统'}</h1>
             </div>
             <Menu
               theme="dark"
               mode={this.state.collapsed ? 'vertical' : 'inline'}
-              defaultOpenKeys={this.state.openKeys}
+              openKeys={this.state.openKeys}
               selectedKeys={this.state.selectedKeys}
+              onOpenChange={this.handleOpenChange.bind(this)}
               onClick={this.handleClick.bind(this)}
             >
               {
@@ -119,6 +145,7 @@ class Main extends Component {
             <Icon
               className="trigger"
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
+              style={{color: '#333333'}}
               onClick={this.handleToggle.bind(this)}
             />
             <Badge count={5} className={style.notification}>
@@ -127,13 +154,13 @@ class Main extends Component {
             <Link to=''><Icon type="user" className={style.user}/></Link>
             <Link onClick={this.handleLogout.bind(this)}><Icon type="poweroff" className={style.logout}/></Link>
           </Header>
-          <Content style={{height: document.documentElement.clientHeight - 60 - 20 - 20}}
+          <Content style={{height: document.documentElement.clientHeight - 60 - 20}}
                    className={style.layoutContent}>
             {this.props.children}
           </Content>
-          <Footer className={style.layoutFooter}>
-            Copyright ©2017 Created by XingXiao
-          </Footer>
+          {/*<Footer className={style.layoutFooter}>*/}
+            {/*Copyright ©2017 Created by XingXiao*/}
+          {/*</Footer>*/}
         </Layout>
       </Layout>
     );
