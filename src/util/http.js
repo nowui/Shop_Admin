@@ -1,7 +1,7 @@
 import fetch from 'dva/fetch';
 import {message} from 'antd';
 
-import constant from '../constant/constant';
+import constant from './constant';
 import database from '../util/database';
 
 const operation = (promise) => {

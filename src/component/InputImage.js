@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {Modal, message} from 'antd';
 
 import ImageHelp from './ImageHelp'
-import constant from '../constant/constant';
+import constant from '../util/constant';
 import style from './InputImage.css';
 
 class InputImage extends Component {

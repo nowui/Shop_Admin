@@ -4,7 +4,7 @@ import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import MemberLevelDetail from './MemberLevelDetail';
-import constant from '../../constant/constant';
+import constant from '../../util/constant';
 import http from '../../util/http';
 import style from '../style.css';
 

@@ -3,7 +3,7 @@ import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, message} from 'antd';
 
-import constant from '../../constant/constant';
+import constant from '../../util/constant';
 import http from '../../util/http';
 import style from '../style.css';
 

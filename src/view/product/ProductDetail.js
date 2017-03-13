@@ -3,7 +3,7 @@ import {Modal, Form, Spin, Button, Input, InputNumber, Checkbox, Select} from 'a
 import InputImage from '../../component/InputImage'
 import InputHtml from '../../component/InputHtml'
 
-import constant from '../../constant/constant';
+import constant from '../../util/constant';
 import style from '../style.css';
 
 class ProductDetail extends Component {

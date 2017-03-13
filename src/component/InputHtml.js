@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import TinyMCE from 'react-tinymce';
 
 import ImageHelp from './ImageHelp'
-import constant from '../constant/constant';
+import constant from '../util/constant';
 
 let editor;
 

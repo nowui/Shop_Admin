@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {Modal, Button, message, Upload, Icon, Spin} from 'antd';
 
-import constant from '../constant/constant';
+import constant from '../util/constant';
 import http from '../util/http';
 import database from '../util/database';
 import style from './ImageHelp.css';
@@ -198,13 +198,11 @@ class ImageHelp extends Component {
 
     let index = 0;
 
-    console.log(this.props.limit);
-
     for (let i = 0; i < this.state.list.length; i++) {
       let item = this.state.list[i];
 
       if (item.select) {
-        if (index < this.props.limit) {
+        if (index < this.props.limit || this.props.limit == 0) {
           index++;
 
           list.push({

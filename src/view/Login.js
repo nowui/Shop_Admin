@@ -3,7 +3,7 @@ import {connect} from 'dva';
 import {routerRedux} from 'dva/router';
 import {Card, message, Spin, Form, Input, Button} from 'antd';
 
-import constant from '../constant/constant';
+import constant from '../util/constant';
 import database from '../util/database';
 import http from '../util/http';
 import style from './style.css';

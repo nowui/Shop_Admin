@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {Modal, Row, Col, Button, Table, Popconfirm} from 'antd';
 
-import constant from '../../constant/constant';
+import constant from '../../util/constant';
 import style from '../style.css';
 
 class CategoryTree extends Component {
