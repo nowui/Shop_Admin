@@ -36,9 +36,9 @@ class ImageHelp extends Component {
       is_visible: true
     });
 
-    if (this.state.list.length > 0) {
-      return;
-    }
+    // if (this.state.list.length > 0) {
+    //   return;
+    // }
 
     this.handleLoad();
   }

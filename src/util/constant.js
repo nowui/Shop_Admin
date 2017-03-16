@@ -39,8 +39,8 @@ export default {
   popconfirm_ok: '确定',
   popconfirm_cancel: '取消',
   required: '不能为空',
-  host: 'http://localhost:8080',
-  // host: 'http://api.jiyiguan.nowui.com',
+  // host: 'http://localhost:8080',
+  host: 'http://api.jiyiguan.nowui.com',
   placeholder: '请输入',
   platform: 'Admin',
   version: '1.0.0'
