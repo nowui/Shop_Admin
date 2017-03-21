@@ -131,7 +131,7 @@ class MemberIndex extends Component {
         member_id: member_id
       },
       success: function (json) {
-        this.refs.detail.setFieldsValue(json.data);
+        this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleSetFieldsValue(json.data);
       }.bind(this),
       complete: function () {
         this.handleFinish();

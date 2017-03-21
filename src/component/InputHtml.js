@@ -9,6 +9,10 @@ let editor;
 class InputHtml extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      content: ''
+    }
   }
 
   componentDidMount() {
@@ -20,6 +24,10 @@ class InputHtml extends Component {
   }
 
   handleSetContent(content) {
+    this.setState({
+      content: content
+    });
+
     this.editor.setContent(content);
   }
 

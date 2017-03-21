@@ -9,6 +9,7 @@ class MemberDetail extends Component {
     super(props);
 
     this.state = {
+      user_avatar: '',
       isChange: false
     }
   }
@@ -19,6 +20,14 @@ class MemberDetail extends Component {
 
   componentWillUnmount() {
 
+  }
+
+  handleSetFieldsValue(values) {
+    this.setState({
+      user_avatar: values.user_avatar
+    });
+
+    this.props.form.setFieldsValue(values);
   }
 
   handleSubmit() {
@@ -83,7 +92,8 @@ class MemberDetail extends Component {
                   {
                     this.props.member_level_list.map(function (item) {
                       return (
-                        <Option key={item.member_level_id} value={item.member_level_id}>{item.member_level_name}</Option>
+                        <Option key={item.member_level_id}
+                                value={item.member_level_id}>{item.member_level_name}</Option>
                       )
                     })
                   }
@@ -110,11 +120,12 @@ class MemberDetail extends Component {
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_width}} label="会员头像">
             {
-              getFieldDecorator('member_avatar', {
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '会员头像'}/>
-              )
+              this.state.user_avatar == '' ?
+                ''
+                :
+                <img src={this.state.user_avatar} style={{
+                  width: '120px'
+                }}/>
             }
           </FormItem>
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
