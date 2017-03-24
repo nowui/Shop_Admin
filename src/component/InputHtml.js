@@ -55,7 +55,7 @@ class InputHtml extends Component {
       <div>
         <TinyMCE
           config={{
-            height: 500,
+            height: 5000,
             menubar: false,
             resize: false,
             border_width: 1,

@@ -103,63 +103,64 @@ class Main extends Component {
 
     return (
       <Layout>
-        <Sider
-          onCollapse={this.handleToggle.bind(this)}
-          collapsed={this.state.collapsed}
-        >
-          <div className={this.state.collapsed ? '' : style.layoutSider}>
-            <div className="logo"><h1 onClick={this.handleLogo.bind(this)}>{this.state.collapsed ? '商城' : '微信商城系统'}</h1>
-            </div>
-            <Menu
-              theme="dark"
-              mode={this.state.collapsed ? 'vertical' : 'inline'}
-              openKeys={this.state.openKeys}
-              selectedKeys={this.state.selectedKeys}
-              onOpenChange={this.handleOpenChange.bind(this)}
-              onClick={this.handleClick.bind(this)}
-            >
-              {
-                database.getMenu().map(function (item) {
-                  return (
-                    <SubMenu key={item.category_id}
-                             title={<span><Icon
-                               className={'anticon ' + item.category_remark}/><span
-                               className="nav-text">{item.category_name}</span></span>}>
-                      {
-                        item.children.map(function (children) {
-                          return (
-                            <Menu.Item key={children.category_id}><Link
-                              to={children.category_value}>{children.category_name}</Link></Menu.Item>
-                          )
-                        })
-                      }
-                    </SubMenu>
-                  )
-                })
-              }
-            </Menu>
+        <Header className={style.layoutHeader}>
+          <div className={style.logo}><h1
+            onClick={this.handleLogo.bind(this)}>微信商城系统</h1>
           </div>
-        </Sider>
+          <Icon
+            className={style.trigger}
+            type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
+            onClick={this.handleToggle.bind(this)}
+          />
+          <Badge count={5} className={style.notification}>
+            <Link to=''><Icon type="notification" className={style.notificationMessage}/></Link>
+          </Badge>
+          <Link to=''><Icon type="user" className={style.user}/></Link>
+          <Link onClick={this.handleLogout.bind(this)}><Icon type="poweroff" className={style.logout}/></Link>
+        </Header>
         <Layout>
-          <Header className={style.layoutHeader}>
-            <Icon
-              className="trigger"
-              type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
-              style={{color: '#333333'}}
-              onClick={this.handleToggle.bind(this)}
-            />
-            <Badge count={5} className={style.notification}>
-              <Link to=''><Icon type="notification" className={style.notificationMessage}/></Link>
-            </Badge>
-            <Link to=''><Icon type="user" className={style.user}/></Link>
-            <Link onClick={this.handleLogout.bind(this)}><Icon type="poweroff" className={style.logout}/></Link>
-          </Header>
+          <Sider
+            onCollapse={this.handleToggle.bind(this)}
+            collapsed={this.state.collapsed}
+            style={{background: '#ffffff'}}
+          >
+            <div className={this.state.collapsed ? '' : style.layoutSider}>
+              <Menu
+                mode={this.state.collapsed ? 'vertical' : 'inline'}
+                openKeys={this.state.openKeys}
+                selectedKeys={this.state.selectedKeys}
+                onOpenChange={this.handleOpenChange.bind(this)}
+                onClick={this.handleClick.bind(this)}
+                style={{height: document.documentElement.clientHeight - 60, paddingTop: '10px'}}
+              >
+                {
+                  database.getMenu().map(function (item) {
+                    return (
+                      <SubMenu key={item.category_id}
+                               title={<span><Icon
+                                 className={'anticon ' + item.category_remark}/><span
+                                 className="nav-text">{item.category_name}</span></span>}>
+                        {
+                          item.children.map(function (children) {
+                            return (
+                              <Menu.Item key={children.category_id}><Link
+                                to={children.category_value}>{children.category_name}</Link></Menu.Item>
+                            )
+                          })
+                        }
+                      </SubMenu>
+                    )
+                  })
+                }
+              </Menu>
+            </div>
+          </Sider>
           <Content style={{height: document.documentElement.clientHeight - 60 - 20}}
                    className={style.layoutContent}>
             {this.props.children}
           </Content>
           {/*<Footer className={style.layoutFooter}>*/}
-            {/*Copyright ©2017 Created by XingXiao*/}
+          {/*Copyright ©2017 Created by XingXiao*/}
           {/*</Footer>*/}
         </Layout>
       </Layout>
