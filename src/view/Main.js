@@ -155,7 +155,7 @@ class Main extends Component {
               </Menu>
             </div>
           </Sider>
-          <Content style={{height: document.documentElement.clientHeight - 60 - 20}}
+          <Content style={{height: document.documentElement.clientHeight - 60}}
                    className={style.layoutContent}>
             {this.props.children}
           </Content>
