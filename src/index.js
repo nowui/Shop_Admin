@@ -29,6 +29,7 @@ app.model(require('./model/delivery'));
 app.model(require('./model/member'));
 app.model(require('./model/member_level'));
 app.model(require('./model/order'));
+app.model(require('./model/distributor'));
 
 // 4. Router
 app.router(require('./router'));
