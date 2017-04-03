@@ -1,16 +1,14 @@
 import React, {Component, PropTypes} from 'react';
-import {Modal, Form, Spin, Button, Input, Checkbox} from 'antd';
+import {Modal, Form, Spin, Button, Input, InputNumber} from 'antd';
 
 import constant from '../../util/constant';
 import style from '../style.css';
 
-class DistributorDetail extends Component {
+class SceneDetail extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      isChange: false
-    }
+    this.state = {}
   }
 
   componentDidMount() {
@@ -27,17 +25,7 @@ class DistributorDetail extends Component {
         return;
       }
 
-      if (!this.state.isChange && this.props.action == 'update') {
-        values.user_account = '';
-      }
-
       this.props.handleSubmit(values);
-    });
-  }
-
-  handleChange(e) {
-    this.setState({
-      isChange: e.target.checked
     });
   }
 
@@ -47,10 +35,6 @@ class DistributorDetail extends Component {
 
   handleReset() {
     this.props.form.resetFields();
-
-    this.setState({
-      isChange: false
-    });
   }
 
   render() {
@@ -58,7 +42,7 @@ class DistributorDetail extends Component {
     const {getFieldDecorator} = this.props.form;
 
     return (
-      <Modal title={'经销商表单'} maskClosable={false} width={constant.detail_width}
+      <Modal title={'二维码表单'} maskClosable={false} width={constant.detail_width}
              visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
@@ -69,73 +53,99 @@ class DistributorDetail extends Component {
              ]}
       >
         <Spin spinning={this.props.is_load}>
-          {getFieldDecorator('user_id')(
-            <Input type="hidden"/>
-          )}
+
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="名称">
+                    style={{width: constant.detail_form_item_width}} label="外键编号">
             {
-              getFieldDecorator('distributor_name', {
+              getFieldDecorator('object_id', {
                 rules: [{
                   required: true,
                   message: constant.required
                 }],
                 initialValue: ''
               })(
-                <Input type="text" placeholder={constant.placeholder + '名称'}/>
+                <Input type="text" placeholder={constant.placeholder + '外键编号'}/>
               )
             }
           </FormItem>
+
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="帐号">
+                    style={{width: constant.detail_form_item_width}} label="场景类型">
             {
-              getFieldDecorator('user_account', {
+              getFieldDecorator('scene_type', {
                 rules: [{
                   required: true,
                   message: constant.required
                 }],
                 initialValue: ''
               })(
-                <Input type="text" placeholder={constant.placeholder + '帐号'}/>
+                <Input type="text" placeholder={constant.placeholder + '场景类型'}/>
               )
             }
+          </FormItem>
+
+          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                    style={{width: constant.detail_form_item_width}} label="新增关注">
             {
-              this.props.action == 'save' ?
-                ''
-                :
-                <Checkbox checked={this.state.isChange} onChange={this.handleChange.bind(this)}>是否修改帐号</Checkbox>
+              getFieldDecorator('scene_add', {
+                rules: [{
+                  required: true,
+                  message: constant.required
+                }],
+                initialValue: 0
+              })(
+                <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + '新增关注'}
+                             min={0} max={999}/>
+              )
             }
           </FormItem>
+
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="密码">
+                    style={{width: constant.detail_form_item_width}} label="取消关注">
             {
-              getFieldDecorator('user_password', {
+              getFieldDecorator('scene_cancel', {
                 rules: [{
-                  required: this.props.action == 'save',
+                  required: true,
+                  message: constant.required
+                }],
+                initialValue: 0
+              })(
+                <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + '取消关注'}
+                             min={0} max={999}/>
+              )
+            }
+          </FormItem>
+
+          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                    style={{width: constant.detail_form_item_width}} label="二维码">
+            {
+              getFieldDecorator('scene_qrcode', {
+                rules: [{
+                  required: true,
                   message: constant.required
                 }],
                 initialValue: ''
               })(
-                <Input type="text" placeholder={constant.placeholder + '密码'}/>
+                <Input type="text" placeholder={constant.placeholder + '二维码'}/>
               )
             }
           </FormItem>
+
         </Spin>
       </Modal>
     );
   }
 }
 
-DistributorDetail.propTypes = {
+SceneDetail.propTypes = {
   is_load: React.PropTypes.bool.isRequired,
   is_detail: React.PropTypes.bool.isRequired,
-  action: React.PropTypes.string.isRequired,
   handleSubmit: React.PropTypes.func.isRequired,
   handleCancel: React.PropTypes.func.isRequired
 };
 
-DistributorDetail = Form.create({
+SceneDetail = Form.create({
   withRef: true
-})(DistributorDetail);
+})(SceneDetail);
 
-export default DistributorDetail;
+export default SceneDetail;

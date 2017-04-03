@@ -30,6 +30,8 @@ app.model(require('./model/member'));
 app.model(require('./model/member_level'));
 app.model(require('./model/order'));
 app.model(require('./model/distributor'));
+app.model(require('./model/supplier'));
+app.model(require('./model/scene'));
 
 // 4. Router
 app.router(require('./router'));

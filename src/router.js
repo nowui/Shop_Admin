@@ -20,6 +20,8 @@ import MemberIndex from './view/member/MemberIndex';
 import MemberLevelIndex from './view/member/MemberLevelIndex';
 import OrderIndex from './view/order/OrderIndex';
 import DistributorIndex from './view/distributor/DistributorIndex';
+import SupplierIndex from './view/supplier/SupplierIndex';
+import SceneIndex from './view/scene/SceneIndex';
 
 import database from './util/database';
 
@@ -57,6 +59,8 @@ function RouterConfig({history}) {
           <Route path="member/level/index" component={MemberLevelIndex}/>
           <Route path="order/index" component={OrderIndex}/>
           <Route path="distributor/index" component={DistributorIndex}/>
+          <Route path="supplier/index" component={SupplierIndex}/>
+          <Route path="scene/index" component={SceneIndex}/>
         </Route>
       </Route>
     </Router>

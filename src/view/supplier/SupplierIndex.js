@@ -3,14 +3,14 @@ import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
-import DistributorDetail from './DistributorDetail';
+import SupplierDetail from './SupplierDetail';
 import constant from '../../util/constant';
 import http from '../../util/http';
 import style from '../style.css';
 
 let request;
 
-class DistributorIndex extends Component {
+class SupplierIndex extends Component {
   constructor(props) {
     super(props);
 
@@ -26,19 +26,19 @@ class DistributorIndex extends Component {
   }
 
   handleSearch() {
-    let distributor_name = this.props.form.getFieldValue('distributor_name');
+    let supplier_name = this.props.form.getFieldValue('supplier_name');
     let page_index = 1;
 
-    this.handleList(distributor_name, page_index);
+    this.handleList(supplier_name, page_index);
   }
 
   handleLoad(page_index) {
-    let distributor_name = this.props.distributor.distributor_name;
+    let supplier_name = this.props.supplier.supplier_name;
 
-    this.handleList(distributor_name, page_index);
+    this.handleList(supplier_name, page_index);
   }
 
-  handleList(distributor_name, page_index) {
+  handleList(supplier_name, page_index) {
     if (this.handleStart({
         is_load: true
       })) {
@@ -46,21 +46,21 @@ class DistributorIndex extends Component {
     }
 
     request = http({
-      url: '/distributor/admin/list',
+      url: '/supplier/admin/list',
       data: {
-        distributor_name: distributor_name,
+        supplier_name: supplier_name,
         page_index: page_index,
-        page_size: this.props.distributor.page_size
+        page_size: this.props.supplier.page_size
       },
       success: function (json) {
         for (let i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].distributor_id;
+          json.data[i].key = json.data[i].supplier_id;
         }
 
         this.props.dispatch({
-          type: 'distributor/fetch',
+          type: 'supplier/fetch',
           data: {
-            distributor_name: distributor_name,
+            supplier_name: supplier_name,
             total: json.total,
             list: json.data,
             page_index: page_index
@@ -75,7 +75,7 @@ class DistributorIndex extends Component {
 
   handleChangeSize(page_index, page_size) {
     this.props.dispatch({
-      type: 'distributor/fetch',
+      type: 'supplier/fetch',
       data: {
         page_size: page_size
       }
@@ -88,7 +88,7 @@ class DistributorIndex extends Component {
 
   handleSave() {
     this.props.dispatch({
-      type: 'distributor/fetch',
+      type: 'supplier/fetch',
       data: {
         is_detail: true,
         action: 'save'
@@ -96,20 +96,20 @@ class DistributorIndex extends Component {
     });
   }
 
-  handleUpdate(distributor_id) {
+  handleUpdate(supplier_id) {
     if (this.handleStart({
         is_load: true,
         is_detail: true,
         action: 'update',
-        distributor_id: distributor_id
+        supplier_id: supplier_id
       })) {
       return;
     }
 
     request = http({
-      url: '/distributor/admin/find',
+      url: '/supplier/admin/find',
       data: {
-        distributor_id: distributor_id
+        supplier_id: supplier_id
       },
       success: function (json) {
         this.refs.detail.setFieldsValue(json.data);
@@ -120,7 +120,7 @@ class DistributorIndex extends Component {
     }).post();
   }
 
-  handleDelete(distributor_id) {
+  handleDelete(supplier_id) {
     if (this.handleStart({
         is_load: true
       })) {
@@ -128,15 +128,15 @@ class DistributorIndex extends Component {
     }
 
     request = http({
-      url: '/distributor/delete',
+      url: '/supplier/delete',
       data: {
-        distributor_id: distributor_id
+        supplier_id: supplier_id
       },
       success: function (json) {
         message.success(constant.success);
 
         setTimeout(function () {
-          this.handleLoad(this.props.distributor.page_index);
+          this.handleLoad(this.props.supplier.page_index);
         }.bind(this), constant.timeout);
       }.bind(this),
       complete: function () {
@@ -152,12 +152,12 @@ class DistributorIndex extends Component {
       return;
     }
 
-    if (this.props.distributor.action == 'update') {
-      data.distributor_id = this.props.distributor.distributor_id;
+    if (this.props.supplier.action == 'update') {
+      data.supplier_id = this.props.supplier.supplier_id;
     }
 
     request = http({
-      url: '/distributor/' + this.props.distributor.action,
+      url: '/supplier/' + this.props.supplier.action,
       data: data,
       success: function (json) {
         message.success(constant.success);
@@ -165,7 +165,7 @@ class DistributorIndex extends Component {
         this.handleCancel();
 
         setTimeout(function () {
-          this.handleLoad(this.props.distributor.page_index);
+          this.handleLoad(this.props.supplier.page_index);
         }.bind(this), constant.timeout);
       }.bind(this),
       complete: function () {
@@ -176,7 +176,7 @@ class DistributorIndex extends Component {
 
   handleCancel() {
     this.props.dispatch({
-      type: 'distributor/fetch',
+      type: 'supplier/fetch',
       data: {
         is_detail: false
       }
@@ -186,12 +186,12 @@ class DistributorIndex extends Component {
   }
 
   handleStart(data) {
-    if (this.props.distributor.is_load) {
+    if (this.props.supplier.is_load) {
       return true;
     }
 
     this.props.dispatch({
-      type: 'distributor/fetch',
+      type: 'supplier/fetch',
       data: data
     });
 
@@ -200,7 +200,7 @@ class DistributorIndex extends Component {
 
   handleFinish() {
     this.props.dispatch({
-      type: 'distributor/fetch',
+      type: 'supplier/fetch',
       data: {
         is_load: false
       }
@@ -211,7 +211,7 @@ class DistributorIndex extends Component {
     request.cancel();
 
     this.props.dispatch({
-      type: 'distributor/fetch',
+      type: 'supplier/fetch',
       data: {
         is_detail: false
       }
@@ -224,18 +224,18 @@ class DistributorIndex extends Component {
 
     const columns = [{
       title: '名称',
-      dataIndex: 'distributor_name'
+      dataIndex: 'supplier_name'
     }, {
       width: 90,
       title: constant.action,
       dataIndex: '',
       render: (text, record, index) => (
         <span>
-          <a onClick={this.handleUpdate.bind(this, record.distributor_id)}>{constant.update}</a>
+          <a onClick={this.handleUpdate.bind(this, record.supplier_id)}>{constant.update}</a>
           <span className={style.divider}/>
           <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
                       cancelText={constant.popconfirm_cancel}
-                      onConfirm={this.handleDelete.bind(this, record.distributor_id)}>
+                      onConfirm={this.handleDelete.bind(this, record.supplier_id)}>
             <a>{constant.delete}</a>
           </Popconfirm>
         </span>
@@ -243,9 +243,9 @@ class DistributorIndex extends Component {
     }];
 
     const pagination = {
-      total: this.props.distributor.total,
-      current: this.props.distributor.page_index,
-      pageSize: this.props.distributor.page_size,
+      total: this.props.supplier.total,
+      current: this.props.supplier.page_index,
+      pageSize: this.props.supplier.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
       onChange: this.handleLoad.bind(this)
@@ -256,11 +256,11 @@ class DistributorIndex extends Component {
         <div key="0">
           <Row className={style.layoutContentHeader}>
             <Col span={8}>
-              <div className={style.layoutContentHeaderTitle}>经销商列表</div>
+              <div className={style.layoutContentHeaderTitle}>供应商列表</div>
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
-                      loading={this.props.distributor.is_load}
+                      loading={this.props.supplier.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
               <Button type="primary" icon="plus-circle" size="default"
                       onClick={this.handleSave.bind(this)}>{constant.save}</Button>
@@ -271,7 +271,7 @@ class DistributorIndex extends Component {
               <Col span={8}>
                 <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="名称">
                   {
-                    getFieldDecorator('distributor_name', {
+                    getFieldDecorator('supplier_name', {
                       initialValue: ''
                     })(
                       <Input type="text" placeholder="请输入名称" className={style.formItemInput}/>
@@ -286,25 +286,25 @@ class DistributorIndex extends Component {
             </Row>
           </Form>
           <Table className={style.layoutContentHeaderTable}
-                 loading={this.props.distributor.is_load && !this.props.distributor.is_detail} columns={columns}
-                 dataSource={this.props.distributor.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 loading={this.props.supplier.is_load && !this.props.supplier.is_detail} columns={columns}
+                 dataSource={this.props.supplier.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>
-          <DistributorDetail is_load={this.props.distributor.is_load}
-                             is_detail={this.props.distributor.is_detail}
-                             action={this.props.distributor.action}
-                             handleSubmit={this.handleSubmit.bind(this)}
-                             handleCancel={this.handleCancel.bind(this)}
-                             ref="detail"/>
+          <SupplierDetail is_load={this.props.supplier.is_load}
+                          is_detail={this.props.supplier.is_detail}
+                          action={this.props.supplier.action}
+                          handleSubmit={this.handleSubmit.bind(this)}
+                          handleCancel={this.handleCancel.bind(this)}
+                          ref="detail"/>
         </div>
       </QueueAnim>
     );
   }
 }
 
-DistributorIndex.propTypes = {};
+SupplierIndex.propTypes = {};
 
-DistributorIndex = Form.create({})(DistributorIndex);
+SupplierIndex = Form.create({})(SupplierIndex);
 
-export default connect(({distributor}) => ({
-  distributor,
-}))(DistributorIndex);
+export default connect(({supplier}) => ({
+  supplier,
+}))(SupplierIndex);

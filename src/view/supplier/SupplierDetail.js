@@ -4,7 +4,7 @@ import {Modal, Form, Spin, Button, Input, Checkbox} from 'antd';
 import constant from '../../util/constant';
 import style from '../style.css';
 
-class DistributorDetail extends Component {
+class SupplierDetail extends Component {
   constructor(props) {
     super(props);
 
@@ -58,7 +58,7 @@ class DistributorDetail extends Component {
     const {getFieldDecorator} = this.props.form;
 
     return (
-      <Modal title={'经销商表单'} maskClosable={false} width={constant.detail_width}
+      <Modal title={'供应商表单'} maskClosable={false} width={constant.detail_width}
              visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
@@ -75,7 +75,7 @@ class DistributorDetail extends Component {
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_width}} label="名称">
             {
-              getFieldDecorator('distributor_name', {
+              getFieldDecorator('supplier_name', {
                 rules: [{
                   required: true,
                   message: constant.required
@@ -83,6 +83,20 @@ class DistributorDetail extends Component {
                 initialValue: ''
               })(
                 <Input type="text" placeholder={constant.placeholder + '名称'}/>
+              )
+            }
+          </FormItem>
+          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                    style={{width: constant.detail_form_item_width}} label="品牌编号">
+            {
+              getFieldDecorator('brand_id', {
+                rules: [{
+                  required: true,
+                  message: constant.required
+                }],
+                initialValue: ''
+              })(
+                <Input type="text" placeholder={constant.placeholder + '品牌编号'}/>
               )
             }
           </FormItem>
@@ -126,7 +140,7 @@ class DistributorDetail extends Component {
   }
 }
 
-DistributorDetail.propTypes = {
+SupplierDetail.propTypes = {
   is_load: React.PropTypes.bool.isRequired,
   is_detail: React.PropTypes.bool.isRequired,
   action: React.PropTypes.string.isRequired,
@@ -134,8 +148,8 @@ DistributorDetail.propTypes = {
   handleCancel: React.PropTypes.func.isRequired
 };
 
-DistributorDetail = Form.create({
+SupplierDetail = Form.create({
   withRef: true
-})(DistributorDetail);
+})(SupplierDetail);
 
-export default DistributorDetail;
+export default SupplierDetail;
