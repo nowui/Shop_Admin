@@ -58,6 +58,7 @@ class MemberDetail extends Component {
     this.props.form.resetFields();
 
     this.setState({
+      user_avatar: '',
       isChange: false
     });
   }
@@ -116,7 +117,6 @@ class MemberDetail extends Component {
               )
             }
           </FormItem>
-
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_width}} label="会员头像">
             {

@@ -9,7 +9,8 @@ class DistributorDetail extends Component {
     super(props);
 
     this.state = {
-      isChange: false
+      isChange: false,
+      scene_qrcode: ''
     }
   }
 
@@ -19,6 +20,14 @@ class DistributorDetail extends Component {
 
   componentWillUnmount() {
 
+  }
+
+  handleSetFieldsValue(values) {
+    this.setState({
+      scene_qrcode: values.scene_qrcode
+    });
+
+    this.props.form.setFieldsValue(values);
   }
 
   handleSubmit() {
@@ -37,7 +46,8 @@ class DistributorDetail extends Component {
 
   handleChange(e) {
     this.setState({
-      isChange: e.target.checked
+      isChange: e.target.checked,
+      scene_qrcode: ''
     });
   }
 
@@ -118,6 +128,17 @@ class DistributorDetail extends Component {
               })(
                 <Input type="text" placeholder={constant.placeholder + '密码'}/>
               )
+            }
+          </FormItem>
+          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                    style={{width: constant.detail_form_item_width}} label="二维码">
+            {
+              this.state.scene_qrcode == '' ?
+                ''
+                :
+                <img src={this.state.scene_qrcode} style={{
+                  width: '200px'
+                }}/>
             }
           </FormItem>
         </Spin>
