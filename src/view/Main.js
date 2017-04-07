@@ -3,6 +3,7 @@ import {connect} from 'dva';
 import {routerRedux, Link} from 'dva/router';
 import {Layout, Menu, Icon, Badge} from 'antd';
 
+import constant from '../util/constant';
 import database from '../util/database';
 import style from './style.css';
 
@@ -105,7 +106,7 @@ class Main extends Component {
       <Layout>
         <Header className={style.layoutHeader}>
           <div className={style.logo}><h1
-            onClick={this.handleLogo.bind(this)}>微信商城系统</h1>
+            onClick={this.handleLogo.bind(this)}>{constant.name}</h1>
           </div>
           {/*<Icon*/}
             {/*className={style.trigger}*/}

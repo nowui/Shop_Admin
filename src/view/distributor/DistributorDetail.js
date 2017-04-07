@@ -46,8 +46,7 @@ class DistributorDetail extends Component {
 
   handleChange(e) {
     this.setState({
-      isChange: e.target.checked,
-      scene_qrcode: ''
+      isChange: e.target.checked
     });
   }
 
@@ -59,7 +58,8 @@ class DistributorDetail extends Component {
     this.props.form.resetFields();
 
     this.setState({
-      isChange: false
+      isChange: false,
+      scene_qrcode: ''
     });
   }
 
