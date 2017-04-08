@@ -217,17 +217,19 @@ class InputImage extends Component {
         <Modal visible={this.state.is_preview} footer={null} onCancel={this.handleCancel.bind(this)}>
           <img alt="example" style={{width: '100%'}} src={this.state.image}/>
         </Modal>
-        <ImageHelp limit={this.props.limit} handleSubmitReturn={this.handleSubmitReturn.bind(this)} ref="image"/>
+        <ImageHelp type={this.props.type} limit={this.props.limit} handleSubmitReturn={this.handleSubmitReturn.bind(this)} ref="image"/>
       </div>
     );
   }
 }
 
 InputImage.propTypes = {
+  type: React.PropTypes.string,
   limit: React.PropTypes.number
 };
 
 InputImage.defaultProps = {
+  type: '',
   limit: 0
 };
 

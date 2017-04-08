@@ -205,6 +205,10 @@ class ImageHelp extends Component {
         if (index < this.props.limit || this.props.limit == 0) {
           index++;
 
+          if (this.props.type != '') {
+            item.url = item.url.substring(0, item.url.lastIndexOf("/")) + "/" + this.props.type + "/" + item.url.substring(item.url.lastIndexOf("/") + 1);
+          }
+
           list.push({
             id: item.id,
             url: item.url,
@@ -301,8 +305,13 @@ class ImageHelp extends Component {
 }
 
 ImageHelp.propTypes = {
+  type: React.PropTypes.string,
   limit: React.PropTypes.number.isRequired,
   handleSubmitReturn: React.PropTypes.func.isRequired
+};
+
+ImageHelp.defaultProps = {
+  type: ''
 };
 
 export default ImageHelp;

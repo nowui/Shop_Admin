@@ -66,13 +66,13 @@ class InputHtml extends Component {
             keep_values: false,
             show_system_default_font: false,
             forced_root_block: 'div',
-            plugins: 'code image imagetools code',
-            toolbar: 'fontselect fontsizeselect | bold italic underline strikethrough removeformat | alignleft aligncenter alignright | mybutton | code',
+            plugins: 'code image imagetools',
+            toolbar: 'fontselect fontsizeselect | bold italic underline strikethrough removeformat | alignleft aligncenter alignright | mybutton image | code',
             setup: function (editor) {
               this.editor = editor;
 
               editor.addButton('mybutton', {
-                icon: 'image',
+                icon: 'mce-ico mce-i-browse',
                 tooltip: 'Insert image',
                 onclick: function () {
                   this.refs.image.handleOpen();
@@ -81,7 +81,7 @@ class InputHtml extends Component {
             }.bind(this)
           }}
         />
-        <ImageHelp is_visible={false} limit={0} handleSubmitReturn={this.handleSubmitReturn.bind(this)} ref="image"/>
+        <ImageHelp is_visible={false} type={'original'} limit={0} handleSubmitReturn={this.handleSubmitReturn.bind(this)} ref="image"/>
       </div>
     );
   }
