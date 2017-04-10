@@ -1,19 +1,24 @@
+import constant from './constant';
+
+const token_key = ('token_' + constant.version);
+const menu_key = ('menu_' + constant.version);
+
 const database = {
   getToken() {
-    return localStorage.getItem("token2");
+    return localStorage.getItem(token_key);
   },
   setToken(token) {
-    localStorage.removeItem("token2");
+    localStorage.clear();
 
-    localStorage.setItem("token2", token);
+    localStorage.setItem(token_key, token);
   },
   getMenu() {
-    return JSON.parse(localStorage.getItem("menu"));
+    return JSON.parse(localStorage.getItem(menu_key));
   },
   setMenu(menu) {
-    localStorage.removeItem("menu");
+    localStorage.removeItem(menu_key);
 
-    localStorage.setItem("menu", JSON.stringify(menu));
+    localStorage.setItem(menu_key, JSON.stringify(menu));
   }
 };
 
