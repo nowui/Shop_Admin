@@ -20,7 +20,7 @@ class FileDetail extends Component {
   }
 
   handleSubmit() {
-    this.props.form.validateFields((errors, values) => {
+    this.props.form.validateFieldsAndScroll((errors, values) => {
       if (!!errors) {
         return;
       }
