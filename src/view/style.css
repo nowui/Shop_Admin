@@ -193,3 +193,8 @@
 .loginButton {
   width: 100%;
 }
+
+.productMemberPrice {
+  float: left;
+  width: 200px;
+}

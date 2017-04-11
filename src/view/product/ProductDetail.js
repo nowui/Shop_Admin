@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {Modal, Form, Spin, Button, Input, InputNumber, Checkbox, Select} from 'antd';
-import InputImage from '../../component/InputImage'
-import InputHtml from '../../component/InputHtml'
+import InputImage from '../../component/InputImage';
+import InputHtml from '../../component/InputHtml';
 
 import constant from '../../util/constant';
 import style from '../style.css';
@@ -219,30 +219,65 @@ class ProductDetail extends Component {
             }
           </FormItem>
 
-          {
-            this.props.member_level_list.map(function (item) {
-              return (
-                <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                          style={{width: constant.detail_form_item_width}} label={item.member_level_name + '价格'}
-                          key={item.member_level_id}>
-                  {
-                    getFieldDecorator('product_price_list.' + item.member_level_id, {
-                      rules: [{
-                        type: 'number',
-                        required: true,
-                        message: constant.required
-                      }],
-                      initialValue: 0.00
-                    })(
-                      <InputNumber type="text" className={style.formItemInput}
-                                   placeholder={constant.placeholder + '商品价格'}
-                                   min={0} max={999999} step={0.01}/>
-                    )
-                  }
-                </FormItem>
-              )
-            })
-          }
+          <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
+                    style={{width: constant.detail_form_item_full_width}} label="会员价格">
+            {
+              this.props.member_level_list.map(function (item) {
+                return (
+                  <div className={style.productMemberPrice} key={item.member_level_id}>
+                    <FormItem hasFeedback {...constant.formItemFullLayoutProductPrice} className={style.formItem}
+                              label={item.member_level_name}
+                    >
+                      {
+                        getFieldDecorator('product_price_list.' + item.member_level_id, {
+                          rules: [{
+                            type: 'number',
+                            required: true,
+                            message: constant.required
+                          }],
+                          initialValue: 0.00
+                        })(
+                          <InputNumber type="text" className={style.formItemInput}
+                                       placeholder={constant.placeholder + '商品价格'}
+                                       min={0} max={999999} step={0.01}/>
+                        )
+                      }
+                    </FormItem>
+                  </div>
+                )
+              })
+            }
+          </FormItem>
+
+          {/*<FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}*/}
+                    {/*style={{width: constant.detail_form_item_full_width}} label="会员价格">*/}
+            {/*{*/}
+              {/*this.props.member_level_list.map(function (item) {*/}
+                {/*return (*/}
+                  {/*<div className={style.productMemberPrice} key={item.member_level_id}>*/}
+                    {/*<FormItem hasFeedback {...constant.formItemFullLayoutProductPrice} className={style.formItem}*/}
+                              {/*label={item.member_level_name}*/}
+                    {/*>*/}
+                      {/*{*/}
+                        {/*getFieldDecorator('product_lr_list.' + item.member_level_id, {*/}
+                          {/*rules: [{*/}
+                            {/*type: 'number',*/}
+                            {/*required: true,*/}
+                            {/*message: constant.required*/}
+                          {/*}],*/}
+                          {/*initialValue: 0.00*/}
+                        {/*})(*/}
+                          {/*<InputNumber type="text" className={style.formItemInput}*/}
+                                       {/*placeholder={constant.placeholder + '商品价格'}*/}
+                                       {/*min={0} max={999999} step={0.01}/>*/}
+                        {/*)*/}
+                      {/*}*/}
+                    {/*</FormItem>*/}
+                  {/*</div>*/}
+                {/*)*/}
+              {/*})*/}
+            {/*}*/}
+          {/*</FormItem>*/}
 
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_width}} label="商品库存">

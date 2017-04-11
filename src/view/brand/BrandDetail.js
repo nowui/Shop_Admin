@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {Modal, Form, Spin, Button, Input} from 'antd';
-import InputImage from '../../component/InputImage'
-import InputHtml from '../../component/InputHtml'
+import InputImage from '../../component/InputImage';
+import InputHtml from '../../component/InputHtml';
 
 import constant from '../../util/constant';
 import style from '../style.css';
