@@ -36,5 +36,7 @@ app.model(require('./model/scene'));
 // 4. Router
 app.router(require('./router'));
 
+document.getElementById("loading").remove();
+
 // 5. Start
 app.start('#root');

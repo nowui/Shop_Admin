@@ -8,7 +8,9 @@ class SceneDetail extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      scene_qrcode: ''
+    }
   }
 
   componentDidMount() {
@@ -17,6 +19,14 @@ class SceneDetail extends Component {
 
   componentWillUnmount() {
 
+  }
+
+  handleSetFieldsValue(values) {
+    this.setState({
+      scene_qrcode: values.scene_qrcode
+    });
+
+    this.props.form.setFieldsValue(values);
   }
 
   handleSubmit() {
@@ -35,6 +45,11 @@ class SceneDetail extends Component {
 
   handleReset() {
     this.props.form.resetFields();
+
+    this.setState({
+      isChange: false,
+      scene_qrcode: ''
+    });
   }
 
   render() {
@@ -52,86 +67,72 @@ class SceneDetail extends Component {
                        onClick={this.handleSubmit.bind(this)}>确定</Button>
              ]}
       >
-        <Spin spinning={this.props.is_load}>
+        {
+          this.props.action == 'update' ?
+            <Spin spinning={this.props.is_load}>
+              <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                        style={{width: constant.detail_form_item_width}} label="场景类型">
+                {
+                  getFieldDecorator('scene_type', {
+                    rules: [{
+                      required: true,
+                      message: constant.required
+                    }],
+                    initialValue: ''
+                  })(
+                    <Input type="text" placeholder={constant.placeholder + '场景类型'}/>
+                  )
+                }
+              </FormItem>
 
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="外键编号">
-            {
-              getFieldDecorator('object_id', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '外键编号'}/>
-              )
-            }
-          </FormItem>
+              <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                        style={{width: constant.detail_form_item_width}} label="新增关注">
+                {
+                  getFieldDecorator('scene_add', {
+                    rules: [{
+                      required: true,
+                      message: constant.required
+                    }],
+                    initialValue: 0
+                  })(
+                    <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + '新增关注'}
+                                 min={0} max={999}/>
+                  )
+                }
+              </FormItem>
 
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="场景类型">
-            {
-              getFieldDecorator('scene_type', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '场景类型'}/>
-              )
-            }
-          </FormItem>
+              <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                        style={{width: constant.detail_form_item_width}} label="取消关注">
+                {
+                  getFieldDecorator('scene_cancel', {
+                    rules: [{
+                      required: true,
+                      message: constant.required
+                    }],
+                    initialValue: 0
+                  })(
+                    <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + '取消关注'}
+                                 min={0} max={999}/>
+                  )
+                }
+              </FormItem>
 
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="新增关注">
-            {
-              getFieldDecorator('scene_add', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: 0
-              })(
-                <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + '新增关注'}
-                             min={0} max={999}/>
-              )
-            }
-          </FormItem>
+              <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                        style={{width: constant.detail_form_item_width}} label="二维码图片">
+                {
+                  this.state.scene_qrcode == '' ?
+                    ''
+                    :
+                    <img src={this.state.scene_qrcode} style={{
+                      width: '200px'
+                    }}/>
+                }
+              </FormItem>
 
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="取消关注">
-            {
-              getFieldDecorator('scene_cancel', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: 0
-              })(
-                <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + '取消关注'}
-                             min={0} max={999}/>
-              )
-            }
-          </FormItem>
-
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="二维码">
-            {
-              getFieldDecorator('scene_qrcode', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '二维码'}/>
-              )
-            }
-          </FormItem>
-
-        </Spin>
+            </Spin>
+            :
+            ''
+        }
       </Modal>
     );
   }
@@ -140,6 +141,7 @@ class SceneDetail extends Component {
 SceneDetail.propTypes = {
   is_load: React.PropTypes.bool.isRequired,
   is_detail: React.PropTypes.bool.isRequired,
+  action: React.PropTypes.string.isRequired,
   handleSubmit: React.PropTypes.func.isRequired,
   handleCancel: React.PropTypes.func.isRequired
 };

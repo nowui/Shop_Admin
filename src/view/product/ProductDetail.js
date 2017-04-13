@@ -249,6 +249,36 @@ class ProductDetail extends Component {
             }
           </FormItem>
 
+          <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
+                    style={{width: constant.detail_form_item_full_width}} label="会员佣金">
+            {
+              this.props.member_level_list.map(function (item) {
+                return (
+                  <div className={style.productMemberPrice} key={item.member_level_id}>
+                    <FormItem hasFeedback {...constant.formItemFullLayoutProductPrice} className={style.formItem}
+                              label={item.member_level_name}
+                    >
+                      {
+                        getFieldDecorator('product_commission_list.' + item.member_level_id, {
+                          rules: [{
+                            type: 'number',
+                            required: true,
+                            message: constant.required
+                          }],
+                          initialValue: 0
+                        })(
+                          <InputNumber type="text" className={style.formItemInput}
+                                       placeholder={constant.placeholder + '商品价格'}
+                                       min={0} max={100} step={1}/>
+                        )
+                      }
+                    </FormItem>
+                  </div>
+                )
+              })
+            }
+          </FormItem>
+
           {/*<FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}*/}
                     {/*style={{width: constant.detail_form_item_full_width}} label="会员价格">*/}
             {/*{*/}

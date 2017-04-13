@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>上海星销信息技术有限公司</title>
-  <link rel="stylesheet" href="index.css"/>
   <style>
     #root {
       position: absolute;
@@ -94,14 +93,77 @@
       color: #404040 !important;
       left: -1px;
     }
+
+    #loading {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      bottom: 0px;
+      left: 0px;
+      background: #ffffff;
+    }
+
+    .progress {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -12px;
+      margin-left: -100px;
+      width: 200px;
+      background: #404040;
+      padding: 5px;
+      overflow: visible;
+      border-radius: 20px;
+    }
+
+    .progress .progress-bar {
+      border-radius: 20px;
+      position: relative;
+    }
+
+    .progress-bar-info {
+      width: 0%;
+      height: 24px;
+      background-color: #108ee9;
+    }
   </style>
 </head>
 <body>
 
 <div id="root"></div>
 
-<script src="index.js"></script>
-<script src="http://api.jiyiguan.nowui.com/assets/tinymce/tinymce.min.js"></script>
+<div id="loading">
+  <div class="progress">
+    <div id="progressBar" class="progress-bar progress-bar-info"></div>
+  </div>
+</div>
 
 </body>
 </html>
+<script src="preloadjs-0.6.2.min.js"></script>
+<script type="text/javascript">
+  var manifest = [{
+    src: "index.css",
+    id: "index.css"
+  }, {
+    src: "index.js",
+    id: "index.js"
+  }];
+
+  var preload = new createjs.LoadQueue();
+  preload.loadManifest(manifest);
+  preload.on('progress', handleProgress);
+  preload.on('complete', handComplete);
+
+  function handleProgress(event) {
+    var progressBar = document.getElementById("progressBar");
+    if (progressBar != null) {
+      document.getElementById("progressBar").style.width = preload.progress * 100 + "%";
+    }
+  }
+
+  function handComplete() {
+
+  }
+</script>
+<script src="tinymce/tinymce.min.js"></script>

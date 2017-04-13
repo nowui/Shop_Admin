@@ -112,7 +112,7 @@ class SceneIndex extends Component {
         scene_id: scene_id
       },
       success: function (json) {
-        this.refs.detail.setFieldsValue(json.data);
+        this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleSetFieldsValue(json.data);
       }.bind(this),
       complete: function () {
         this.handleFinish();
@@ -136,7 +136,7 @@ class SceneIndex extends Component {
         message.success(constant.success);
 
         setTimeout(function () {
-            this.handleLoad(this.props.scene.page_index);
+          this.handleLoad(this.props.scene.page_index);
         }.bind(this), constant.timeout);
       }.bind(this),
       complete: function () {
@@ -146,6 +146,12 @@ class SceneIndex extends Component {
   }
 
   handleSubmit(data) {
+    if (this.props.scene.action == 'update') {
+      this.handleCancel();
+
+      return;
+    }
+
     if (this.handleStart({
         is_load: true
       })) {
@@ -165,7 +171,7 @@ class SceneIndex extends Component {
         this.handleCancel();
 
         setTimeout(function () {
-            this.handleLoad(this.props.scene.page_index);
+          this.handleLoad(this.props.scene.page_index);
         }.bind(this), constant.timeout);
       }.bind(this),
       complete: function () {
@@ -224,7 +230,37 @@ class SceneIndex extends Component {
 
     const columns = [{
       title: '名称',
-      dataIndex: 'scene_type'
+      dataIndex: 'scene_type',
+      render: (text, record, index) => (
+        <span>
+          {
+            text == 'COMPANY'?
+              '公司二维码'
+              :
+              ''
+          }
+          {
+            text == 'DISTRIBUTOR'?
+              '供应商二维码'
+              :
+              ''
+          }
+          {
+            text == 'MEMBER'?
+              '会员二维码'
+              :
+              ''
+          }
+        </span>
+      )
+    }, {
+      width: 100,
+      title: '新增关注',
+      dataIndex: 'scene_add'
+    }, {
+      width: 100,
+      title: '取消关注',
+      dataIndex: 'scene_cancel'
     }, {
       width: 90,
       title: constant.action,
@@ -261,8 +297,8 @@ class SceneIndex extends Component {
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
                       loading={this.props.scene.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
-              {/*<Button type="primary" icon="plus-circle" size="default"*/}
-                      {/*onClick={this.handleSave.bind(this)}>{constant.save}</Button>*/}
+              <Button type="primary" icon="plus-circle" size="default"
+                      onClick={this.handleSave.bind(this)}>新增公司二维码</Button>
             </Col>
           </Row>
           <Form className={style.layoutContentHeaderSearch}>
@@ -289,10 +325,11 @@ class SceneIndex extends Component {
                  dataSource={this.props.scene.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>
           <SceneDetail is_load={this.props.scene.is_load}
-                      is_detail={this.props.scene.is_detail}
-                      handleSubmit={this.handleSubmit.bind(this)}
-                      handleCancel={this.handleCancel.bind(this)}
-                      ref="detail"/>
+                       is_detail={this.props.scene.is_detail}
+                       action={this.props.scene.action}
+                       handleSubmit={this.handleSubmit.bind(this)}
+                       handleCancel={this.handleCancel.bind(this)}
+                       ref="detail"/>
         </div>
       </QueueAnim>
     );

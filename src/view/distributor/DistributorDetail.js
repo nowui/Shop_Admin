@@ -131,7 +131,7 @@ class DistributorDetail extends Component {
             }
           </FormItem>
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="二维码">
+                    style={{width: constant.detail_form_item_width}} label="二维码图片">
             {
               this.state.scene_qrcode == '' ?
                 ''
