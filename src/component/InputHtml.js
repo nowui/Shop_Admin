@@ -55,9 +55,7 @@ class InputHtml extends Component {
       <div>
         <TinyMCE
           config={{
-            height: 1000,
             menubar: false,
-            resize: false,
             border_width: 1,
             convert_urls: false,
             statusbar: false,
@@ -66,7 +64,8 @@ class InputHtml extends Component {
             keep_values: false,
             show_system_default_font: false,
             forced_root_block: 'div',
-            plugins: 'code image imagetools',
+            plugins: 'code image imagetools autoresize',
+            imagetools_toolbar: "rotateleft rotateright | flipv fliph | editimage imageoptions",
             toolbar: 'fontselect fontsizeselect | bold italic underline strikethrough removeformat | alignleft aligncenter alignright | mybutton image | code',
             setup: function (editor) {
               this.editor = editor;
