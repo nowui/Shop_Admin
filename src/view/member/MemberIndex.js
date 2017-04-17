@@ -20,6 +20,8 @@ class MemberIndex extends Component {
   }
 
   componentDidMount() {
+    this.props.form.setFieldsValue(this.props.member);
+
     this.handleSearch();
 
     this.handleMemberLevelList();

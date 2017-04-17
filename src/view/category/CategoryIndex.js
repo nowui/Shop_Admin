@@ -19,6 +19,8 @@ class CategoryIndex extends Component {
   }
 
   componentDidMount() {
+    this.props.form.setFieldsValue(this.props.category);
+
     this.handleSearch();
   }
 

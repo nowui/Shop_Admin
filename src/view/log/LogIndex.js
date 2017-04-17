@@ -18,6 +18,8 @@ class LogIndex extends Component {
   }
 
   componentDidMount() {
+    this.props.form.setFieldsValue(this.props.log);
+
     this.handleSearch();
   }
 

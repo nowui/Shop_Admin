@@ -18,6 +18,8 @@ class DeliveryIndex extends Component {
   }
 
   componentDidMount() {
+    this.props.form.setFieldsValue(this.props.delivery);
+
     this.handleSearch();
   }
 

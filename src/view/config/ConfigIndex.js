@@ -18,6 +18,8 @@ class ConfigIndex extends Component {
   }
 
   componentDidMount() {
+    this.props.form.setFieldsValue(this.props.config);
+
     // this.handleSearch();
   }
 

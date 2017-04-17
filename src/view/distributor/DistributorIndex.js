@@ -18,6 +18,8 @@ class DistributorIndex extends Component {
   }
 
   componentDidMount() {
+    this.props.form.setFieldsValue(this.props.distributor);
+
     this.handleSearch();
   }
 

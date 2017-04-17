@@ -18,6 +18,8 @@ class AdminIndex extends Component {
   }
 
   componentDidMount() {
+    this.props.form.setFieldsValue(this.props.admin);
+
     this.handleSearch();
   }
 

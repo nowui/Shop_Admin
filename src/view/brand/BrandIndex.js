@@ -18,6 +18,8 @@ class BrandIndex extends Component {
   }
 
   componentDidMount() {
+    this.props.form.setFieldsValue(this.props.brand);
+
     this.handleSearch();
   }
 

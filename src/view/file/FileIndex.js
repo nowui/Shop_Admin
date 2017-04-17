@@ -18,6 +18,8 @@ class FileIndex extends Component {
   }
 
   componentDidMount() {
+    this.props.form.setFieldsValue(this.props.file);
+
     this.handleSearch();
   }
 

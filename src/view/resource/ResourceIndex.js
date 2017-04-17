@@ -18,6 +18,8 @@ class ResourceIndex extends Component {
   }
 
   componentDidMount() {
+    this.props.form.setFieldsValue(this.props.resource);
+
     this.handleSearch();
   }
 

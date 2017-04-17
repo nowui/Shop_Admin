@@ -22,6 +22,8 @@ class ProductIndex extends Component {
   }
 
   componentDidMount() {
+    this.props.form.setFieldsValue(this.props.product);
+
     this.handleSearch();
 
     this.handleCategoryList();

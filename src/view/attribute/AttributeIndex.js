@@ -18,6 +18,8 @@ class AttributeIndex extends Component {
   }
 
   componentDidMount() {
+    this.props.form.setFieldsValue(this.props.attribute);
+
     this.handleSearch();
   }
 

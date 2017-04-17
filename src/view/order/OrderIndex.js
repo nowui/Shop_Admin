@@ -18,6 +18,8 @@ class OrderIndex extends Component {
   }
 
   componentDidMount() {
+    this.props.form.setFieldsValue(this.props.order);
+
     this.handleSearch();
   }
 

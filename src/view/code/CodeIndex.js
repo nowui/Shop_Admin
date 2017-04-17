@@ -17,6 +17,8 @@ class CodeIndex extends Component {
   }
 
   componentDidMount() {
+    this.props.form.setFieldsValue(this.props.code);
+
     this.handleSearch();
   }
 
@@ -25,19 +27,16 @@ class CodeIndex extends Component {
   }
 
   handleSearch() {
-    let code_name = this.props.form.getFieldValue('code_name');
     let page_index = 1;
 
-    this.handList(code_name, page_index);
+    this.handList(page_index);
   }
 
   handLoad(page_index) {
-    let code_name = this.props.code.code_name;
-
-    this.handList(code_name, page_index);
+    this.handList(page_index);
   }
 
-  handList(code_name, page_index) {
+  handList(page_index) {
     if (this.handleStart({
         is_load: true
       })) {
@@ -47,8 +46,6 @@ class CodeIndex extends Component {
     request = http({
       url: '/code/list',
       data: {
-        table_schema: 'Shop',
-        code_name: code_name,
         page_index: page_index,
         page_size: this.props.code.page_size
       },
@@ -60,7 +57,6 @@ class CodeIndex extends Component {
         this.props.dispatch({
           type: 'code/fetch',
           data: {
-            code_name: code_name,
             total: json.total,
             list: json.data,
             page_index: page_index
@@ -84,6 +80,15 @@ class CodeIndex extends Component {
   }
 
   handUpdate(table_name) {
+    let name_space = this.props.form.getFieldValue('name_space');
+
+    this.props.dispatch({
+      type: 'code/fetch',
+      data: {
+        name_space: name_space
+      }
+    });
+
     if (this.handleStart({
         is_load: true,
         is_modal: true,
@@ -95,7 +100,7 @@ class CodeIndex extends Component {
     request = http({
       url: '/code/save',
       data: {
-        table_schema: 'Shop',
+        name_space: name_space,
         table_name: table_name
       },
       success: function (json) {
@@ -252,12 +257,12 @@ class CodeIndex extends Component {
           <Form className={style.layoutContentHeaderSearch}>
             <Row>
               <Col span={8}>
-                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="产品名称">
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="命名空间">
                   {
-                    getFieldDecorator('code_name', {
+                    getFieldDecorator('name_space', {
                       initialValue: ''
                     })(
-                      <Input type="text" placeholder="请输入产品名称" className={style.formItemInput}/>
+                      <Input type="text" placeholder="请输入命名空间" className={style.formItemInput}/>
                     )
                   }
                 </FormItem>
