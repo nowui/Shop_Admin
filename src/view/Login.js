@@ -74,7 +74,7 @@ class Login extends Component {
                   required: true,
                   message: constant.required
                 }],
-                initialValue: 'admin'
+                initialValue: ''
               })(
                 <Input type="text" placeholder={'用户名'}/>
               )
@@ -87,7 +87,7 @@ class Login extends Component {
                   required: true,
                   message: constant.required
                 }],
-                initialValue: 'admin'
+                initialValue: ''
               })(
                 <Input type="password" placeholder={'密码'}/>
               )
@@ -98,7 +98,7 @@ class Login extends Component {
           }}>
             <Button type="primary" htmlType="submit" className={style.loginButton}
                     loading={this.state.is_load}
-                    onClick={this.handleSubmit.bind(this)}>登录微信商城</Button>
+                    onClick={this.handleSubmit.bind(this)}>登录系统</Button>
           </FormItem>
         </Spin>
       </Card>

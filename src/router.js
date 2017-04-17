@@ -29,6 +29,7 @@ function RouterConfig({history}) {
 
   const validate = function (next, replace, callback) {
     if ((database.getToken() == '' || database.getToken() == null) && next.location.pathname != '/login') {
+
       replace('/login');
     }
 

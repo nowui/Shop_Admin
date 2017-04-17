@@ -39,6 +39,21 @@ class ProductDetail extends Component {
       }
     }
 
+    let commission_list = values.commission_list;
+
+    for (let i = 0; i < commission_list.length; i++) {
+      let commission = commission_list[i];
+
+      if (commission.product_attribute = '[]') {
+        let product_commission = JSON.parse(commission.product_commission);
+        for (let j = 0; j < product_commission.length; j++) {
+          let object = {};
+          object['product_commission_list.' + product_commission[j].member_level_id] = product_commission[j].product_commission;
+          this.props.form.setFieldsValue(object);
+        }
+      }
+    }
+
     this.refs.product_image.handleSetList(JSON.parse(values.product_image));
 
     this.refs.product_image_list.handleSetList(JSON.parse(values.product_image_list));
@@ -59,7 +74,6 @@ class ProductDetail extends Component {
       values.product_content = this.refs.product_content.handleGetContent();
 
       let sku_list = [];
-
       let product_price = [];
 
       product_price.push({
@@ -85,6 +99,30 @@ class ProductDetail extends Component {
       });
 
       values.sku_list = sku_list;
+
+      let commission_list = [];
+      let product_commission = [];
+
+      product_commission.push({
+        member_level_id: '',
+        member_level_name: '',
+        product_commission: values.product_commission
+      });
+
+      for (let i = 0; i < this.props.member_level_list.length; i++) {
+        product_commission.push({
+          member_level_id: this.props.member_level_list[i].member_level_id,
+          member_level_name: this.props.member_level_list[i].member_level_name,
+          product_commission: this.props.form.getFieldValue('product_commission_list.' + this.props.member_level_list[i].member_level_id)
+        });
+      }
+
+      commission_list.push({
+        product_attribute: JSON.stringify([]),
+        product_commission: JSON.stringify(product_commission)
+      });
+
+      values.commission_list = commission_list;
 
       this.props.handleSubmit(values);
     });
