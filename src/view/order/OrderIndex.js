@@ -225,20 +225,31 @@ class OrderIndex extends Component {
     const {getFieldDecorator} = this.props.form;
 
     const columns = [{
-      title: '名称',
+      width: 120,
+      title: '订单号',
       dataIndex: 'order_number'
+    }, {
+      width: 120,
+      title: '收货人',
+      dataIndex: 'order_delivery_name'
+    }, {
+      width: 120,
+      title: '电话',
+      dataIndex: 'order_delivery_phone'
+    }, {
+      width: 120,
+      title: '金额',
+      dataIndex: 'order_product_amount'
+    }, {
+      title: '状态',
+      dataIndex: 'order_status'
     }, {
       width: 90,
       title: constant.action,
       dataIndex: '',
       render: (text, record, index) => (
         <span>
-          <a onClick={this.handleUpdate.bind(this, record.order_id)}>{constant.update}</a>
-          <span className={style.divider}/>
-          <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
-                      cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.order_id)}>
-            <a>{constant.delete}</a>
-          </Popconfirm>
+          <a onClick={this.handleUpdate.bind(this, record.order_id)}>{constant.find}</a>
         </span>
       )
     }];

@@ -225,20 +225,23 @@ class DeliveryIndex extends Component {
     const {getFieldDecorator} = this.props.form;
 
     const columns = [{
+      width: 120,
       title: '名称',
       dataIndex: 'delivery_name'
+    }, {
+      width: 120,
+      title: '电话',
+      dataIndex: 'delivery_phone'
+    }, {
+      title: '地址',
+      dataIndex: 'delivery_address'
     }, {
       width: 90,
       title: constant.action,
       dataIndex: '',
       render: (text, record, index) => (
         <span>
-          <a onClick={this.handleUpdate.bind(this, record.delivery_id)}>{constant.update}</a>
-          <span className={style.divider}/>
-          <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
-                      cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.delivery_id)}>
-            <a>{constant.delete}</a>
-          </Popconfirm>
+          <a onClick={this.handleUpdate.bind(this, record.delivery_id)}>{constant.find}</a>
         </span>
       )
     }];

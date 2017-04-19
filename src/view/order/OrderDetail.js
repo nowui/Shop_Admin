@@ -20,13 +20,15 @@ class OrderDetail extends Component {
   }
 
   handleSubmit() {
-    this.props.form.validateFieldsAndScroll((errors, values) => {
-      if (!!errors) {
-        return;
-      }
+    // this.props.form.validateFieldsAndScroll((errors, values) => {
+    //   if (!!errors) {
+    //     return;
+    //   }
+    //
+    //   this.props.handleSubmit(values);
+    // });
 
-      this.props.handleSubmit(values);
-    });
+    this.handleCancel();
   }
 
   handleCancel() {
@@ -53,21 +55,6 @@ class OrderDetail extends Component {
              ]}
       >
         <Spin spinning={this.props.is_load}>
-
-            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="用户编号">
-              {
-                getFieldDecorator('user_id', {
-                  rules: [{
-                    required: true,
-                    message: constant.required
-                  }],
-                  initialValue: ''
-                })(
-                  <Input type="text" placeholder={constant.placeholder + '用户编号'}/>
-                )
-              }
-            </FormItem>
 
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="订单号">

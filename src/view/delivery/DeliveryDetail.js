@@ -55,21 +55,6 @@ class DeliveryDetail extends Component {
         <Spin spinning={this.props.is_load}>
 
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="用户编号">
-              {
-                getFieldDecorator('user_id', {
-                  rules: [{
-                    required: true,
-                    message: constant.required
-                  }],
-                  initialValue: ''
-                })(
-                  <Input type="text" placeholder={constant.placeholder + '用户编号'}/>
-                )
-              }
-            </FormItem>
-
-            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="收货人">
               {
                 getFieldDecorator('delivery_name', {
