@@ -23,6 +23,8 @@ import DistributorIndex from './view/distributor/DistributorIndex';
 import SupplierIndex from './view/supplier/SupplierIndex';
 import SceneIndex from './view/scene/SceneIndex';
 
+import BillIndex from './view/bill/BillIndex';
+
 import database from './util/database';
 
 function RouterConfig({history}) {
@@ -62,6 +64,8 @@ function RouterConfig({history}) {
           <Route path="distributor/index" component={DistributorIndex}/>
           <Route path="supplier/index" component={SupplierIndex}/>
           <Route path="scene/index" component={SceneIndex}/>
+
+          <Route path="bill/index" component={BillIndex}/>
         </Route>
       </Route>
     </Router>
