@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {Modal, Form, Spin, Button, Input} from 'antd';
 import InputImage from '../../component/InputImage';
 import InputHtml from '../../component/InputHtml';
@@ -88,8 +88,8 @@ class BrandDetail extends Component {
           </FormItem>
 
           <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItemInputImageMarginBottom}
-                    style={{width: constant.detail_form_item_full_width}} label="课程图片">
-            <InputImage ref="brand_image"/>
+                    style={{width: constant.detail_form_item_full_width}} label="品牌图片">
+            <InputImage limit={1} ref="brand_image"/>
           </FormItem>
 
           <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
