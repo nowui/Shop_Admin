@@ -54,9 +54,13 @@ class ProductDetail extends Component {
       }
     }
 
-    this.refs.product_image.handleSetList(JSON.parse(values.product_image));
+    this.refs.product_image.handleSetList([values.product_image]);
 
-    this.refs.product_image_list.handleSetList(JSON.parse(values.product_image_list));
+    let product_image_list = [];
+    for (let i = 0; i < values.product_image_list.length; i++) {
+      product_image_list.push(values.product_image_list[i].product_file_path);
+    }
+    this.refs.product_image_list.handleSetList(product_image_list);
 
     this.refs.product_content.handleSetContent(values.product_content);
   }
@@ -67,7 +71,7 @@ class ProductDetail extends Component {
         return;
       }
 
-      values.product_image = JSON.stringify(this.refs.product_image.handleGetList());
+      values.product_image = this.refs.product_image.handleGetList()[0];
 
       values.product_image_list = JSON.stringify(this.refs.product_image_list.handleGetList());
 

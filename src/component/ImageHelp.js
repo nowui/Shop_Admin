@@ -49,7 +49,7 @@ class ImageHelp extends Component {
       data: {
         file_name: '',
         page_index: 1,
-        page_size: 10
+        page_size: 45
       },
       success: function (json) {
         let list = [];
@@ -284,7 +284,7 @@ class ImageHelp extends Component {
               const mask = item.status || item.select ? style.itemMask + ' ' + style.itemMaskActive : style.itemMask;
               return (
                 <div key={item.id} className={style.item}>
-                  <img className={style.itemImage} src={constant.host + item.url}/>
+                  <div className={style.itemImage} style={{backgroundImage: 'url(' + constant.host + item.url + ')', backgroundSize: 'cover'}}></div>
                   <div onMouseOver={this.handleMouseOver.bind(this, item.url)} onMouseOut={this.handleMouseOut.bind(this, item.url)}>
                     <div className={mask} onClick={this.handleClick.bind(this, item.url)}></div>
                     <i className={"anticon anticon-eye-o " + style.itemPreviewIcon} style={{display: item.status && !item.select ? 'inline' : 'none'}} onClick={this.handlePreview.bind(this, item.url)}/>

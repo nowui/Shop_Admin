@@ -284,6 +284,10 @@ class ProductIndex extends Component {
       dataIndex: 'product_name'
     }, {
       width: 90,
+      title: '价格',
+      dataIndex: 'product_price'
+    }, {
+      width: 90,
       title: constant.action,
       dataIndex: '',
       render: (text, record, index) => (

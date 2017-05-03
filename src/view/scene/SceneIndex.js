@@ -234,8 +234,8 @@ class SceneIndex extends Component {
       render: (text, record, index) => (
         <span>
           {
-            text == 'COMPANY'?
-              '公司二维码'
+            text == 'PLATFORM'?
+              '平台二维码'
               :
               ''
           }
@@ -267,7 +267,7 @@ class SceneIndex extends Component {
       dataIndex: '',
       render: (text, record, index) => (
         <span>
-          <a onClick={this.handleUpdate.bind(this, record.scene_id)}>{constant.update}</a>
+          <a onClick={this.handleUpdate.bind(this, record.scene_id)}>{constant.find}</a>
           <span className={style.divider}/>
           <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
                       cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.scene_id)}>
@@ -298,7 +298,7 @@ class SceneIndex extends Component {
                       loading={this.props.scene.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
               <Button type="primary" icon="plus-circle" size="default"
-                      onClick={this.handleSave.bind(this)}>新增公司二维码</Button>
+                      onClick={this.handleSave.bind(this)}>新增平台二维码</Button>
             </Col>
           </Row>
           <Form className={style.layoutContentHeaderSearch}>
