@@ -229,20 +229,24 @@ class OrderIndex extends Component {
       title: '订单号',
       dataIndex: 'order_number'
     }, {
-      width: 120,
+      width: 100,
       title: '收货人',
       dataIndex: 'order_delivery_name'
     }, {
-      width: 120,
+      width: 100,
       title: '电话',
       dataIndex: 'order_delivery_phone'
     }, {
-      width: 120,
+      title: '地址',
+      dataIndex: 'order_delivery_address'
+    }, {
+      width: 100,
       title: '金额',
       dataIndex: 'order_product_amount'
     }, {
+      width: 100,
       title: '状态',
-      dataIndex: 'order_status'
+      dataIndex: 'order_flow'
     }, {
       width: 90,
       title: constant.action,
@@ -281,12 +285,12 @@ class OrderIndex extends Component {
           <Form className={style.layoutContentHeaderSearch}>
             <Row>
               <Col span={8}>
-                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="名称">
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="订单号">
                   {
                     getFieldDecorator('order_number', {
                       initialValue: ''
                     })(
-                      <Input type="text" placeholder="请输入名称" className={style.formItemInput}/>
+                      <Input type="text" placeholder="请输入订单号" className={style.formItemInput}/>
                     )
                   }
                 </FormItem>

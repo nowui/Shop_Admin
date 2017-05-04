@@ -29,7 +29,8 @@ class InputImage extends Component {
 
     for (let i = 0; i < list.length; i++) {
       array.push({
-        url: list[i],
+        file_id: list[i].file_id,
+        file_path: list[i].file_path,
         status: false
       });
     }
@@ -40,13 +41,7 @@ class InputImage extends Component {
   }
 
   handleGetList() {
-    let list = [];
-
-    for (let i = 0; i < this.state.list.length; i++) {
-      list.push(this.state.list[i].url);
-    }
-
-    return list;
+    return this.state.list;
   }
 
   handleBeforeUpload(file) {
@@ -75,19 +70,26 @@ class InputImage extends Component {
     });
   }
 
-  handlePreview(url) {
+  handlePreview(file_id) {
+    let file_path = '';
+    for (let i = 0; i < this.state.list.length; i++) {
+      if (this.state.list[i].file_id == file_id) {
+        file_path = this.state.list[i].file_path;
+      }
+    }
+
     this.setState({
-      image: constant.host + url,
+      image: constant.host + file_path,
       is_preview: true
     });
   }
 
-  handleDelete(url) {
+  handleDelete(file_id) {
     let index = -1;
     let list = this.state.list;
 
     for (let i = 0; i < list.length; i++) {
-      if (list[i] == url) {
+      if (list[i].file_id == file_id) {
         index = i;
       }
     }
@@ -103,22 +105,16 @@ class InputImage extends Component {
     this.refs.image.handleOpen();
   }
 
-  handleChange(list) {
-    this.setState({
-      list: list
-    });
-  }
-
-  handleMouseOver(url) {
+  handleMouseOver(file_id) {
     let list = [];
 
     for (let i = 0; i < this.state.list.length; i++) {
       let item = this.state.list[i];
 
       list.push({
-        id: item.id,
-        url: item.url,
-        status: item.url == url
+        file_id: item.file_id,
+        file_path: item.file_path,
+        status: item.file_id == file_id
       });
     }
 
@@ -127,15 +123,15 @@ class InputImage extends Component {
     });
   }
 
-  handleMouseOut(url) {
+  handleMouseOut(file_id) {
     let list = [];
 
     for (let i = 0; i < this.state.list.length; i++) {
       let item = this.state.list[i];
 
       list.push({
-        id: item.id,
-        url: item.url,
+        file_id: item.file_id,
+        file_path: item.file_path,
         status: false
       });
     }
@@ -152,7 +148,7 @@ class InputImage extends Component {
       let isNotExit = true;
 
       for (let k = 0; k < this.state.list.length; k++) {
-        if (list[i].url == this.state.list[k].url) {
+        if (list[i].file_path == this.state.list[k].file_path) {
           isNotExit = false;
 
           break;
@@ -189,17 +185,17 @@ class InputImage extends Component {
           this.state.list.map(function (item) {
             const mask = item.status ? style.itemMask + ' ' + style.itemMaskActive : style.itemMask;
             return (
-              <div key={item.url} className={style.item}>
-                <img className={style.itemImage} src={constant.host + item.url}/>
-                <div onMouseOver={this.handleMouseOver.bind(this, item.url)}
+              <div key={item.file_id} className={style.item}>
+                <div className={style.itemImage} style={{backgroundImage: 'url(' + constant.host + item.file_path + ')'}}></div>
+                <div onMouseOver={this.handleMouseOver.bind(this, item.file_id)}
                      onMouseOut={this.handleMouseOut.bind(this)}>
                   <div className={mask}></div>
                   <i className={"anticon anticon-eye-o " + style.itemPreviewIcon}
                      style={{display: item.status ? 'inline' : 'none'}}
-                     onClick={this.handlePreview.bind(this, item.url)}/>
+                     onClick={this.handlePreview.bind(this, item.file_id)}/>
                   <i className={"anticon anticon-delete " + style.itemRemoveIcon}
                      style={{display: item.status ? 'inline' : 'none'}}
-                     onClick={this.handleDelete.bind(this, item.url)}/>
+                     onClick={this.handleDelete.bind(this, item.file_id)}/>
                 </div>
               </div>
             )

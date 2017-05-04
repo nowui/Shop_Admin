@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Modal, Form, Spin, Button, Input, InputNumber, Checkbox, Select} from 'antd';
+import {Modal, Form, Spin, Button, Input, InputNumber, Checkbox, Select, message} from 'antd';
 import InputImage from '../../component/InputImage';
 import InputHtml from '../../component/InputHtml';
 
@@ -54,11 +54,11 @@ class ProductDetail extends Component {
       }
     }
 
-    this.refs.product_image.handleSetList([values.product_image]);
+    this.refs.product_image.handleSetList([values.product_image_file]);
 
     let product_image_list = [];
-    for (let i = 0; i < values.product_image_list.length; i++) {
-      product_image_list.push(values.product_image_list[i].product_file_path);
+    for (let i = 0; i < values.product_image_file_list.length; i++) {
+      product_image_list.push(values.product_image_file_list[i]);
     }
     this.refs.product_image_list.handleSetList(product_image_list);
 
@@ -71,9 +71,20 @@ class ProductDetail extends Component {
         return;
       }
 
-      values.product_image = this.refs.product_image.handleGetList()[0];
+      let product_image_file = this.refs.product_image.handleGetList();
+      if (product_image_file.length == 0) {
+        message.error('商品图片不能为空');
 
-      values.product_image_list = JSON.stringify(this.refs.product_image_list.handleGetList());
+        return;
+      }
+      values.product_image = product_image_file[0].file_id;
+
+      let product_image_file_list = this.refs.product_image_list.handleGetList();
+      let product_image_list = [];
+      for (let i = 0; i < product_image_file_list.length; i++) {
+        product_image_list.push(product_image_file_list[i].file_id);
+      }
+      values.product_image_list = JSON.stringify(product_image_list);
 
       values.product_content = this.refs.product_content.handleGetContent();
 

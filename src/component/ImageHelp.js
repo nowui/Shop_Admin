@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Modal, Button, message, Upload, Icon, Spin} from 'antd';
+import {Modal, Button, message, Upload, Icon, Spin, Pagination} from 'antd';
 
 import constant from '../util/constant';
 import http from '../util/http';
@@ -17,7 +17,10 @@ class ImageHelp extends Component {
       is_visible: false,
       is_preview: false,
       image: '',
-      list: []
+      list: [],
+      page_index: 1,
+      page_size: 36,
+      total: 0
     }
   }
 
@@ -40,31 +43,33 @@ class ImageHelp extends Component {
     //   return;
     // }
 
-    this.handleLoad();
+    this.handleLoad(1);
   }
 
-  handleLoad() {
+  handleLoad(page_index) {
     request = http({
       url: '/file/admin/list',
       data: {
         file_name: '',
-        page_index: 1,
-        page_size: 45
+        page_index: page_index,
+        page_size: this.state.page_size
       },
       success: function (json) {
         let list = [];
 
         for (let i = 0; i < json.data.length; i++) {
           list.push({
-            id: json.data[i].file_id,
-            url: json.data[i].file_path,
+            file_id: json.data[i].file_id,
+            file_path: json.data[i].file_path,
             status: false,
             select: false
           });
         }
 
         this.setState({
-          list: list
+          list: list,
+          page_index: page_index,
+          total: json.total
         });
       }.bind(this),
       complete: function () {
@@ -100,8 +105,8 @@ class ImageHelp extends Component {
       let item = this.state.list[i];
 
       list.push({
-        id: item.id,
-        url: item.url,
+        file_id: item.file_id,
+        file_path: item.file_path,
         status: false,
         select: false
       });
@@ -119,32 +124,33 @@ class ImageHelp extends Component {
     });
   }
 
-  handlePreview(url) {
+  handlePreview(file_id) {
+    let file_path = '';
+    for (let i = 0; i < this.state.list.length; i++) {
+      if (this.state.list[i].file_id == file_id) {
+        file_path = this.state.list[i].file_path;
+      }
+    }
+
     this.setState({
-      image: constant.host + url,
+      image: constant.host + file_path,
       is_preview: true
     });
   }
 
-  handleChange(list) {
-    this.setState({
-      list: list
-    });
-  }
-
-  handleClick(url) {
+  handleClick(file_id) {
     let list = [];
 
     for (let i = 0; i < this.state.list.length; i++) {
       let item = this.state.list[i];
 
-      if (item.url == url) {
+      if (item.file_id == file_id) {
         item.select = !item.select;
       }
 
       list.push({
-        id: item.id,
-        url: item.url,
+        file_id: item.file_id,
+        file_path: item.file_path,
         status: item.status,
         select: item.select
       });
@@ -155,16 +161,16 @@ class ImageHelp extends Component {
     });
   }
 
-  handleMouseOver(url) {
+  handleMouseOver(file_id) {
     let list = [];
 
     for (let i = 0; i < this.state.list.length; i++) {
       let item = this.state.list[i];
 
       list.push({
-        id: item.id,
-        url: item.url,
-        status: item.url == url,
+        file_id: item.file_id,
+        file_path: item.file_path,
+        status: item.file_id == file_id,
         select: item.select
       });
     }
@@ -174,15 +180,15 @@ class ImageHelp extends Component {
     });
   }
 
-  handleMouseOut() {
+  handleMouseOut(file_id) {
     let list = [];
 
     for (let i = 0; i < this.state.list.length; i++) {
       let item = this.state.list[i];
 
       list.push({
-        id: item.id,
-        url: item.url,
+        file_id: item.file_id,
+        file_path: item.file_path,
         status: false,
         select: item.select
       });
@@ -206,12 +212,12 @@ class ImageHelp extends Component {
           index++;
 
           if (this.props.type != '') {
-            item.url = item.url.substring(0, item.url.lastIndexOf("/")) + "/" + this.props.type + "/" + item.url.substring(item.url.lastIndexOf("/") + 1);
+            item.file_path = item.file_path.substring(0, item.file_path.lastIndexOf("/")) + "/" + this.props.type + "/" + item.file_path.substring(item.file_path.lastIndexOf("/") + 1);
           }
 
           list.push({
-            id: item.id,
-            url: item.url,
+            file_id: item.file_id,
+            file_path: item.file_path,
             status: false,
             select: item.select
           });
@@ -244,6 +250,10 @@ class ImageHelp extends Component {
     }
   }
 
+  handlePaginationChange(page, pageSize) {
+    this.handleLoad(page);
+  }
+
   render() {
     const props = {
       name: 'file',
@@ -266,7 +276,7 @@ class ImageHelp extends Component {
                <div key="normal" style={{float: 'left', marginLeft: 10}}>
                  <Upload {...props}>
                    <Button type="ghost" loading={this.state.is_load}>
-                     <Icon type="cloud-upload"/>上传普通图片
+                     <Icon type="cloud-upload"/>上传图片
                    </Button>
                  </Upload>
                </div>,
@@ -283,11 +293,11 @@ class ImageHelp extends Component {
             this.state.list.map(function (item) {
               const mask = item.status || item.select ? style.itemMask + ' ' + style.itemMaskActive : style.itemMask;
               return (
-                <div key={item.id} className={style.item}>
-                  <div className={style.itemImage} style={{backgroundImage: 'url(' + constant.host + item.url + ')', backgroundSize: 'cover'}}></div>
-                  <div onMouseOver={this.handleMouseOver.bind(this, item.url)} onMouseOut={this.handleMouseOut.bind(this, item.url)}>
-                    <div className={mask} onClick={this.handleClick.bind(this, item.url)}></div>
-                    <i className={"anticon anticon-eye-o " + style.itemPreviewIcon} style={{display: item.status && !item.select ? 'inline' : 'none'}} onClick={this.handlePreview.bind(this, item.url)}/>
+                <div key={item.file_id} className={style.item}>
+                  <div className={style.itemImage} style={{backgroundImage: 'url(' + constant.host + item.file_path + ')'}}></div>
+                  <div onMouseOver={this.handleMouseOver.bind(this, item.file_id)} onMouseOut={this.handleMouseOut.bind(this, item.file_id)}>
+                    <div className={mask} onClick={this.handleClick.bind(this, item.file_id)}></div>
+                    <i className={"anticon anticon-eye-o " + style.itemPreviewIcon} style={{display: item.status && !item.select ? 'inline' : 'none'}} onClick={this.handlePreview.bind(this, item.file_id)}/>
                     <i className={"anticon anticon-delete " + style.itemRemoveIcon} style={{display: item.status && !item.select ? 'inline' : 'none'}} />
                     <i className={"anticon anticon-check-circle-o " + style.itemCheckIcon} style={{display: item.select ? 'inline' : 'none'}} onClick={this.handlePreview.bind(this)}/>
                   </div>
@@ -295,6 +305,9 @@ class ImageHelp extends Component {
               )
             }.bind(this))
           }
+          <div style={{float: 'left', width: '100%', textAlign: 'right'}}>
+            <Pagination current={this.state.page_index} pageSize={this.state.page_size} total={this.state.total} onChange={this.handlePaginationChange.bind(this)} />
+          </div>
         </Spin>
         <Modal visible={this.state.is_preview} footer={null} onCancel={this.handleCancelPreview.bind(this)}>
           <img alt="example" style={{ width: '100%' }} src={this.state.image} />
