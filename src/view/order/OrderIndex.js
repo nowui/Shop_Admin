@@ -114,7 +114,7 @@ class OrderIndex extends Component {
         order_id: order_id
       },
       success: function (json) {
-        this.refs.detail.setFieldsValue(json.data);
+        this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleSetFieldsValue(json.data);
       }.bind(this),
       complete: function () {
         this.handleFinish();
@@ -138,7 +138,7 @@ class OrderIndex extends Component {
         message.success(constant.success);
 
         setTimeout(function () {
-            this.handleLoad(this.props.order.page_index);
+          this.handleLoad(this.props.order.page_index);
         }.bind(this), constant.timeout);
       }.bind(this),
       complete: function () {
@@ -167,7 +167,7 @@ class OrderIndex extends Component {
         this.handleCancel();
 
         setTimeout(function () {
-            this.handleLoad(this.props.order.page_index);
+          this.handleLoad(this.props.order.page_index);
         }.bind(this), constant.timeout);
       }.bind(this),
       complete: function () {
@@ -246,7 +246,14 @@ class OrderIndex extends Component {
     }, {
       width: 100,
       title: '状态',
-      dataIndex: 'order_flow'
+      dataIndex: 'order_flow',
+      render: (text, record, index) => (
+        <span>
+          {
+            constant.getOrderFlow(text)
+          }
+        </span>
+      )
     }, {
       width: 90,
       title: constant.action,
@@ -275,11 +282,9 @@ class OrderIndex extends Component {
               <div className={style.layoutContentHeaderTitle}>订单列表</div>
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
-              <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
+              <Button type="primary" icon="search" size="default"
                       loading={this.props.order.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
-              <Button type="primary" icon="plus-circle" size="default"
-                      onClick={this.handleSave.bind(this)}>{constant.save}</Button>
             </Col>
           </Row>
           <Form className={style.layoutContentHeaderSearch}>
@@ -306,10 +311,10 @@ class OrderIndex extends Component {
                  dataSource={this.props.order.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>
           <OrderDetail is_load={this.props.order.is_load}
-                      is_detail={this.props.order.is_detail}
-                      handleSubmit={this.handleSubmit.bind(this)}
-                      handleCancel={this.handleCancel.bind(this)}
-                      ref="detail"/>
+                       is_detail={this.props.order.is_detail}
+                       handleSubmit={this.handleSubmit.bind(this)}
+                       handleCancel={this.handleCancel.bind(this)}
+                       ref="detail"/>
         </div>
       </QueueAnim>
     );

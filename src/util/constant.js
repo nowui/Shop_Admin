@@ -44,12 +44,44 @@ export default {
   popconfirm_cancel: '取消',
   required: '不能为空',
   name: '上海星销信息技术有限公司',
-  host: 'http://localhost:8080',
+  // host: 'http://localhost:8080',
   // name: '广州市济颐馆贸易有限公司',
-  // host: 'http://api.jiyiguan.nowui.com',
+  host: 'http://api.jiyiguan.nowui.com',
   // name: '上海星销信息技术有限公司',
   // host: 'http://api.xingxiao.nowui.com',
   placeholder: '请输入',
   platform: 'Admin',
-  version: '1.0.0'
+  version: '1.0.0',
+  getOrderFlow: function (value) {
+    let label = '';
+    for (let i = 0; i < this.order_flow.length; i++) {
+      if (value == this.order_flow[i].value) {
+        label = this.order_flow[i].label;
+      }
+    }
+
+    return label;
+  },
+  order_flow: [{
+    value: 'WAIT_PAY',
+    label: '代付款'
+  }, {
+    value: 'EXPIRE',
+    label: '超时未付款'
+  }, {
+    value: 'WAIT_CONFIRM',
+    label: '已付款，待确认'
+  }, {
+    value: 'WAIT_SEND',
+    label: '代发货'
+  }, {
+    value: 'WAIT_RECEIVE',
+    label: '代收货'
+  }, {
+    value: 'FINISH',
+    label: '订单完成'
+  }, {
+    value: 'CANCEL',
+    label: '订单取消'
+  }]
 };
