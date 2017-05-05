@@ -48,7 +48,7 @@ class ImageHelp extends Component {
 
   handleLoad(page_index) {
     request = http({
-      url: '/file/admin/list',
+      url: '/file/admin/image/list',
       data: {
         file_name: '',
         page_index: page_index,
@@ -310,7 +310,8 @@ class ImageHelp extends Component {
           </div>
         </Spin>
         <Modal visible={this.state.is_preview} footer={null} onCancel={this.handleCancelPreview.bind(this)}>
-          <img alt="example" style={{ width: '100%' }} src={this.state.image} />
+
+
         </Modal>
       </Modal>
     );
