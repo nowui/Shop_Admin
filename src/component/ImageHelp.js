@@ -242,11 +242,7 @@ class ImageHelp extends Component {
         is_load: false
       });
 
-      this.handleLoad();
-    } else {
-      this.setState({
-        is_load: true
-      });
+      this.handleLoad(1);
     }
   }
 

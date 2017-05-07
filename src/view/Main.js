@@ -5,35 +5,54 @@ import {Layout, Menu, Icon, Badge} from 'antd';
 
 import constant from '../util/constant';
 import database from '../util/database';
+import http from '../util/http';
 import style from './style.css';
 
 class Main extends Component {
   constructor(props) {
     super(props);
 
-    let open_key = [];
-    let selected_key = [];
-
-    for (let i = 0; i < database.getMenu().length; i++) {
-      for (let k = 0; k < database.getMenu()[i].children.length; k++) {
-        if (database.getMenu()[i].children[k].category_value == '/' + this.props.routes[2].path) {
-          open_key = [database.getMenu()[i].category_id];
-          selected_key = [database.getMenu()[i].children[k].category_id];
-
-          break
-        }
-      }
-    }
-
     this.state = {
       collapsed: false,
-      openKeys: open_key,
-      selectedKeys: selected_key
+      menu: [],
+      openKeys: [],
+      selectedKeys: []
     }
   }
 
   componentDidMount() {
+    http({
+      url: '/admin/menu',
+      data: {
 
+      },
+      success: function (json) {
+        var menu = json.data;
+
+        var open_key = [];
+        var selected_key = [];
+
+        for (var i = 0; i < menu.length; i++) {
+          for (var k = 0; k < menu[i].children.length; k++) {
+            if (menu[i].children[k].category_value == '/' + this.props.routes[2].path) {
+              open_key = [menu[i].category_id];
+              selected_key = [menu[i].children[k].category_id];
+
+              break;
+            }
+          }
+        }
+
+        this.setState({
+          menu: menu,
+          openKeys: open_key,
+          selectedKeys: selected_key
+        });
+      }.bind(this),
+      complete: function () {
+
+      }.bind(this)
+    }).post();
   }
 
   componentWillUnmount() {
@@ -136,7 +155,7 @@ class Main extends Component {
                 style={{height: document.documentElement.clientHeight - 60, paddingTop: '10px'}}
               >
                 {
-                  database.getMenu().map(function (item) {
+                  this.state.menu.map(function (item) {
                     return (
                       <SubMenu key={item.category_id}
                                title={<span><Icon

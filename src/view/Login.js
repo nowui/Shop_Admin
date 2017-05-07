@@ -42,7 +42,6 @@ class Login extends Component {
           message.success("登录成功");
 
           database.setToken(json.data.token);
-          database.setMenu(json.data.menu);
 
           setTimeout(function () {
             this.props.dispatch(routerRedux.push({

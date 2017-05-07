@@ -1,10 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import {Modal, message} from 'antd';
 
-import VideoHelp from './VideoHelp';
+import FileHelp from './FileHelp';
 import constant from '../util/constant';
 import notification from '../util/notification';
-import style from './InputVideo.css';
+import style from './InputFile.css';
 
 class InputImage extends Component {
   constructor(props) {
@@ -17,13 +17,30 @@ class InputImage extends Component {
 
   componentDidMount() {
     notification.on('notification_file_video_save', this, function (data) {
-      let list = this.state.list;
+      var list = this.state.list;
       list.push({
         file_id: data.file_id,
         file_name: data.file_name,
         file_path: data.file_path,
+        file_image: data.file_image,
         status: false
       })
+
+      this.setState({
+        list: list
+      });
+    });
+
+    notification.on('notification_file_video_update', this, function (data) {
+      var list = this.state.list;
+
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].file_id == data.file_id) {
+          list[i].file_name = data.file_name;
+          list[i].file_path = data.file_path;
+          list[i].file_image = data.file_image;
+        }
+      }
 
       this.setState({
         list: list
@@ -34,16 +51,19 @@ class InputImage extends Component {
   componentWillUnmount() {
     notification.remove('notification_file_video_save', this);
 
+    notification.remove('notification_file_video_update', this);
+
   }
 
   handleSetList(list) {
-    let array = [];
+    var array = [];
 
-    for (let i = 0; i < list.length; i++) {
+    for (var i = 0; i < list.length; i++) {
       array.push({
         file_id: list[i].file_id,
         file_name: list[i].file_name,
         file_path: list[i].file_path,
+        file_image: list[i].file_image,
         status: false
       });
     }
@@ -57,11 +77,15 @@ class InputImage extends Component {
     return this.state.list;
   }
 
-  handleDelete(file_id) {
-    let index = -1;
-    let list = this.state.list;
+  handleEdit(file_id) {
+    this.refs.video.refs.wrappedComponent.refs.formWrappedComponent.handleEdit(file_id);
+  }
 
-    for (let i = 0; i < list.length; i++) {
+  handleDelete(file_id) {
+    var index = -1;
+    var list = this.state.list;
+
+    for (var i = 0; i < list.length; i++) {
       if (list[i].file_id == file_id) {
         index = i;
       }
@@ -74,20 +98,21 @@ class InputImage extends Component {
     });
   }
 
-  handleUpload() {
-    this.refs.video.refs.wrappedComponent.refs.formWrappedComponent.handleOpen();
+  handleAdd() {
+    this.refs.video.refs.wrappedComponent.refs.formWrappedComponent.handleAdd();
   }
 
   handleMouseOver(file_id) {
-    let list = [];
+    var list = [];
 
-    for (let i = 0; i < this.state.list.length; i++) {
-      let item = this.state.list[i];
+    for (var i = 0; i < this.state.list.length; i++) {
+      var item = this.state.list[i];
 
       list.push({
         file_id: item.file_id,
         file_name: item.file_name,
         file_path: item.file_path,
+        file_image: item.file_image,
         status: item.file_id == file_id
       });
     }
@@ -98,15 +123,16 @@ class InputImage extends Component {
   }
 
   handleMouseOut(file_id) {
-    let list = [];
+    var list = [];
 
-    for (let i = 0; i < this.state.list.length; i++) {
-      let item = this.state.list[i];
+    for (var i = 0; i < this.state.list.length; i++) {
+      var item = this.state.list[i];
 
       list.push({
         file_id: item.file_id,
         file_name: item.file_name,
         file_path: item.file_path,
+        file_image: item.file_image,
         status: false
       });
     }
@@ -117,13 +143,13 @@ class InputImage extends Component {
   }
 
   handleSubmitReturn(list) {
-    let array = this.state.list;
+    var array = this.state.list;
 
-    for (let i = 0; i < list.length; i++) {
-      let isNotExit = true;
+    for (var i = 0; i < list.length; i++) {
+      var isNotExit = true;
 
-      for (let k = 0; k < this.state.list.length; k++) {
-        if (list[i].file_path == this.state.list[k].file_path) {
+      for (var k = 0; k < this.state.list.length; k++) {
+        if (list[i].file_id == this.state.list[k].file_id) {
           isNotExit = false;
 
           break;
@@ -160,12 +186,13 @@ class InputImage extends Component {
             const mask = item.status ? style.itemMask + ' ' + style.itemMaskActive : style.itemMask;
             return (
               <div key={item.file_id} className={style.item}>
-                <div className={style.itemImage}>{item.file_path}</div>
+                <div className={style.itemImage} style={{backgroundImage: 'url(' + constant.host + item.file_image + ')'}}></div>
                 <div onMouseOver={this.handleMouseOver.bind(this, item.file_id)}
                      onMouseOut={this.handleMouseOut.bind(this)}>
                   <div className={mask}></div>
-                  <i className={"anticon anticon-eye-o " + style.itemPreviewIcon}
-                     style={{display: item.status ? 'inline' : 'none'}}/>
+                  <i className={"anticon anticon-edit " + style.itemPreviewIcon}
+                     style={{display: item.status ? 'inline' : 'none'}}
+                     onClick={this.handleEdit.bind(this, item.file_id)}/>
                   <i className={"anticon anticon-delete " + style.itemRemoveIcon}
                      style={{display: item.status ? 'inline' : 'none'}}
                      onClick={this.handleDelete.bind(this, item.file_id)}/>
@@ -176,14 +203,14 @@ class InputImage extends Component {
         }
         {
           this.state.list.length < this.props.limit ?
-            <div className={style.button} onClick={this.handleUpload.bind(this)}>
+            <div className={style.button} onClick={this.handleAdd.bind(this)}>
               <i className={"anticon anticon-plus " + style.buttonIcon}/>
-              <div className={"ant-upload-text " + style.buttonText}>添加图片</div>
+              <div className={"ant-upload-text " + style.buttonText}>添加文件</div>
             </div>
             :
             ''
         }
-        <VideoHelp type={this.props.type} limit={this.props.limit} handleSubmitReturn={this.handleSubmitReturn.bind(this)} ref="video"/>
+        <FileHelp type={this.props.type} limit={this.props.limit} handleSubmitReturn={this.handleSubmitReturn.bind(this)} ref="video"/>
       </div>
     );
   }

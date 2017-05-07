@@ -1,12 +1,13 @@
 import React, {Component, PropTypes} from 'react';
 import {Modal, Form, Spin, Button, Input, InputNumber, Checkbox, Select, message} from 'antd';
 import InputImage from '../../component/InputImage';
+import InputFile from '../../component/InputFile';
 import InputHtml from '../../component/InputHtml';
 
 import constant from '../../util/constant';
 import style from '../style.css';
 
-class ProductDetail extends Component {
+class ProductVideoDetail extends Component {
   constructor(props) {
     super(props);
 
@@ -272,96 +273,6 @@ class ProductDetail extends Component {
             }
           </FormItem>
 
-          <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_full_width}} label="会员价格">
-            {
-              this.props.member_level_list.map(function (item) {
-                return (
-                  <div className={style.productMemberPrice} key={item.member_level_id}>
-                    <FormItem hasFeedback {...constant.formItemFullLayoutProductPrice} className={style.formItem}
-                              label={item.member_level_name + '(¥)'}
-                    >
-                      {
-                        getFieldDecorator('product_price_list.' + item.member_level_id, {
-                          rules: [{
-                            type: 'number',
-                            required: true,
-                            message: constant.required
-                          }],
-                          initialValue: 0.00
-                        })(
-                          <InputNumber type="text" className={style.formItemInput}
-                                       placeholder={constant.placeholder + '商品价格'}
-                                       min={0} max={999999} step={0.01}/>
-                        )
-                      }
-                    </FormItem>
-                  </div>
-                )
-              })
-            }
-          </FormItem>
-
-          <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_full_width}} label="会员佣金">
-            {
-              this.props.member_level_list.map(function (item) {
-                return (
-                  <div className={style.productMemberPrice} key={item.member_level_id}>
-                    <FormItem hasFeedback {...constant.formItemFullLayoutProductPrice} className={style.formItem}
-                              label={item.member_level_name + '(%)'}
-                    >
-                      {
-                        getFieldDecorator('product_commission_list.' + item.member_level_id, {
-                          rules: [{
-                            type: 'number',
-                            required: true,
-                            message: constant.required
-                          }],
-                          initialValue: 0
-                        })(
-                          <InputNumber type="text" className={style.formItemInput}
-                                       placeholder={constant.placeholder + '商品价格'}
-                                       min={0} max={100} step={1}/>
-                        )
-                      }
-                    </FormItem>
-                  </div>
-                )
-              })
-            }
-          </FormItem>
-
-          {/*<FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}*/}
-                    {/*style={{width: constant.detail_form_item_full_width}} label="会员价格">*/}
-            {/*{*/}
-              {/*this.props.member_level_list.map(function (item) {*/}
-                {/*return (*/}
-                  {/*<div className={style.productMemberPrice} key={item.member_level_id}>*/}
-                    {/*<FormItem hasFeedback {...constant.formItemFullLayoutProductPrice} className={style.formItem}*/}
-                              {/*label={item.member_level_name}*/}
-                    {/*>*/}
-                      {/*{*/}
-                        {/*getFieldDecorator('product_lr_list.' + item.member_level_id, {*/}
-                          {/*rules: [{*/}
-                            {/*type: 'number',*/}
-                            {/*required: true,*/}
-                            {/*message: constant.required*/}
-                          {/*}],*/}
-                          {/*initialValue: 0.00*/}
-                        {/*})(*/}
-                          {/*<InputNumber type="text" className={style.formItemInput}*/}
-                                       {/*placeholder={constant.placeholder + '商品价格'}*/}
-                                       {/*min={0} max={999999} step={0.01}/>*/}
-                        {/*)*/}
-                      {/*}*/}
-                    {/*</FormItem>*/}
-                  {/*</div>*/}
-                {/*)*/}
-              {/*})*/}
-            {/*}*/}
-          {/*</FormItem>*/}
-
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_width}} label="商品库存">
             {
@@ -442,8 +353,8 @@ class ProductDetail extends Component {
           </FormItem>
 
           <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_full_width}} label="图片列表">
-            <InputImage limit={5} ref="product_image_list"/>
+                    style={{width: constant.detail_form_item_full_width}} label="视频列表">
+            <InputFile limit={5} ref="product_image_list"/>
           </FormItem>
 
           <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
@@ -457,7 +368,7 @@ class ProductDetail extends Component {
   }
 }
 
-ProductDetail.propTypes = {
+ProductVideoDetail.propTypes = {
   is_load: React.PropTypes.bool.isRequired,
   is_detail: React.PropTypes.bool.isRequired,
   category_list: React.PropTypes.array.isRequired,
@@ -467,8 +378,8 @@ ProductDetail.propTypes = {
   handleCancel: React.PropTypes.func.isRequired
 };
 
-ProductDetail = Form.create({
+ProductVideoDetail = Form.create({
   withRef: true
-})(ProductDetail);
+})(ProductVideoDetail);
 
-export default ProductDetail;
+export default ProductVideoDetail;
