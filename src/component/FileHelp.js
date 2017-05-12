@@ -110,6 +110,12 @@ class VideoHelp extends Component {
       this.setState({
         is_load: false
       });
+    } else if (info.file.status == 'uploading') {
+      this.setState({
+        is_load: true
+      });
+    } else if (info.file.status === 'error') {
+      message.error(info.file.name + ' file upload failed');
     }
   }
 

@@ -43,7 +43,7 @@ class InputHtml extends Component {
     let html = '';
 
     for (let i = 0; i < list.length; i++) {
-      html += '<img src="' + constant.host + list[i].url + '" />';
+      html += '<img src="' + constant.host + list[i].file_path + '" />';
     }
 
     this.editor.insertContent(html);

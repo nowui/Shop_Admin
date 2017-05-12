@@ -243,6 +243,12 @@ class ImageHelp extends Component {
       });
 
       this.handleLoad(1);
+    } else if (info.file.status == 'uploading') {
+      this.setState({
+        is_load: true
+      });
+    } else if (info.file.status === 'error') {
+      message.error(info.file.name + ' file upload failed');
     }
   }
 
@@ -290,19 +296,26 @@ class ImageHelp extends Component {
               const mask = item.status || item.select ? style.itemMask + ' ' + style.itemMaskActive : style.itemMask;
               return (
                 <div key={item.file_id} className={style.item}>
-                  <div className={style.itemImage} style={{backgroundImage: 'url(' + constant.host + item.file_path + ')'}}></div>
-                  <div onMouseOver={this.handleMouseOver.bind(this, item.file_id)} onMouseOut={this.handleMouseOut.bind(this, item.file_id)}>
+                  <div className={style.itemImage}
+                       style={{backgroundImage: 'url(' + constant.host + item.file_path + ')'}}></div>
+                  <div onMouseOver={this.handleMouseOver.bind(this, item.file_id)}
+                       onMouseOut={this.handleMouseOut.bind(this, item.file_id)}>
                     <div className={mask} onClick={this.handleClick.bind(this, item.file_id)}></div>
-                    <i className={"anticon anticon-eye-o " + style.itemPreviewIcon} style={{display: item.status && !item.select ? 'inline' : 'none'}} onClick={this.handlePreview.bind(this, item.file_id)}/>
-                    <i className={"anticon anticon-delete " + style.itemRemoveIcon} style={{display: item.status && !item.select ? 'inline' : 'none'}} />
-                    <i className={"anticon anticon-check-circle-o " + style.itemCheckIcon} style={{display: item.select ? 'inline' : 'none'}} onClick={this.handlePreview.bind(this)}/>
+                    <i className={"anticon anticon-eye-o " + style.itemPreviewIcon}
+                       style={{display: item.status && !item.select ? 'inline' : 'none'}}
+                       onClick={this.handlePreview.bind(this, item.file_id)}/>
+                    <i className={"anticon anticon-delete " + style.itemRemoveIcon}
+                       style={{display: item.status && !item.select ? 'inline' : 'none'}}/>
+                    <i className={"anticon anticon-check-circle-o " + style.itemCheckIcon}
+                       style={{display: item.select ? 'inline' : 'none'}} onClick={this.handlePreview.bind(this)}/>
                   </div>
                 </div>
               )
             }.bind(this))
           }
           <div style={{float: 'left', width: '100%', textAlign: 'right'}}>
-            <Pagination current={this.state.page_index} pageSize={this.state.page_size} total={this.state.total} onChange={this.handlePaginationChange.bind(this)} />
+            <Pagination current={this.state.page_index} pageSize={this.state.page_size} total={this.state.total}
+                        onChange={this.handlePaginationChange.bind(this)}/>
           </div>
         </Spin>
         <Modal visible={this.state.is_preview} footer={null} onCancel={this.handleCancelPreview.bind(this)}>
