@@ -24,8 +24,8 @@ import OrderVideoIndex from './view/order/OrderVideoIndex';
 import DistributorIndex from './view/distributor/DistributorIndex';
 import SupplierIndex from './view/supplier/SupplierIndex';
 import SceneIndex from './view/scene/SceneIndex';
-
 import BillIndex from './view/bill/BillIndex';
+import CartIndex from './view/cart/CartIndex';
 
 import database from './util/database';
 
@@ -43,7 +43,7 @@ function RouterConfig({history}) {
   return (
     <Router history={history}>
       <Route path="/">
-        <IndexRedirect to="product/index"/>
+        <IndexRedirect to="dashboard/index"/>
         <Route path="login" component={Login}/>
         <Route component={Main} onEnter={validate}>
           <Route path="dashboard/index" component={DashboardIndex}/>
@@ -68,8 +68,8 @@ function RouterConfig({history}) {
           <Route path="distributor/index" component={DistributorIndex}/>
           <Route path="supplier/index" component={SupplierIndex}/>
           <Route path="scene/index" component={SceneIndex}/>
-
           <Route path="bill/index" component={BillIndex}/>
+          <Route path="cart/index" component={CartIndex}/>
         </Route>
       </Route>
     </Router>

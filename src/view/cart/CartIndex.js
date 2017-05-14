@@ -3,14 +3,14 @@ import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
-import SceneDetail from './SceneDetail';
+import CartDetail from './CartDetail';
 import constant from '../../util/constant';
 import http from '../../util/http';
 import style from '../style.css';
 
 let request;
 
-class SceneIndex extends Component {
+class CartIndex extends Component {
   constructor(props) {
     super(props);
 
@@ -26,19 +26,19 @@ class SceneIndex extends Component {
   }
 
   handleSearch() {
-    let scene_type = this.props.form.getFieldValue('scene_type');
+    let cart_name = this.props.form.getFieldValue('cart_name');
     let page_index = 1;
 
-    this.handleList(scene_type, page_index);
+    this.handleList(cart_name, page_index);
   }
 
   handleLoad(page_index) {
-    let scene_type = this.props.scene.scene_type;
+    let cart_name = this.props.cart.cart_name;
 
-    this.handleList(scene_type, page_index);
+    this.handleList(cart_name, page_index);
   }
 
-  handleList(scene_type, page_index) {
+  handleList(cart_name, page_index) {
     if (this.handleStart({
         is_load: true
       })) {
@@ -46,21 +46,21 @@ class SceneIndex extends Component {
     }
 
     request = http({
-      url: '/scene/admin/list',
+      url: '/cart/admin/list',
       data: {
-        scene_type: scene_type,
+        cart_name: cart_name,
         page_index: page_index,
-        page_size: this.props.scene.page_size
+        page_size: this.props.cart.page_size
       },
       success: function (json) {
         for (let i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].scene_id;
+          json.data[i].key = json.data[i].cart_id;
         }
 
         this.props.dispatch({
-          type: 'scene/fetch',
+          type: 'cart/fetch',
           data: {
-            scene_type: scene_type,
+            cart_name: cart_name,
             total: json.total,
             list: json.data,
             page_index: page_index
@@ -75,7 +75,7 @@ class SceneIndex extends Component {
 
   handleChangeSize(page_index, page_size) {
     this.props.dispatch({
-      type: 'scene/fetch',
+      type: 'cart/fetch',
       data: {
         page_size: page_size
       }
@@ -88,7 +88,7 @@ class SceneIndex extends Component {
 
   handleSave() {
     this.props.dispatch({
-      type: 'scene/fetch',
+      type: 'cart/fetch',
       data: {
         is_detail: true,
         action: 'save'
@@ -96,23 +96,23 @@ class SceneIndex extends Component {
     });
   }
 
-  handleUpdate(scene_id) {
+  handleUpdate(cart_id) {
     if (this.handleStart({
         is_load: true,
         is_detail: true,
         action: 'update',
-        scene_id: scene_id
+        cart_id: cart_id
       })) {
       return;
     }
 
     request = http({
-      url: '/scene/admin/find',
+      url: '/cart/admin/find',
       data: {
-        scene_id: scene_id
+        cart_id: cart_id
       },
       success: function (json) {
-        this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleSetFieldsValue(json.data);
+        this.refs.detail.setFieldsValue(json.data);
       }.bind(this),
       complete: function () {
         this.handleFinish();
@@ -120,7 +120,7 @@ class SceneIndex extends Component {
     }).post();
   }
 
-  handleDelete(scene_id) {
+  handleDelete(cart_id) {
     if (this.handleStart({
         is_load: true
       })) {
@@ -128,15 +128,15 @@ class SceneIndex extends Component {
     }
 
     request = http({
-      url: '/scene/delete',
+      url: '/cart/delete',
       data: {
-        scene_id: scene_id
+        cart_id: cart_id
       },
       success: function (json) {
         message.success(constant.success);
 
         setTimeout(function () {
-          this.handleLoad(this.props.scene.page_index);
+            this.handleLoad(this.props.cart.page_index);
         }.bind(this), constant.timeout);
       }.bind(this),
       complete: function () {
@@ -146,24 +146,18 @@ class SceneIndex extends Component {
   }
 
   handleSubmit(data) {
-    if (this.props.scene.action == 'update') {
-      this.handleCancel();
-
-      return;
-    }
-
     if (this.handleStart({
         is_load: true
       })) {
       return;
     }
 
-    if (this.props.scene.action == 'update') {
-      data.scene_id = this.props.scene.scene_id;
+    if (this.props.cart.action == 'update') {
+      data.cart_id = this.props.cart.cart_id;
     }
 
     request = http({
-      url: '/scene/' + this.props.scene.action,
+      url: '/cart/' + this.props.cart.action,
       data: data,
       success: function (json) {
         message.success(constant.success);
@@ -171,7 +165,7 @@ class SceneIndex extends Component {
         this.handleCancel();
 
         setTimeout(function () {
-          this.handleLoad(this.props.scene.page_index);
+            this.handleLoad(this.props.cart.page_index);
         }.bind(this), constant.timeout);
       }.bind(this),
       complete: function () {
@@ -182,7 +176,7 @@ class SceneIndex extends Component {
 
   handleCancel() {
     this.props.dispatch({
-      type: 'scene/fetch',
+      type: 'cart/fetch',
       data: {
         is_detail: false
       }
@@ -192,12 +186,12 @@ class SceneIndex extends Component {
   }
 
   handleStart(data) {
-    if (this.props.scene.is_load) {
+    if (this.props.cart.is_load) {
       return true;
     }
 
     this.props.dispatch({
-      type: 'scene/fetch',
+      type: 'cart/fetch',
       data: data
     });
 
@@ -206,7 +200,7 @@ class SceneIndex extends Component {
 
   handleFinish() {
     this.props.dispatch({
-      type: 'scene/fetch',
+      type: 'cart/fetch',
       data: {
         is_load: false
       }
@@ -217,7 +211,7 @@ class SceneIndex extends Component {
     request.cancel();
 
     this.props.dispatch({
-      type: 'scene/fetch',
+      type: 'cart/fetch',
       data: {
         is_detail: false
       }
@@ -230,57 +224,17 @@ class SceneIndex extends Component {
 
     const columns = [{
       title: '名称',
-      dataIndex: 'scene_type',
-      render: (text, record, index) => (
-        <span>
-          {
-            text == 'PLATFORM'?
-              '平台二维码'
-              :
-              ''
-          }
-          {
-            text == 'DISTRIBUTOR'?
-              '供应商二维码'
-              :
-              ''
-          }
-          {
-            text == 'MEMBER'?
-              '会员二维码'
-              :
-              ''
-          }
-        </span>
-      )
-    }, {
-      width: 100,
-      title: '新增关注',
-      dataIndex: 'scene_add'
-    }, {
-      width: 100,
-      title: '取消关注',
-      dataIndex: 'scene_cancel'
-    }, {
-      width: 100,
-      title: '是否失效',
-      dataIndex: 'scene_is_expire',
-      render: (text, record, index) => (
-        record.scene_is_expire ?
-          '已失效'
-          :
-          ''
-      )
+      dataIndex: 'cart_name'
     }, {
       width: 90,
       title: constant.action,
       dataIndex: '',
       render: (text, record, index) => (
         <span>
-          <a onClick={this.handleUpdate.bind(this, record.scene_id)}>{constant.find}</a>
+          <a onClick={this.handleUpdate.bind(this, record.cart_id)}>{constant.update}</a>
           <span className={style.divider}/>
           <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
-                      cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.scene_id)}>
+                      cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.cart_id)}>
             <a>{constant.delete}</a>
           </Popconfirm>
         </span>
@@ -288,9 +242,9 @@ class SceneIndex extends Component {
     }];
 
     const pagination = {
-      total: this.props.scene.total,
-      current: this.props.scene.page_index,
-      pageSize: this.props.scene.page_size,
+      total: this.props.cart.total,
+      current: this.props.cart.page_index,
+      pageSize: this.props.cart.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
       onChange: this.handleLoad.bind(this)
@@ -301,14 +255,14 @@ class SceneIndex extends Component {
         <div key="0">
           <Row className={style.layoutContentHeader}>
             <Col span={8}>
-              <div className={style.layoutContentHeaderTitle}>二维码列表</div>
+              <div className={style.layoutContentHeaderTitle}>列表</div>
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
-                      loading={this.props.scene.is_load}
+                      loading={this.props.cart.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
               <Button type="primary" icon="plus-circle" size="default"
-                      onClick={this.handleSave.bind(this)}>新增平台二维码</Button>
+                      onClick={this.handleSave.bind(this)}>{constant.save}</Button>
             </Col>
           </Row>
           <Form className={style.layoutContentHeaderSearch}>
@@ -316,7 +270,7 @@ class SceneIndex extends Component {
               <Col span={8}>
                 <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="名称">
                   {
-                    getFieldDecorator('scene_type', {
+                    getFieldDecorator('cart_name', {
                       initialValue: ''
                     })(
                       <Input type="text" placeholder="请输入名称" className={style.formItemInput}/>
@@ -331,25 +285,24 @@ class SceneIndex extends Component {
             </Row>
           </Form>
           <Table className={style.layoutContentHeaderTable}
-                 loading={this.props.scene.is_load && !this.props.scene.is_detail} columns={columns}
-                 dataSource={this.props.scene.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 loading={this.props.cart.is_load && !this.props.cart.is_detail} columns={columns}
+                 dataSource={this.props.cart.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>
-          <SceneDetail is_load={this.props.scene.is_load}
-                       is_detail={this.props.scene.is_detail}
-                       action={this.props.scene.action}
-                       handleSubmit={this.handleSubmit.bind(this)}
-                       handleCancel={this.handleCancel.bind(this)}
-                       ref="detail"/>
+          <CartDetail is_load={this.props.cart.is_load}
+                      is_detail={this.props.cart.is_detail}
+                      handleSubmit={this.handleSubmit.bind(this)}
+                      handleCancel={this.handleCancel.bind(this)}
+                      ref="detail"/>
         </div>
       </QueueAnim>
     );
   }
 }
 
-SceneIndex.propTypes = {};
+CartIndex.propTypes = {};
 
-SceneIndex = Form.create({})(SceneIndex);
+CartIndex = Form.create({})(CartIndex);
 
-export default connect(({scene}) => ({
-  scene,
-}))(SceneIndex);
+export default connect(({cart}) => ({
+  cart,
+}))(CartIndex);

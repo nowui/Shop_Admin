@@ -49,8 +49,6 @@ export default {
   host: 'http://api.xingxiao.nowui.com',
   // name: '广州市济颐馆贸易有限公司',
   // host: 'http://api.jiyiguan.nowui.com',
-  // name: '马卡龙小魔女',
-  // host: 'http://api.makalong.nowui.com',
   placeholder: '请输入',
   platform: 'Admin',
   version: '1.0.0',

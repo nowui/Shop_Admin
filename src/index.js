@@ -33,6 +33,7 @@ app.model(require('./model/distributor'));
 app.model(require('./model/supplier'));
 app.model(require('./model/scene'));
 app.model(require('./model/bill'));
+app.model(require('./model/cart'));
 
 // 4. Router
 app.router(require('./router'));
