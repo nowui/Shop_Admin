@@ -18,6 +18,7 @@ import ProductVideoIndex from './view/product/ProductVideoIndex';
 import ProductIndex from './view/product/ProductIndex';
 import DeliveryIndex from './view/delivery/DeliveryIndex';
 import MemberIndex from './view/member/MemberIndex';
+import MemberTreeIndex from './view/member/MemberTreeIndex';
 import MemberLevelIndex from './view/member/MemberLevelIndex';
 import OrderIndex from './view/order/OrderIndex';
 import OrderVideoIndex from './view/order/OrderVideoIndex';
@@ -62,6 +63,7 @@ function RouterConfig({history}) {
           <Route path="product/video/index" component={ProductVideoIndex}/>
           <Route path="delivery/index" component={DeliveryIndex}/>
           <Route path="member/index" component={MemberIndex}/>
+          <Route path="member/tree/index" component={MemberTreeIndex}/>
           <Route path="member/level/index" component={MemberLevelIndex}/>
           <Route path="order/index" component={OrderIndex}/>
           <Route path="order/video/index" component={OrderVideoIndex}/>

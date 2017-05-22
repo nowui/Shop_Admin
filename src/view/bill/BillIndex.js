@@ -242,7 +242,11 @@ class BillIndex extends Component {
     }];
 
     const pagination = {
+      size: 'defalut',
       total: this.props.bill.total,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
       current: this.props.bill.page_index,
       pageSize: this.props.bill.page_size,
       showSizeChanger: true,
@@ -284,7 +288,7 @@ class BillIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
+          <Table size="middle" className={style.layoutContentHeaderTable}
                  loading={this.props.bill.is_load && !this.props.bill.is_detail} columns={columns}
                  dataSource={this.props.bill.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>

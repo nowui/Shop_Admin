@@ -244,7 +244,11 @@ class FileIndex extends Component {
     }];
 
     const pagination = {
+      size: 'defalut',
       total: this.props.file.total,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
       current: this.props.file.page_index,
       pageSize: this.props.file.page_size,
       showSizeChanger: true,
@@ -286,7 +290,7 @@ class FileIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
+          <Table size="middle" className={style.layoutContentHeaderTable}
                  loading={this.props.file.is_load && !this.props.file.is_detail} columns={columns}
                  dataSource={this.props.file.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>

@@ -244,7 +244,11 @@ class BrandIndex extends Component {
     }];
 
     const pagination = {
+      size: 'defalut',
       total: this.props.brand.total,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
       current: this.props.brand.page_index,
       pageSize: this.props.brand.page_size,
       showSizeChanger: true,
@@ -286,7 +290,7 @@ class BrandIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
+          <Table size="middle" className={style.layoutContentHeaderTable}
                  loading={this.props.brand.is_load && !this.props.brand.is_detail} columns={columns}
                  dataSource={this.props.brand.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>

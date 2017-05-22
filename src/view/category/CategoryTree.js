@@ -148,10 +148,10 @@ class CategoryTree extends Component {
                     onClick={this.handleSave.bind(this, this.state.category_id)}>{constant.save}</Button>
           </Col>
         </Row>
-        <Table className={style.layoutContentHeaderTable} expandedRowKeys={this.state.expandedRowKeys}
+        <Table size="middle" className={style.layoutContentHeaderTable} expandedRowKeys={this.state.expandedRowKeys}
                onExpand={this.handleExpand.bind(this)} columns={columns} dataSource={this.state.children}
                pagination={false}
-               scroll={{y: constant.scrollModalHeight()}} size="middle" bordered/>
+               scroll={{y: constant.scrollModalHeight()}} bordered/>
       </Modal>
     );
   }

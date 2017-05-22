@@ -243,8 +243,12 @@ class SupplierIndex extends Component {
     }];
 
     const pagination = {
+      size: 'defalut',
       total: this.props.supplier.total,
       current: this.props.supplier.page_index,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
       pageSize: this.props.supplier.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
@@ -285,7 +289,7 @@ class SupplierIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
+          <Table size="middle" className={style.layoutContentHeaderTable}
                  loading={this.props.supplier.is_load && !this.props.supplier.is_detail} columns={columns}
                  dataSource={this.props.supplier.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>

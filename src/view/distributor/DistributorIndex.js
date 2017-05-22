@@ -245,7 +245,11 @@ class DistributorIndex extends Component {
     }];
 
     const pagination = {
+      size: 'defalut',
       total: this.props.distributor.total,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
       current: this.props.distributor.page_index,
       pageSize: this.props.distributor.page_size,
       showSizeChanger: true,
@@ -287,7 +291,7 @@ class DistributorIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
+          <Table size="middle" className={style.layoutContentHeaderTable}
                  loading={this.props.distributor.is_load && !this.props.distributor.is_detail} columns={columns}
                  dataSource={this.props.distributor.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>

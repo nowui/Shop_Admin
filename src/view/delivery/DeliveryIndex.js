@@ -247,7 +247,11 @@ class DeliveryIndex extends Component {
     }];
 
     const pagination = {
+      size: 'defalut',
       total: this.props.delivery.total,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
       current: this.props.delivery.page_index,
       pageSize: this.props.delivery.page_size,
       showSizeChanger: true,
@@ -289,7 +293,7 @@ class DeliveryIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
+          <Table size="middle" className={style.layoutContentHeaderTable}
                  loading={this.props.delivery.is_load && !this.props.delivery.is_detail} columns={columns}
                  dataSource={this.props.delivery.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>

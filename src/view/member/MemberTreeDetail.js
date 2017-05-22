@@ -4,7 +4,7 @@ import {Modal, Form, Spin, Button, Input, Checkbox, Select} from 'antd';
 import constant from '../../util/constant';
 import style from '../style.css';
 
-class MemberDetail extends Component {
+class MemberTreeDetail extends Component {
   constructor(props) {
     super(props);
 
@@ -34,10 +34,6 @@ class MemberDetail extends Component {
     this.props.form.validateFieldsAndScroll((errors, values) => {
       if (!!errors) {
         return;
-      }
-
-      if (!this.state.isChange && this.props.action == 'update') {
-        values.user_phone = '';
       }
 
       this.props.handleSubmit(values);
@@ -76,7 +72,7 @@ class MemberDetail extends Component {
                        onClick={this.handleCancel.bind(this)}>关闭</Button>,
                <Button key="submit" type="primary" size="default" icon="check-circle"
                        loading={this.props.is_load}
-                       onClick={this.handleCancel.bind(this)}>确定</Button>
+                       onClick={this.handleSubmit.bind(this)}>确定</Button>
              ]}
       >
         <Spin spinning={this.props.is_load}>
@@ -85,6 +81,10 @@ class MemberDetail extends Component {
                     style={{width: constant.detail_form_item_width}} label="会员等级">
             {
               getFieldDecorator('member_level_id', {
+                rules: [{
+                  required: true,
+                  message: constant.required
+                }],
                 initialValue: ''
               })(
                 <Select style={{
@@ -128,40 +128,6 @@ class MemberDetail extends Component {
                 }}/>
             }
           </FormItem>
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="会员帐号">
-            {
-              getFieldDecorator('user_phone', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '会员帐号'}/>
-              )
-            }
-            {
-              this.props.action == 'save' ?
-                ''
-                :
-                <Checkbox checked={this.state.isChange} onChange={this.handleChange.bind(this)}>是否修改帐号</Checkbox>
-            }
-          </FormItem>
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="会员密码">
-            {
-              getFieldDecorator('user_password', {
-                rules: [{
-                  required: this.props.action == 'save',
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '会员密码'}/>
-              )
-            }
-          </FormItem>
 
         </Spin>
       </Modal>
@@ -169,7 +135,7 @@ class MemberDetail extends Component {
   }
 }
 
-MemberDetail.propTypes = {
+MemberTreeDetail.propTypes = {
   is_load: React.PropTypes.bool.isRequired,
   is_detail: React.PropTypes.bool.isRequired,
   action: React.PropTypes.string.isRequired,
@@ -178,8 +144,8 @@ MemberDetail.propTypes = {
   handleCancel: React.PropTypes.func.isRequired
 };
 
-MemberDetail = Form.create({
+MemberTreeDetail = Form.create({
   withRef: true
-})(MemberDetail);
+})(MemberTreeDetail);
 
-export default MemberDetail;
+export default MemberTreeDetail;

@@ -245,7 +245,13 @@ class MemberIndex extends Component {
 
     const columns = [{
       title: '名称',
-      dataIndex: 'member_name'
+      dataIndex: 'member_name',
+      render: (text, record, index) => (
+        <span style={{ position: 'relative' }}>
+          <img style={{ position: 'absolute', top: 4, left: 4, width: '30px', height: '30px' }} src={record.user_avatar} />
+          <div style={{ position: 'absolute', left: 40, width: '300px', lineHeight: '39px' }}>{record.member_name}</div>
+        </span>
+      )
     }, {
       width: 90,
       title: constant.action,
@@ -264,7 +270,11 @@ class MemberIndex extends Component {
     }];
 
     const pagination = {
+      size: 'defalut',
       total: this.props.member.total,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
       current: this.props.member.page_index,
       pageSize: this.props.member.page_size,
       showSizeChanger: true,
@@ -306,7 +316,9 @@ class MemberIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
+          <Table rowKey="member_id"
+                 size="middle"
+                 className={style.layoutContentHeaderTable}
                  loading={this.props.member.is_load && !this.props.member.is_detail} columns={columns}
                  dataSource={this.props.member.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>

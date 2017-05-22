@@ -244,7 +244,11 @@ class ResourceIndex extends Component {
     }];
 
     const pagination = {
+      size: 'defalut',
       total: this.props.resource.total,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
       current: this.props.resource.page_index,
       pageSize: this.props.resource.page_size,
       showSizeChanger: true,
@@ -286,7 +290,7 @@ class ResourceIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
+          <Table size="middle" className={style.layoutContentHeaderTable}
                  loading={this.props.resource.is_load && !this.props.resource.is_detail} columns={columns}
                  dataSource={this.props.resource.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>

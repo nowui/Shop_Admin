@@ -26,7 +26,7 @@ export default {
   },
   timeout: 10,
   duration: 0.3,
-  page_size: 9,
+  page_size: 10,
   action: '操作',
   search: '搜索',
   find: '查看',

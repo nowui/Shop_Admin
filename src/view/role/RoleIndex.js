@@ -244,7 +244,11 @@ class RoleIndex extends Component {
     }];
 
     const pagination = {
+      size: 'defalut',
       total: this.props.role.total,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
       current: this.props.role.page_index,
       pageSize: this.props.role.page_size,
       showSizeChanger: true,
@@ -286,7 +290,7 @@ class RoleIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
+          <Table size="middle" className={style.layoutContentHeaderTable}
                  loading={this.props.role.is_load && !this.props.role.is_detail} columns={columns}
                  dataSource={this.props.role.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>

@@ -304,7 +304,11 @@ class ProductVideoIndex extends Component {
     }];
 
     const pagination = {
+      size: 'defalut',
       total: this.props.product.total,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
       current: this.props.product.page_index,
       pageSize: this.props.product.page_size,
       showSizeChanger: true,
@@ -346,7 +350,7 @@ class ProductVideoIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
+          <Table size="middle" className={style.layoutContentHeaderTable}
                  loading={this.props.product.is_load && !this.props.product.is_detail} columns={columns}
                  dataSource={this.props.product.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>

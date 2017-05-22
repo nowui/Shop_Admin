@@ -248,7 +248,11 @@ class AdminIndex extends Component {
     }];
 
     const pagination = {
+      size: 'defalut',
       total: this.props.admin.total,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
       current: this.props.admin.page_index,
       pageSize: this.props.admin.page_size,
       showSizeChanger: true,
@@ -290,7 +294,7 @@ class AdminIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
+          <Table size="middle" className={style.layoutContentHeaderTable}
                  loading={this.props.admin.is_load && !this.props.admin.is_detail} columns={columns}
                  dataSource={this.props.admin.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>

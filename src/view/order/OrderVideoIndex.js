@@ -289,7 +289,11 @@ class OrderVideoIndex extends Component {
     }];
 
     const pagination = {
+      size: 'defalut',
       total: this.props.order.total,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
       current: this.props.order.page_index,
       pageSize: this.props.order.page_size,
       showSizeChanger: true,
@@ -329,7 +333,7 @@ class OrderVideoIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
+          <Table size="middle" className={style.layoutContentHeaderTable}
                  loading={this.props.order.is_load && !this.props.order.is_detail} columns={columns}
                  dataSource={this.props.order.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>

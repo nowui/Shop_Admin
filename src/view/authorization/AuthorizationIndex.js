@@ -260,7 +260,11 @@ class AuthorizationIndex extends Component {
     }];
 
     const pagination = {
+      size: 'defalut',
       total: this.props.authorization.total,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
       current: this.props.authorization.page_index,
       pageSize: this.props.authorization.page_size,
       showSizeChanger: true,
@@ -300,7 +304,7 @@ class AuthorizationIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
+          <Table size="middle" className={style.layoutContentHeaderTable}
                  loading={this.props.authorization.is_load && !this.props.authorization.is_detail} columns={columns}
                  dataSource={this.props.authorization.list} pagination={pagination}
                  scroll={{y: constant.scrollHeight()}}

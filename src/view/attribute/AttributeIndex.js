@@ -244,7 +244,11 @@ class AttributeIndex extends Component {
     }];
 
     const pagination = {
+      size: 'defalut',
       total: this.props.attribute.total,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
       current: this.props.attribute.page_index,
       pageSize: this.props.attribute.page_size,
       showSizeChanger: true,
@@ -286,7 +290,7 @@ class AttributeIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
+          <Table size="middle" className={style.layoutContentHeaderTable}
                  loading={this.props.attribute.is_load && !this.props.attribute.is_detail} columns={columns}
                  dataSource={this.props.attribute.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>

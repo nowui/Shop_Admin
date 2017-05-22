@@ -76,7 +76,7 @@ class OrderDetail extends Component {
       render: (text, record, index) => (
         <div>
           {
-            record.product_price * record.product_quantity
+            record.order_product_price * record.order_product_quantity
           }
         </div>
       )
@@ -86,16 +86,22 @@ class OrderDetail extends Component {
       render: (text, record, index) => (
         <div>
           {
-            record.order_product_commission.map((item) => {
-              return (
-                <div key={item.member_id}>
-                  会员：{item.member_name}，
-                  等级：{item.member_level_name}，
-                  佣金：{item.product_commission}%，
-                  分成：¥{item.commission_amount}
-                </div>
-              );
-            })
+            record.order_product_commission.length == 0 ?
+              ''
+              :
+              record.order_product_commission.map((item) => {
+                return (
+                  <div key={item.member_id}>
+                    会员：{item.member_name}，
+                    等级：{item.member_level_name}，
+                    佣金：{item.product_commission}%，
+                    分成：¥{item.commission_amount}
+                  </div>
+                );
+              })
+          }
+          {
+
           }
         </div>
       )
