@@ -3,44 +3,61 @@ import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
-import OrderDetail from './OrderDetail';
+import ArticleDetail from './ArticleDetail';
 import constant from '../../util/constant';
 import http from '../../util/http';
 import style from '../style.css';
 
 let request;
 
-class OrderIndex extends Component {
+class ArticleIndex extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      category_list: []
+    }
   }
 
   componentDidMount() {
-    this.props.form.setFieldsValue(this.props.order);
-
     this.handleSearch();
+
+    this.handleCategoryList();
   }
 
   componentWillUnmount() {
     this.handleReset();
   }
 
+  handleCategoryList() {
+    http({
+      url: '/article/category/list',
+      data: {},
+      success: function (json) {
+        this.setState({
+          category_list: json.data
+        });
+      }.bind(this),
+      complete: function () {
+
+      }.bind(this)
+    }).post();
+  }
+
   handleSearch() {
-    let order_number = this.props.form.getFieldValue('order_number');
+    let article_name = this.props.form.getFieldValue('article_name');
     let page_index = 1;
 
-    this.handleList(order_number, page_index);
+    this.handleList(article_name, page_index);
   }
 
   handleLoad(page_index) {
-    let order_number = this.props.order.order_number;
+    let article_name = this.props.article.article_name;
 
-    this.handleList(order_number, page_index);
+    this.handleList(article_name, page_index);
   }
 
-  handleList(order_number, page_index) {
+  handleList(article_name, page_index) {
     if (this.handleStart({
         is_load: true
       })) {
@@ -48,21 +65,21 @@ class OrderIndex extends Component {
     }
 
     request = http({
-      url: '/order/admin/list',
+      url: '/article/admin/list',
       data: {
-        order_number: order_number,
+        article_name: article_name,
         page_index: page_index,
-        page_size: this.props.order.page_size
+        page_size: this.props.article.page_size
       },
       success: function (json) {
         for (let i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].order_id;
+          json.data[i].key = json.data[i].article_id;
         }
 
         this.props.dispatch({
-          type: 'order/fetch',
+          type: 'article/fetch',
           data: {
-            order_number: order_number,
+            article_name: article_name,
             total: json.total,
             list: json.data,
             page_index: page_index
@@ -77,7 +94,7 @@ class OrderIndex extends Component {
 
   handleChangeSize(page_index, page_size) {
     this.props.dispatch({
-      type: 'order/fetch',
+      type: 'article/fetch',
       data: {
         page_size: page_size
       }
@@ -90,7 +107,7 @@ class OrderIndex extends Component {
 
   handleSave() {
     this.props.dispatch({
-      type: 'order/fetch',
+      type: 'article/fetch',
       data: {
         is_detail: true,
         action: 'save'
@@ -98,20 +115,20 @@ class OrderIndex extends Component {
     });
   }
 
-  handleUpdate(order_id) {
+  handleUpdate(article_id) {
     if (this.handleStart({
         is_load: true,
         is_detail: true,
         action: 'update',
-        order_id: order_id
+        article_id: article_id
       })) {
       return;
     }
 
     request = http({
-      url: '/order/admin/find',
+      url: '/article/admin/find',
       data: {
-        order_id: order_id
+        article_id: article_id
       },
       success: function (json) {
         this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleSetFieldsValue(json.data);
@@ -122,7 +139,7 @@ class OrderIndex extends Component {
     }).post();
   }
 
-  handleDelete(order_id) {
+  handleDelete(article_id) {
     if (this.handleStart({
         is_load: true
       })) {
@@ -130,15 +147,15 @@ class OrderIndex extends Component {
     }
 
     request = http({
-      url: '/order/delete',
+      url: '/article/delete',
       data: {
-        order_id: order_id
+        article_id: article_id
       },
       success: function (json) {
         message.success(constant.success);
 
         setTimeout(function () {
-          this.handleLoad(this.props.order.page_index);
+          this.handleLoad(this.props.article.page_index);
         }.bind(this), constant.timeout);
       }.bind(this),
       complete: function () {
@@ -154,12 +171,12 @@ class OrderIndex extends Component {
       return;
     }
 
-    if (this.props.order.action == 'update') {
-      data.order_id = this.props.order.order_id;
+    if (this.props.article.action == 'update') {
+      data.article_id = this.props.article.article_id;
     }
 
     request = http({
-      url: '/order/' + this.props.order.action,
+      url: '/article/' + this.props.article.action,
       data: data,
       success: function (json) {
         message.success(constant.success);
@@ -167,7 +184,7 @@ class OrderIndex extends Component {
         this.handleCancel();
 
         setTimeout(function () {
-          this.handleLoad(this.props.order.page_index);
+          this.handleLoad(this.props.article.page_index);
         }.bind(this), constant.timeout);
       }.bind(this),
       complete: function () {
@@ -178,7 +195,7 @@ class OrderIndex extends Component {
 
   handleCancel() {
     this.props.dispatch({
-      type: 'order/fetch',
+      type: 'article/fetch',
       data: {
         is_detail: false
       }
@@ -188,12 +205,12 @@ class OrderIndex extends Component {
   }
 
   handleStart(data) {
-    if (this.props.order.is_load) {
+    if (this.props.article.is_load) {
       return true;
     }
 
     this.props.dispatch({
-      type: 'order/fetch',
+      type: 'article/fetch',
       data: data
     });
 
@@ -202,7 +219,7 @@ class OrderIndex extends Component {
 
   handleFinish() {
     this.props.dispatch({
-      type: 'order/fetch',
+      type: 'article/fetch',
       data: {
         is_load: false
       }
@@ -213,7 +230,7 @@ class OrderIndex extends Component {
     request.cancel();
 
     this.props.dispatch({
-      type: 'order/fetch',
+      type: 'article/fetch',
       data: {
         is_detail: false
       }
@@ -225,54 +242,29 @@ class OrderIndex extends Component {
     const {getFieldDecorator} = this.props.form;
 
     const columns = [{
-      width: 120,
-      title: '订单号',
-      dataIndex: 'order_number'
+      title: '名称',
+      dataIndex: 'article_name'
     }, {
-      width: 110,
-      title: '收货人',
-      dataIndex: 'order_delivery_name'
-    }, {
-      width: 95,
-      title: '电话',
-      dataIndex: 'order_delivery_phone'
-    }, {
-      title: '地址',
-      dataIndex: 'order_delivery_address'
-    }, {
-      width: 80,
-      title: '金额',
-      dataIndex: 'order_product_amount'
-    }, {
-      width: 60,
-      title: '状态',
-      dataIndex: 'order_flow',
-      render: (text, record, index) => (
-        <span>
-          {
-            constant.getOrderFlow(text)
-          }
-        </span>
-      )
-    }, {
-      width: 45,
+      width: 90,
       title: constant.action,
       dataIndex: '',
       render: (text, record, index) => (
         <span>
-          <a onClick={this.handleUpdate.bind(this, record.order_id)}>{constant.find}</a>
+          <a onClick={this.handleUpdate.bind(this, record.article_id)}>{constant.update}</a>
+          <span className={style.divider}/>
+          <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
+                      cancelText={constant.popconfirm_cancel}
+                      onConfirm={this.handleDelete.bind(this, record.article_id)}>
+            <a>{constant.delete}</a>
+          </Popconfirm>
         </span>
       )
     }];
 
     const pagination = {
-      size: 'defalut',
-      total: this.props.order.total,
-      showTotal: function (total, range) {
-        return '总共' + total + '条数据';
-      },
-      current: this.props.order.page_index,
-      pageSize: this.props.order.page_size,
+      total: this.props.article.total,
+      current: this.props.article.page_index,
+      pageSize: this.props.article.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
       onChange: this.handleLoad.bind(this)
@@ -283,23 +275,25 @@ class OrderIndex extends Component {
         <div key="0">
           <Row className={style.layoutContentHeader}>
             <Col span={8}>
-              <div className={style.layoutContentHeaderTitle}>订单列表</div>
+              <div className={style.layoutContentHeaderTitle}>列表</div>
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
-              <Button type="primary" icon="search" size="default"
-                      loading={this.props.order.is_load}
+              <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
+                      loading={this.props.article.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
+              <Button type="primary" icon="plus-circle" size="default"
+                      onClick={this.handleSave.bind(this)}>{constant.save}</Button>
             </Col>
           </Row>
           <Form className={style.layoutContentHeaderSearch}>
             <Row>
               <Col span={8}>
-                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="订单号">
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="名称">
                   {
-                    getFieldDecorator('order_number', {
+                    getFieldDecorator('article_name', {
                       initialValue: ''
                     })(
-                      <Input type="text" placeholder="请输入订单号" className={style.formItemInput}/>
+                      <Input type="text" placeholder="请输入名称" className={style.formItemInput}/>
                     )
                   }
                 </FormItem>
@@ -310,25 +304,26 @@ class OrderIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
-                 loading={this.props.order.is_load && !this.props.order.is_detail} columns={columns}
-                 dataSource={this.props.order.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+          <Table className={style.layoutContentHeaderTable}
+                 loading={this.props.article.is_load && !this.props.article.is_detail} columns={columns}
+                 dataSource={this.props.article.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
                  bordered/>
-          <OrderDetail is_load={this.props.order.is_load}
-                       is_detail={this.props.order.is_detail}
-                       handleSubmit={this.handleSubmit.bind(this)}
-                       handleCancel={this.handleCancel.bind(this)}
-                       ref="detail"/>
+          <ArticleDetail is_load={this.props.article.is_load}
+                         is_detail={this.props.article.is_detail}
+                         category_list={this.state.category_list}
+                         handleSubmit={this.handleSubmit.bind(this)}
+                         handleCancel={this.handleCancel.bind(this)}
+                         ref="detail"/>
         </div>
       </QueueAnim>
     );
   }
 }
 
-OrderIndex.propTypes = {};
+ArticleIndex.propTypes = {};
 
-OrderIndex = Form.create({})(OrderIndex);
+ArticleIndex = Form.create({})(ArticleIndex);
 
-export default connect(({order}) => ({
-  order,
-}))(OrderIndex);
+export default connect(({article}) => ({
+  article,
+}))(ArticleIndex);

@@ -64,11 +64,11 @@ class OrderDetail extends Component {
     }, {
       width: 100,
       title: '价格',
-      dataIndex: 'product_price'
+      dataIndex: 'order_product_price'
     }, {
       width: 100,
       title: '数量',
-      dataIndex: 'product_quantity'
+      dataIndex: 'order_product_quantity'
     }, {
       width: 100,
       title: '合计',
