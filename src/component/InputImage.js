@@ -21,12 +21,12 @@ class InputImage extends Component {
 
   componentDidMount() {
     notification.on('notification_image_help_' + this.props.name + '_Submit', this, function (data) {
-      let array = this.state.list;
+      var array = this.state.list;
 
-      for (let i = 0; i < data.length; i++) {
-        let isNotExit = true;
+      for (var i = 0; i < data.length; i++) {
+        var isNotExit = true;
 
-        for (let k = 0; k < this.state.list.length; k++) {
+        for (var k = 0; k < this.state.list.length; k++) {
           if (data[i].file_path == this.state.list[k].file_path) {
             isNotExit = false;
 
@@ -56,9 +56,9 @@ class InputImage extends Component {
   }
 
   handleSetValue(data) {
-    let array = [];
+    var array = [];
 
-    for (let i = 0; i < data.length; i++) {
+    for (var i = 0; i < data.length; i++) {
       array.push({
         file_id: data[i].file_id,
         file_path: data[i].file_path,
@@ -72,7 +72,7 @@ class InputImage extends Component {
   }
 
   handleBeforeUpload(file) {
-    let result = true;
+    var result = true;
 
     if (file.type == 'image/jpeg' || file.type == 'image/jpg' || file.type == 'image/png') {
 
@@ -98,8 +98,8 @@ class InputImage extends Component {
   }
 
   handlePreview(file_id) {
-    let file_path = '';
-    for (let i = 0; i < this.state.list.length; i++) {
+    var file_path = '';
+    for (var i = 0; i < this.state.list.length; i++) {
       if (this.state.list[i].file_id == file_id) {
         file_path = this.state.list[i].file_path;
       }
@@ -112,10 +112,10 @@ class InputImage extends Component {
   }
 
   handleDelete(file_id) {
-    let index = -1;
-    let list = this.state.list;
+    var index = -1;
+    var list = this.state.list;
 
-    for (let i = 0; i < list.length; i++) {
+    for (var i = 0; i < list.length; i++) {
       if (list[i].file_id == file_id) {
         index = i;
       }
@@ -133,10 +133,10 @@ class InputImage extends Component {
   }
 
   handleMouseOver(file_id) {
-    let list = [];
+    var list = [];
 
-    for (let i = 0; i < this.state.list.length; i++) {
-      let item = this.state.list[i];
+    for (var i = 0; i < this.state.list.length; i++) {
+      var item = this.state.list[i];
 
       list.push({
         file_id: item.file_id,
@@ -151,10 +151,10 @@ class InputImage extends Component {
   }
 
   handleMouseOut(file_id) {
-    let list = [];
+    var list = [];
 
-    for (let i = 0; i < this.state.list.length; i++) {
-      let item = this.state.list[i];
+    for (var i = 0; i < this.state.list.length; i++) {
+      var item = this.state.list[i];
 
       list.push({
         file_id: item.file_id,

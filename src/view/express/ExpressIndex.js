@@ -25,14 +25,14 @@ class ExpressIndex extends Component {
   }
 
   handleSearch() {
-    let express_name = this.props.form.getFieldValue('express_name');
-    let page_index = 1;
+    var express_name = this.props.form.getFieldValue('express_name');
+    var page_index = 1;
 
     this.handleList(express_name, page_index);
   }
 
   handleLoad(page_index) {
-    let express_name = this.props.express.express_name;
+    var express_name = this.props.express.express_name;
 
     this.handleList(express_name, page_index);
   }
@@ -52,7 +52,7 @@ class ExpressIndex extends Component {
         page_size: this.props.express.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
+        for (var i = 0; i < json.data.length; i++) {
           json.data[i].key = json.data[i].express_id;
         }
 

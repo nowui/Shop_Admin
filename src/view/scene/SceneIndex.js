@@ -25,14 +25,14 @@ class SceneIndex extends Component {
   }
 
   handleSearch() {
-    let scene_type = this.props.form.getFieldValue('scene_type');
-    let page_index = 1;
+    var scene_type = this.props.form.getFieldValue('scene_type');
+    var page_index = 1;
 
     this.handleList(scene_type, page_index);
   }
 
   handleLoad(page_index) {
-    let scene_type = this.props.scene.scene_type;
+    var scene_type = this.props.scene.scene_type;
 
     this.handleList(scene_type, page_index);
   }
@@ -52,7 +52,7 @@ class SceneIndex extends Component {
         page_size: this.props.scene.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
+        for (var i = 0; i < json.data.length; i++) {
           json.data[i].key = json.data[i].scene_id;
         }
 

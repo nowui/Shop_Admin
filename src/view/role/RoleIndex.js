@@ -27,14 +27,14 @@ class RoleIndex extends Component {
   }
 
   handleSearch() {
-    let role_name = this.props.form.getFieldValue('role_name');
-    let page_index = 1;
+    var role_name = this.props.form.getFieldValue('role_name');
+    var page_index = 1;
 
     this.handList(role_name, page_index);
   }
 
   handLoad(page_index) {
-    let role_name = this.props.role.role_name;
+    var role_name = this.props.role.role_name;
 
     this.handList(role_name, page_index);
   }
@@ -54,7 +54,7 @@ class RoleIndex extends Component {
         page_size: this.props.role.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
+        for (var i = 0; i < json.data.length; i++) {
           json.data[i].key = json.data[i].role_id;
         }
 

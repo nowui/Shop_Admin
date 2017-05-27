@@ -25,14 +25,14 @@ class SupplierIndex extends Component {
   }
 
   handleSearch() {
-    let supplier_name = this.props.form.getFieldValue('supplier_name');
-    let page_index = 1;
+    var supplier_name = this.props.form.getFieldValue('supplier_name');
+    var page_index = 1;
 
     this.handleList(supplier_name, page_index);
   }
 
   handleLoad(page_index) {
-    let supplier_name = this.props.supplier.supplier_name;
+    var supplier_name = this.props.supplier.supplier_name;
 
     this.handleList(supplier_name, page_index);
   }
@@ -52,7 +52,7 @@ class SupplierIndex extends Component {
         page_size: this.props.supplier.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
+        for (var i = 0; i < json.data.length; i++) {
           json.data[i].key = json.data[i].supplier_id;
         }
 

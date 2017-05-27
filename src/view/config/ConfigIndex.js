@@ -27,14 +27,14 @@ class ConfigIndex extends Component {
   }
 
   handleSearch() {
-    let config_name = this.props.form.getFieldValue('config_name');
-    let page_index = 1;
+    var config_name = this.props.form.getFieldValue('config_name');
+    var page_index = 1;
 
     this.handleList(config_name, page_index);
   }
 
   handleLoad(page_index) {
-    let config_name = this.props.config.config_name;
+    var config_name = this.props.config.config_name;
 
     this.handleList(config_name, page_index);
   }
@@ -54,7 +54,7 @@ class ConfigIndex extends Component {
         page_size: this.props.config.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
+        for (var i = 0; i < json.data.length; i++) {
           json.data[i].key = json.data[i].config_id;
         }
 

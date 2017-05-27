@@ -52,7 +52,7 @@ class OrderDetail extends Component {
           order_amount: json.data.order_amount
         });
 
-        for (let i = 0; i < json.data.product_list.length; i++) {
+        for (var i = 0; i < json.data.product_list.length; i++) {
           json.data.product_list[i].order_product_commission = JSON.parse(json.data.product_list[i].order_product_commission);
         }
 

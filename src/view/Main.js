@@ -70,7 +70,7 @@ class Main extends Component {
     const latestOpenKey = openKeys.find(key => !(state.openKeys.indexOf(key) > -1));
     const latestCloseKey = state.openKeys.find(key => !(openKeys.indexOf(key) > -1));
 
-    let nextOpenKeys = [];
+    var nextOpenKeys = [];
     if (latestOpenKey) {
       nextOpenKeys = this.getAncestorKeys(latestOpenKey).concat(latestOpenKey);
     }

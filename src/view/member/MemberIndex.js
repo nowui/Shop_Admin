@@ -46,14 +46,14 @@ class MemberIndex extends Component {
   }
 
   handleSearch() {
-    let member_name = this.props.form.getFieldValue('member_name');
-    let page_index = 1;
+    var member_name = this.props.form.getFieldValue('member_name');
+    var page_index = 1;
 
     this.handleList(member_name, page_index);
   }
 
   handleLoad(page_index) {
-    let member_name = this.props.member.member_name;
+    var member_name = this.props.member.member_name;
 
     this.handleList(member_name, page_index);
   }
@@ -73,7 +73,7 @@ class MemberIndex extends Component {
         page_size: this.props.member.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
+        for (var i = 0; i < json.data.length; i++) {
           json.data[i].key = json.data[i].member_id;
         }
 

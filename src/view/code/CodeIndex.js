@@ -115,7 +115,7 @@ class CodeIndex extends Component {
   }
 
   handleUpdate(table_name) {
-    let name_space = this.props.form.getFieldValue('name_space');
+    var name_space = this.props.form.getFieldValue('name_space');
 
     this.setState({
       is_load: true

@@ -44,7 +44,7 @@ class MemberTreeIndex extends Component {
   }
 
   handleSearch() {
-    let page_index = 1;
+    var page_index = 1;
 
     this.handleList(page_index);
   }
@@ -66,7 +66,7 @@ class MemberTreeIndex extends Component {
 
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
+        for (var i = 0; i < json.data.length; i++) {
           json.data[i].key = json.data[i].member_id;
         }
 

@@ -27,14 +27,14 @@ class LogIndex extends Component {
   }
 
   handleSearch() {
-    let log_url = this.props.form.getFieldValue('log_url');
-    let page_index = 1;
+    var log_url = this.props.form.getFieldValue('log_url');
+    var page_index = 1;
 
     this.handleList(log_url, page_index);
   }
 
   handleLoad(page_index) {
-    let log_url = this.props.log.log_url;
+    var log_url = this.props.log.log_url;
 
     this.handleList(log_url, page_index);
   }
@@ -54,7 +54,7 @@ class LogIndex extends Component {
         page_size: this.props.log.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
+        for (var i = 0; i < json.data.length; i++) {
           json.data[i].key = json.data[i].log_id;
         }
 

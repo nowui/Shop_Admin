@@ -27,14 +27,14 @@ class ResourceIndex extends Component {
   }
 
   handleSearch() {
-    let resource_name = this.props.form.getFieldValue('resource_name');
-    let page_index = 1;
+    var resource_name = this.props.form.getFieldValue('resource_name');
+    var page_index = 1;
 
     this.handleList(resource_name, page_index);
   }
 
   handleLoad(page_index) {
-    let resource_name = this.props.resource.resource_name;
+    var resource_name = this.props.resource.resource_name;
 
     this.handleList(resource_name, page_index);
   }
@@ -54,7 +54,7 @@ class ResourceIndex extends Component {
         page_size: this.props.resource.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
+        for (var i = 0; i < json.data.length; i++) {
           json.data[i].key = json.data[i].resource_id;
         }
 

@@ -25,14 +25,14 @@ class MemberLevelIndex extends Component {
   }
 
   handleSearch() {
-    let member_level_name = this.props.form.getFieldValue('member_level_name');
-    let page_index = 1;
+    var member_level_name = this.props.form.getFieldValue('member_level_name');
+    var page_index = 1;
 
     this.handleList(member_level_name, page_index);
   }
 
   handleLoad(page_index) {
-    let member_level_name = this.props.member_level.member_level_name;
+    var member_level_name = this.props.member_level.member_level_name;
 
     this.handleList(member_level_name, page_index);
   }
@@ -52,7 +52,7 @@ class MemberLevelIndex extends Component {
         page_size: this.props.member_level.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
+        for (var i = 0; i < json.data.length; i++) {
           json.data[i].key = json.data[i].member_level_id;
         }
 

@@ -53,8 +53,8 @@ export default {
   platform: 'Admin',
   version: '1.0.0',
   getOrderFlow: function (value) {
-    let label = '';
-    for (let i = 0; i < this.order_flow.length; i++) {
+    var label = '';
+    for (var i = 0; i < this.order_flow.length; i++) {
       if (value == this.order_flow[i].value) {
         label = this.order_flow[i].label;
       }

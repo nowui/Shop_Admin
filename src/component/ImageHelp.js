@@ -60,9 +60,9 @@ class ImageHelp extends Component {
         page_size: this.state.page_size
       },
       success: function (json) {
-        let list = [];
+        var list = [];
 
-        for (let i = 0; i < json.data.length; i++) {
+        for (var i = 0; i < json.data.length; i++) {
           list.push({
             file_id: json.data[i].file_id,
             file_path: json.data[i].file_path,
@@ -84,7 +84,7 @@ class ImageHelp extends Component {
   }
 
   handleBeforeUpload(file) {
-    let result = true;
+    var result = true;
 
     if (file.type == 'image/jpeg' || file.type == 'image/jpg' || file.type == 'image/png') {
 
@@ -104,10 +104,10 @@ class ImageHelp extends Component {
   }
 
   handleCancel() {
-    let list = [];
+    var list = [];
 
-    for (let i = 0; i < this.state.list.length; i++) {
-      let item = this.state.list[i];
+    for (var i = 0; i < this.state.list.length; i++) {
+      var item = this.state.list[i];
 
       list.push({
         file_id: item.file_id,
@@ -130,8 +130,8 @@ class ImageHelp extends Component {
   }
 
   handlePreview(file_id) {
-    let file_path = '';
-    for (let i = 0; i < this.state.list.length; i++) {
+    var file_path = '';
+    for (var i = 0; i < this.state.list.length; i++) {
       if (this.state.list[i].file_id == file_id) {
         file_path = this.state.list[i].file_path;
       }
@@ -144,10 +144,10 @@ class ImageHelp extends Component {
   }
 
   handleClick(file_id) {
-    let list = [];
+    var list = [];
 
-    for (let i = 0; i < this.state.list.length; i++) {
-      let item = this.state.list[i];
+    for (var i = 0; i < this.state.list.length; i++) {
+      var item = this.state.list[i];
 
       if (item.file_id == file_id) {
         item.select = !item.select;
@@ -167,10 +167,10 @@ class ImageHelp extends Component {
   }
 
   handleMouseOver(file_id) {
-    let list = [];
+    var list = [];
 
-    for (let i = 0; i < this.state.list.length; i++) {
-      let item = this.state.list[i];
+    for (var i = 0; i < this.state.list.length; i++) {
+      var item = this.state.list[i];
 
       list.push({
         file_id: item.file_id,
@@ -186,10 +186,10 @@ class ImageHelp extends Component {
   }
 
   handleMouseOut(file_id) {
-    let list = [];
+    var list = [];
 
-    for (let i = 0; i < this.state.list.length; i++) {
-      let item = this.state.list[i];
+    for (var i = 0; i < this.state.list.length; i++) {
+      var item = this.state.list[i];
 
       list.push({
         file_id: item.file_id,
@@ -205,12 +205,12 @@ class ImageHelp extends Component {
   }
 
   handleSubmit() {
-    let list = [];
+    var list = [];
 
-    let index = 0;
+    var index = 0;
 
-    for (let i = 0; i < this.state.list.length; i++) {
-      let item = this.state.list[i];
+    for (var i = 0; i < this.state.list.length; i++) {
+      var item = this.state.list[i];
 
       if (item.select) {
         if (index < this.props.limit || this.props.limit == 0) {

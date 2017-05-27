@@ -27,14 +27,14 @@ class DistributorIndex extends Component {
   }
 
   handleSearch() {
-    let distributor_name = this.props.form.getFieldValue('distributor_name');
-    let page_index = 1;
+    var distributor_name = this.props.form.getFieldValue('distributor_name');
+    var page_index = 1;
 
     this.handleList(distributor_name, page_index);
   }
 
   handleLoad(page_index) {
-    let distributor_name = this.props.distributor.distributor_name;
+    var distributor_name = this.props.distributor.distributor_name;
 
     this.handleList(distributor_name, page_index);
   }
@@ -54,7 +54,7 @@ class DistributorIndex extends Component {
         page_size: this.props.distributor.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
+        for (var i = 0; i < json.data.length; i++) {
           json.data[i].key = json.data[i].distributor_id;
         }
 

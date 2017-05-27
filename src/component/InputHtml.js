@@ -19,9 +19,9 @@ class InputHtml extends Component {
 
   componentDidMount() {
     notification.on('notification_image_help_' + this.props.name + '_Submit', this, function (data) {
-      let html = '';
+      var html = '';
 
-      for (let i = 0; i < data.length; i++) {
+      for (var i = 0; i < data.length; i++) {
         html += '<img src="' + constant.host + data[i].file_path + '" />';
       }
 
@@ -48,9 +48,9 @@ class InputHtml extends Component {
   }
 
   handleSubmitReturn(list) {
-    let html = '';
+    var html = '';
 
-    for (let i = 0; i < list.length; i++) {
+    for (var i = 0; i < list.length; i++) {
       html += '<img src="' + constant.host + list[i].file_path + '" />';
     }
 

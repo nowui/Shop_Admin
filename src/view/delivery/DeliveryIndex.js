@@ -27,14 +27,14 @@ class DeliveryIndex extends Component {
   }
 
   handleSearch() {
-    let delivery_name = this.props.form.getFieldValue('delivery_name');
-    let page_index = 1;
+    var delivery_name = this.props.form.getFieldValue('delivery_name');
+    var page_index = 1;
 
     this.handleList(delivery_name, page_index);
   }
 
   handleLoad(page_index) {
-    let delivery_name = this.props.delivery.delivery_name;
+    var delivery_name = this.props.delivery.delivery_name;
 
     this.handleList(delivery_name, page_index);
   }
@@ -54,7 +54,7 @@ class DeliveryIndex extends Component {
         page_size: this.props.delivery.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
+        for (var i = 0; i < json.data.length; i++) {
           json.data[i].key = json.data[i].delivery_id;
         }
 

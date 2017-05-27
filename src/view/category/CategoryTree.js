@@ -58,7 +58,7 @@ class CategoryTree extends Component {
         category_id: this.state.category_id
       },
       success: function (json) {
-        let expandedRowKeys = this.checkList(json.data.children);
+        var expandedRowKeys = this.checkList(json.data.children);
 
         this.setState({
           category_id: json.data.category_id,
@@ -77,7 +77,7 @@ class CategoryTree extends Component {
   }
 
   setFieldsValue(data) {
-    let expandedRowKeys = this.checkList(data.children);
+    var expandedRowKeys = this.checkList(data.children);
 
     this.setState({
       category_id: data.category_id,
@@ -88,9 +88,9 @@ class CategoryTree extends Component {
   }
 
   checkList(list) {
-    let expandedRowKeys = [];
+    var expandedRowKeys = [];
 
-    for (let i = 0; i < list.length; i++) {
+    for (var i = 0; i < list.length; i++) {
       expandedRowKeys.push(list[i].category_id);
 
       if (list[i].children) {
@@ -102,14 +102,14 @@ class CategoryTree extends Component {
   }
 
   handleExpand(expanded, record) {
-    let array = this.state.expandedRowKeys;
+    var array = this.state.expandedRowKeys;
 
     if (expanded) {
       array.push(record.category_id);
     } else {
-      let index = -1;
+      var index = -1;
 
-      for (let i = 0; i < array.length; i++) {
+      for (var i = 0; i < array.length; i++) {
         if (record.category_id == array[i]) {
           index = i;
 

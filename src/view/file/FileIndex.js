@@ -27,14 +27,14 @@ class FileIndex extends Component {
   }
 
   handleSearch() {
-    let file_name = this.props.form.getFieldValue('file_name');
-    let page_index = 1;
+    var file_name = this.props.form.getFieldValue('file_name');
+    var page_index = 1;
 
     this.handleList(file_name, page_index);
   }
 
   handleLoad(page_index) {
-    let file_name = this.props.file.file_name;
+    var file_name = this.props.file.file_name;
 
     this.handleList(file_name, page_index);
   }
@@ -54,7 +54,7 @@ class FileIndex extends Component {
         page_size: this.props.file.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
+        for (var i = 0; i < json.data.length; i++) {
           json.data[i].key = json.data[i].file_id;
         }
 
