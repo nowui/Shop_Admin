@@ -4,6 +4,7 @@ import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, message} from 'antd';
 
 import constant from '../../util/constant';
+import notification from '../../util/notification';
 import request from '../../util/request';
 import style from '../style.css';
 
@@ -12,88 +13,113 @@ class CodeIndex extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false
+    }
   }
 
   componentDidMount() {
-    this.props.form.setFieldsValue(this.props.code);
+    this.props.form.setFieldsValue({
+      name_space: this.props.code.name_space
+    });
 
-    this.handleSearch();
+    this.handleLoad();
+
+    notification.on('notification_code_index_load', this, function (data) {
+      this.handleLoad();
+    });
   }
 
   componentWillUnmount() {
-      }
+    notification.remove('notification_code_index_load', this);
+  }
 
   handleSearch() {
-    let page_index = 1;
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'code/fetch',
+        data: {
+          code_name: this.props.form.getFieldValue('code_name'),
+          page_index: 1
+        }
+      });
 
-    this.handList(page_index);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
-  handLoad(page_index) {
-    this.handList(page_index);
-  }
-
-  handList(page_index) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+  handleLoad() {
+    this.setState({
+      is_load: true
+    });
 
     request.post({
-      url: '/code/list',
+      url: '/code/admin/list',
       data: {
-        page_index: page_index,
+        code_name: this.props.code.code_name,
+        page_index: this.props.code.page_index,
         page_size: this.props.code.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].table_name;
-        }
-
         this.props.dispatch({
           type: 'code/fetch',
           data: {
             total: json.total,
-            list: json.data,
-            page_index: page_index
+            list: json.data
           }
         });
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
     });
   }
 
-  handSave() {
-    this.props.dispatch({
-      type: 'code/fetch',
-      data: {
-        is_modal: true,
-        action: 'save'
-      }
-    });
+  handleChangeIndex(page_index) {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'code/fetch',
+        data: {
+          page_index: page_index
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
-  handUpdate(table_name) {
+  handleChangeSize(page_index, page_size) {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'code/fetch',
+        data: {
+          page_index: page_index,
+          page_size: page_size
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
+  }
+
+  handleSave() {
+    notification.emit('notification_code_detail_save', {});
+  }
+
+  handleUpdate(table_name) {
     let name_space = this.props.form.getFieldValue('name_space');
 
-    this.props.dispatch({
-      type: 'code/fetch',
-      data: {
-        name_space: name_space
-      }
+    this.setState({
+      is_load: true
     });
-
-    if (this.handleStart({
-        is_load: true,
-        is_modal: true,
-        action: 'update'
-      })) {
-      return;
-    }
 
     request.post({
       url: '/code/save',
@@ -105,17 +131,17 @@ class CodeIndex extends Component {
         message.success(constant.success);
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
     });
   }
 
   handleDelete(code_id) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+    this.setState({
+      is_load: true
+    });
 
     request.post({
       url: '/code/delete',
@@ -125,89 +151,14 @@ class CodeIndex extends Component {
       success: function (json) {
         message.success(constant.success);
 
-        setTimeout(function () {
-          this.handLoad(this.props.code.page_index);
-        }.bind(this), constant.timeout);
+        this.handleLoad();
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
     });
-  }
-
-  handleSubmit(data) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    if (this.props.code.action == 'update') {
-      data.code_id = this.props.code.code_id;
-    }
-
-    request.post({
-      url: '/code/' + this.props.code.action,
-      data: data,
-      success: function (json) {
-        message.success(constant.success);
-
-        this.handleCancel();
-
-        setTimeout(function () {
-          this.handLoad(this.props.code.page_index);
-        }.bind(this), constant.timeout);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    });
-  }
-
-  handleCancel() {
-    this.props.dispatch({
-      type: 'code/fetch',
-      data: {
-        is_modal: false
-      }
-    });
-
-    this.refs.detail.resetFields();
-  }
-
-  handleStart(data) {
-    if (this.props.code.is_load) {
-      return true;
-    }
-
-    this.props.dispatch({
-      type: 'code/fetch',
-      data: data
-    });
-
-    return false;
-  }
-
-  handleFinish() {
-    this.props.dispatch({
-      type: 'code/fetch',
-      data: {
-        is_load: false
-      }
-    });
-  }
-
-  handleChangeSize(page_index, page_size) {
-    this.props.dispatch({
-      type: 'code/fetch',
-      data: {
-        page_size: page_size
-      }
-    });
-
-    setTimeout(function () {
-      this.handLoad(page_index);
-    }.bind(this), constant.timeout);
   }
 
   render() {
@@ -223,7 +174,7 @@ class CodeIndex extends Component {
       dataIndex: '',
       render: (text, record, index) => (
         <span>
-          <a onClick={this.handUpdate.bind(this, record.table_name)}>执行</a>
+          <a onClick={this.handleUpdate.bind(this, record.table_name)}>执行</a>
         </span>
       )
     }];
@@ -238,7 +189,7 @@ class CodeIndex extends Component {
       pageSize: this.props.code.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
-      onChange: this.handLoad.bind(this)
+      onChange: this.handleChangeIndex.bind(this)
     };
 
     return (
@@ -249,11 +200,9 @@ class CodeIndex extends Component {
               <div className={style.layoutContentHeaderTitle}>代码生成</div>
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
-              <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
-                      loading={this.props.code.is_load}
+              <Button type="primary" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
+                      loading={this.state.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
-              <Button type="primary" icon="plus-circle" size="default"
-                      onClick={this.handSave.bind(this)}>{constant.save}</Button>
             </Col>
           </Row>
           <Form className={style.layoutContentHeaderSearch}>
@@ -275,8 +224,9 @@ class CodeIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
-                 loading={this.props.code.is_load && !this.props.code.is_detail} columns={columns}
+          <Table rowKey="table_name"
+                 className={style.layoutContentHeaderTable}
+                 loading={this.state.is_load} columns={columns}
                  dataSource={this.props.code.list} pagination={pagination}
                  bordered/>
         </div>
@@ -290,5 +240,5 @@ CodeIndex.propTypes = {};
 CodeIndex = Form.create({})(CodeIndex);
 
 export default connect(({code}) => ({
-  code,
+  code
 }))(CodeIndex);

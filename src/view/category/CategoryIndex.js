@@ -112,12 +112,16 @@ class CategoryIndex extends Component {
     }.bind(this));
   }
 
-  handleSave(parent_id) {
-    notification.emit('notification_category_detail_save', {});
+  handleSave() {
+    notification.emit('notification_category_detail_save', {
+      is_tree: false,
+      parent_id: ''
+    });
   }
 
   handleUpdate(category_id) {
     notification.emit('notification_category_detail_update', {
+      is_tree: false,
       category_id: category_id
     });
   }

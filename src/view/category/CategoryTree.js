@@ -3,6 +3,8 @@ import {connect} from 'dva';
 import {Modal, Row, Col, Button, Table, Popconfirm, message} from 'antd';
 
 import constant from '../../util/constant';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
 class CategoryTree extends Component {
@@ -10,6 +12,8 @@ class CategoryTree extends Component {
     super(props);
 
     this.state = {
+      is_load: false,
+      is_show: false,
       category_id: '',
       category_name: '',
       children: [],
@@ -18,11 +22,58 @@ class CategoryTree extends Component {
   }
 
   componentDidMount() {
+    notification.on('notification_category_tree_update', this, function (data) {
+      new Promise(function (resolve, reject) {
+        this.setState({
+          is_show: true,
+          action: 'update',
+          category_id: data.category_id
+        });
 
+        resolve();
+      }.bind(this)).then(function () {
+        this.handleLoad();
+      }.bind(this));
+    });
+
+    notification.on('notification_category_tree_load', this, function (data) {
+      this.handleLoad();
+    });
   }
 
   componentWillUnmount() {
+    notification.remove('notification_category_tree_update', this);
 
+    notification.remove('notification_category_tree_load', this);
+  }
+
+  handleLoad() {
+    this.setState({
+      is_load: true
+    });
+
+    request.post({
+      url: '/category/admin/tree/list',
+      data: {
+        category_id: this.state.category_id
+      },
+      success: function (json) {
+        let expandedRowKeys = this.checkList(json.data.children);
+
+        this.setState({
+          category_id: json.data.category_id,
+          category_name: json.data.category_name,
+          children: json.data.children,
+          expandedRowKeys: expandedRowKeys
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+
+      }.bind(this)
+    });
   }
 
   setFieldsValue(data) {
@@ -75,30 +126,46 @@ class CategoryTree extends Component {
   }
 
   handleSave(parent_id) {
-    this.props.handleSave(parent_id);
+    notification.emit('notification_category_detail_save', {
+      is_tree: true,
+      parent_id: parent_id
+    });
   }
 
   handleUpdate(category_id) {
-    this.props.handleUpdate(category_id);
+    notification.emit('notification_category_detail_update', {
+      is_tree: true,
+      category_id: category_id
+    });
   }
 
   handleDelete(category_id) {
-    this.props.handleDelete(category_id);
+    this.setState({
+      is_load: true
+    });
+
+    request.post({
+      url: '/category/delete',
+      data: {
+        category_id: category_id
+      },
+      success: function (json) {
+        message.success(constant.success);
+
+        this.handleLoad();
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+      }.bind(this)
+    });
   }
 
   handleCancel() {
-    this.props.handleCancel();
-  }
-
-  handleReset() {
-    setTimeout(function () {
-      this.setState({
-        category_id: '',
-        category_name: '',
-        children: [],
-        expandedRowKeys: []
-      });
-    }.bind(this), constant.timeout);
+    this.setState({
+      is_show: false
+    });
   }
 
   render() {
@@ -134,7 +201,7 @@ class CategoryTree extends Component {
 
     return (
       <Modal title={this.state.category_name} maskClosable={false} width={constant.detail_width} zIndex={1}
-             visible={this.props.is_tree} onCancel={this.handleCancel.bind(this)}
+             visible={this.state.is_show} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
                        onClick={this.handleCancel.bind(this)}>关闭</Button>
@@ -152,7 +219,7 @@ class CategoryTree extends Component {
         <Table className={style.layoutContentHeaderTable} expandedRowKeys={this.state.expandedRowKeys}
                onExpand={this.handleExpand.bind(this)} columns={columns} dataSource={this.state.children}
                pagination={false}
-               scroll={{y: constant.scrollModalHeight()}} bordered/>
+               bordered/>
       </Modal>
     );
   }

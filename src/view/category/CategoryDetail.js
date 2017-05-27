@@ -14,8 +14,10 @@ class CategoryDetail extends Component {
     this.state = {
       is_load: false,
       is_show: false,
+      is_tree: false,
       action: '',
-      category_id: ''
+      category_id: '',
+      parent_id: ''
     }
   }
 
@@ -23,18 +25,25 @@ class CategoryDetail extends Component {
     notification.on('notification_category_detail_save', this, function (data) {
       this.setState({
         is_show: true,
-        action: 'save'
+        is_tree: data.is_tree,
+        action: 'save',
+        parent_id: data.parent_id
       });
     });
 
     notification.on('notification_category_detail_update', this, function (data) {
-      this.setState({
-        is_show: true,
-        action: 'update',
-        category_id: data.category_id
-      });
+      new Promise(function (resolve, reject) {
+        this.setState({
+          is_show: true,
+          is_tree: data.is_tree,
+          action: 'update',
+          category_id: data.category_id
+        });
 
-      this.handleLoad(data.category_id);
+        resolve();
+      }.bind(this)).then(function () {
+        this.handleLoad();
+      }.bind(this));
     });
   }
 
@@ -44,7 +53,7 @@ class CategoryDetail extends Component {
     notification.remove('notification_category_detail_update', this);
   }
 
-  handleLoad(category_id) {
+  handleLoad() {
     this.setState({
       is_load: true
     });
@@ -52,7 +61,7 @@ class CategoryDetail extends Component {
     request.post({
       url: '/category/admin/find',
       data: {
-        category_id: category_id
+        category_id: this.state.category_id
       },
       success: function (json) {
         this.props.form.setFieldsValue({
@@ -80,6 +89,10 @@ class CategoryDetail extends Component {
 
       values.category_id = this.state.category_id;
 
+      if (this.state.action == 'save') {
+        values.parent_id = this.state.parent_id;
+      }
+
       request.post({
         url: '/category/' + this.state.action,
         data: values,
@@ -88,7 +101,11 @@ class CategoryDetail extends Component {
 
           this.handleCancel();
 
-          notification.emit('notification_category_index_load', {});
+          if (this.state.is_tree) {
+            notification.emit('notification_category_tree_load', {});
+          } else {
+            notification.emit('notification_category_index_load', {});
+          }
         }.bind(this),
         complete: function () {
 
