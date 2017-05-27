@@ -1,5 +1,6 @@
-import React, {Component, PropTypes} from 'react';
-import {Modal, Form, Spin, Button, Input, Checkbox, Select} from 'antd';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
+import {Modal, Form, Spin, Button, Input, Select} from 'antd';
 
 import constant from '../../util/constant';
 import style from '../style.css';
@@ -136,12 +137,12 @@ class MemberTreeDetail extends Component {
 }
 
 MemberTreeDetail.propTypes = {
-  is_load: React.PropTypes.bool.isRequired,
-  is_detail: React.PropTypes.bool.isRequired,
-  action: React.PropTypes.string.isRequired,
-  member_level_list: React.PropTypes.array.isRequired,
-  handleSubmit: React.PropTypes.func.isRequired,
-  handleCancel: React.PropTypes.func.isRequired
+  is_load: PropTypes.bool.isRequired,
+  is_detail: PropTypes.bool.isRequired,
+  action: PropTypes.string.isRequired,
+  member_level_list: PropTypes.array.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  handleCancel: PropTypes.func.isRequired
 };
 
 MemberTreeDetail = Form.create({

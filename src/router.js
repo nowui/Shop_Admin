@@ -14,19 +14,18 @@ import ResourceIndex from './view/resource/ResourceIndex';
 import FileIndex from './view/file/FileIndex';
 
 import BrandIndex from './view/brand/BrandIndex';
-import ProductVideoIndex from './view/product/ProductVideoIndex';
 import ProductIndex from './view/product/ProductIndex';
 import DeliveryIndex from './view/delivery/DeliveryIndex';
 import MemberIndex from './view/member/MemberIndex';
 import MemberTreeIndex from './view/member/MemberTreeIndex';
 import MemberLevelIndex from './view/member/MemberLevelIndex';
 import OrderIndex from './view/order/OrderIndex';
-import OrderVideoIndex from './view/order/OrderVideoIndex';
 import DistributorIndex from './view/distributor/DistributorIndex';
 import SupplierIndex from './view/supplier/SupplierIndex';
 import SceneIndex from './view/scene/SceneIndex';
 import BillIndex from './view/bill/BillIndex';
 import CartIndex from './view/cart/CartIndex';
+import ExpressIndex from './view/express/ExpressIndex';
 
 import ArticleIndex from './view/article/ArticleIndex';
 
@@ -62,18 +61,17 @@ function RouterConfig({history}) {
 
           <Route path="brand/index" component={BrandIndex}/>
           <Route path="product/index" component={ProductIndex}/>
-          <Route path="product/video/index" component={ProductVideoIndex}/>
           <Route path="delivery/index" component={DeliveryIndex}/>
           <Route path="member/index" component={MemberIndex}/>
           <Route path="member/tree/index" component={MemberTreeIndex}/>
           <Route path="member/level/index" component={MemberLevelIndex}/>
           <Route path="order/index" component={OrderIndex}/>
-          <Route path="order/video/index" component={OrderVideoIndex}/>
           <Route path="distributor/index" component={DistributorIndex}/>
           <Route path="supplier/index" component={SupplierIndex}/>
           <Route path="scene/index" component={SceneIndex}/>
           <Route path="bill/index" component={BillIndex}/>
           <Route path="cart/index" component={CartIndex}/>
+          <Route path="express/index" component={ExpressIndex}/>
 
           <Route path="article/index" component={ArticleIndex}/>
         </Route>

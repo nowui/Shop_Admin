@@ -1,39 +1,87 @@
-import React, {Component, PropTypes} from 'react';
-import {Modal, Form, Row, Col, Spin, Button, Input} from 'antd';
+import React, {Component} from 'react';
+import {connect} from 'dva';
+import {Modal, Form, Spin, Button, Input, message} from 'antd';
 
 import constant from '../../util/constant';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
 class AuthorizationDetail extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false,
+      is_show: false,
+      action: '',
+      authorization_id: ''
+    }
   }
 
   componentDidMount() {
+    notification.on('notification_authorization_detail_save', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'save'
+      });
+    });
 
-  }
+    notification.on('notification_authorization_detail_update', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'update',
+        authorization_id: data.authorization_id
+      });
 
-  componentWillUnmount() {
-
-  }
-
-  handleSubmit() {
-    this.props.form.validateFieldsAndScroll((errors, values) => {
-      if (!!errors) {
-        return;
-      }
-
-      this.props.handleSubmit(values);
+      this.handleLoad(data.authorization_id);
     });
   }
 
-  handleCancel() {
-    this.props.handleCancel();
+  componentWillUnmount() {
+    notification.remove('notification_authorization_detail_save', this);
+
+    notification.remove('notification_authorization_detail_update', this);
   }
 
-  handleReset() {
+  handleLoad(authorization_id) {
+    this.setState({
+      is_load: true
+    });
+
+    request.post({
+      url: '/authorization/admin/find',
+      data: {
+        authorization_id: authorization_id
+      },
+      success: function (json) {
+        this.props.form.setFieldsValue({
+          authorization_token: json.data.authorization_token,
+          authorization_platform: json.data.authorization_platform,
+          authorization_version: json.data.authorization_version,
+          authorization_ip_address: json.data.authorization_ip_address,
+          authorization_create_time: json.data.authorization_create_time,
+          authorization_expire_time: json.data.authorization_expire_time
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+
+      }.bind(this)
+    });
+  }
+
+  handleSubmit() {
+    this.handleCancel();
+  }
+
+  handleCancel() {
+    this.setState({
+      is_show: false
+    });
+
     this.props.form.resetFields();
   }
 
@@ -43,7 +91,7 @@ class AuthorizationDetail extends Component {
 
     return (
       <Modal title={'授权表单'} maskClosable={false} width={constant.detail_width}
-             visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
+             visible={this.state.is_show} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
                        onClick={this.handleCancel.bind(this)}>关闭</Button>,
@@ -52,106 +100,103 @@ class AuthorizationDetail extends Component {
                        onClick={this.handleSubmit.bind(this)}>确定</Button>
              ]}
       >
-        <Spin spinning={this.props.is_load}>
-          <FormItem {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="授权Token">
-            {
-              getFieldDecorator('authorization_token', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="textarea" placeholder={constant.placeholder + '授权Token'} rows={8}/>
-              )
-            }
-          </FormItem>
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="平台">
-            {
-              getFieldDecorator('authorization_platform', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '平台'}/>
-              )
-            }
-          </FormItem>
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="版本">
-            {
-              getFieldDecorator('authorization_version', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '版本'}/>
-              )
-            }
-          </FormItem>
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="IP地址">
-            {
-              getFieldDecorator('authorization_ip_address', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + 'IP地址'}/>
-              )
-            }
-          </FormItem>
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="创建时间">
-            {
-              getFieldDecorator('authorization_create_time', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '创建时间'}/>
-              )
-            }
-          </FormItem>
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="失效时间">
-            {
-              getFieldDecorator('authorization_expire_time', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '失效时间'}/>
-              )
-            }
-          </FormItem>
+        <Spin spinning={this.state.is_load}>
+          <form>
+            <FormItem {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="授权Token">
+              {
+                getFieldDecorator('authorization_token', {
+                  rules: [{
+                    required: true,
+                    message: constant.required
+                  }],
+                  initialValue: ''
+                })(
+                  <Input type="textarea" placeholder={constant.placeholder + '授权Token'} rows={8}/>
+                )
+              }
+            </FormItem>
+            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="平台">
+              {
+                getFieldDecorator('authorization_platform', {
+                  rules: [{
+                    required: true,
+                    message: constant.required
+                  }],
+                  initialValue: ''
+                })(
+                  <Input type="text" placeholder={constant.placeholder + '平台'}/>
+                )
+              }
+            </FormItem>
+            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="版本">
+              {
+                getFieldDecorator('authorization_version', {
+                  rules: [{
+                    required: true,
+                    message: constant.required
+                  }],
+                  initialValue: ''
+                })(
+                  <Input type="text" placeholder={constant.placeholder + '版本'}/>
+                )
+              }
+            </FormItem>
+            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="IP地址">
+              {
+                getFieldDecorator('authorization_ip_address', {
+                  rules: [{
+                    required: true,
+                    message: constant.required
+                  }],
+                  initialValue: ''
+                })(
+                  <Input type="text" placeholder={constant.placeholder + 'IP地址'}/>
+                )
+              }
+            </FormItem>
+            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="创建时间">
+              {
+                getFieldDecorator('authorization_create_time', {
+                  rules: [{
+                    required: true,
+                    message: constant.required
+                  }],
+                  initialValue: ''
+                })(
+                  <Input type="text" placeholder={constant.placeholder + '创建时间'}/>
+                )
+              }
+            </FormItem>
+            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="失效时间">
+              {
+                getFieldDecorator('authorization_expire_time', {
+                  rules: [{
+                    required: true,
+                    message: constant.required
+                  }],
+                  initialValue: ''
+                })(
+                  <Input type="text" placeholder={constant.placeholder + '失效时间'}/>
+                )
+              }
+            </FormItem>
+          </form>
         </Spin>
       </Modal>
     );
   }
 }
 
-AuthorizationDetail.propTypes = {
-  is_load: React.PropTypes.bool.isRequired,
-  is_detail: React.PropTypes.bool.isRequired,
-  handleSubmit: React.PropTypes.func.isRequired,
-  handleCancel: React.PropTypes.func.isRequired
-};
+AuthorizationDetail.propTypes = {};
 
-AuthorizationDetail = Form.create({
-  withRef: true
-})(AuthorizationDetail);
+AuthorizationDetail = Form.create({})(AuthorizationDetail);
 
-export default AuthorizationDetail;
+export default connect(({authorization}) => ({
+  authorization
+}))(AuthorizationDetail);

@@ -1,133 +1,132 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import BillDetail from './BillDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class BillIndex extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false
+    }
   }
 
   componentDidMount() {
-    this.handleSearch();
+    this.props.form.setFieldsValue({
+      bill_name: this.props.bill.bill_name
+    });
+
+    this.handleLoad();
+
+    notification.on('notification_bill_index_load', this, function (data) {
+      this.handleLoad();
+    });
   }
 
   componentWillUnmount() {
-    this.handleReset();
+    notification.remove('notification_bill_index_load', this);
   }
 
   handleSearch() {
-    let bill_name = this.props.form.getFieldValue('bill_name');
-    let page_index = 1;
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'bill/fetch',
+        data: {
+          bill_name: this.props.form.getFieldValue('bill_name'),
+          page_index: 1
+        }
+      });
 
-    this.handleList(bill_name, page_index);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
-  handleLoad(page_index) {
-    let bill_name = this.props.bill.bill_name;
+  handleLoad() {
+    this.setState({
+      is_load: true
+    });
 
-    this.handleList(bill_name, page_index);
-  }
-
-  handleList(bill_name, page_index) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    request = http({
+    request.post({
       url: '/bill/admin/list',
       data: {
-        bill_name: bill_name,
-        page_index: page_index,
+        bill_name: this.props.bill.bill_name,
+        page_index: this.props.bill.page_index,
         page_size: this.props.bill.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].bill_id;
-        }
-
         this.props.dispatch({
           type: 'bill/fetch',
           data: {
-            bill_name: bill_name,
             total: json.total,
-            list: json.data,
-            page_index: page_index
+            list: json.data
           }
         });
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    }).post();
+    });
+  }
+
+  handleChangeIndex(page_index) {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'bill/fetch',
+        data: {
+          page_index: page_index
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleChangeSize(page_index, page_size) {
-    this.props.dispatch({
-      type: 'bill/fetch',
-      data: {
-        page_size: page_size
-      }
-    });
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'bill/fetch',
+        data: {
+          page_index: page_index,
+          page_size: page_size
+        }
+      });
 
-    setTimeout(function () {
-      this.handleLoad(page_index);
-    }.bind(this), constant.timeout);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleSave() {
-    this.props.dispatch({
-      type: 'bill/fetch',
-      data: {
-        is_detail: true,
-        action: 'save'
-      }
-    });
+    notification.emit('notification_bill_detail_save', {});
   }
 
   handleUpdate(bill_id) {
-    if (this.handleStart({
-        is_load: true,
-        is_detail: true,
-        action: 'update',
-        bill_id: bill_id
-      })) {
-      return;
-    }
-
-    request = http({
-      url: '/bill/admin/find',
-      data: {
-        bill_id: bill_id
-      },
-      success: function (json) {
-        this.refs.detail.setFieldsValue(json.data);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    }).post();
+    notification.emit('notification_bill_detail_update', {
+      bill_id: bill_id
+    });
   }
 
   handleDelete(bill_id) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+    this.setState({
+      is_load: true
+    });
 
-    request = http({
+    request.post({
       url: '/bill/delete',
       data: {
         bill_id: bill_id
@@ -135,86 +134,13 @@ class BillIndex extends Component {
       success: function (json) {
         message.success(constant.success);
 
-        setTimeout(function () {
-            this.handleLoad(this.props.bill.page_index);
-        }.bind(this), constant.timeout);
+        this.handleLoad();
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    }).post();
-  }
-
-  handleSubmit(data) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    if (this.props.bill.action == 'update') {
-      data.bill_id = this.props.bill.bill_id;
-    }
-
-    request = http({
-      url: '/bill/' + this.props.bill.action,
-      data: data,
-      success: function (json) {
-        message.success(constant.success);
-
-        this.handleCancel();
-
-        setTimeout(function () {
-            this.handleLoad(this.props.bill.page_index);
-        }.bind(this), constant.timeout);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    }).post();
-  }
-
-  handleCancel() {
-    this.props.dispatch({
-      type: 'bill/fetch',
-      data: {
-        is_detail: false
-      }
-    });
-
-    this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleReset();
-  }
-
-  handleStart(data) {
-    if (this.props.bill.is_load) {
-      return true;
-    }
-
-    this.props.dispatch({
-      type: 'bill/fetch',
-      data: data
-    });
-
-    return false;
-  }
-
-  handleFinish() {
-    this.props.dispatch({
-      type: 'bill/fetch',
-      data: {
-        is_load: false
-      }
-    });
-  }
-
-  handleReset() {
-    request.cancel();
-
-    this.props.dispatch({
-      type: 'bill/fetch',
-      data: {
-        is_detail: false
-      }
     });
   }
 
@@ -231,12 +157,7 @@ class BillIndex extends Component {
       dataIndex: '',
       render: (text, record, index) => (
         <span>
-          <a onClick={this.handleUpdate.bind(this, record.bill_id)}>{constant.update}</a>
-          <span className={style.divider}/>
-          <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
-                      cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.bill_id)}>
-            <a>{constant.delete}</a>
-          </Popconfirm>
+          <a onClick={this.handleUpdate.bind(this, record.bill_id)}>{constant.find}</a>
         </span>
       )
     }];
@@ -251,7 +172,7 @@ class BillIndex extends Component {
       pageSize: this.props.bill.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
-      onChange: this.handleLoad.bind(this)
+      onChange: this.handleChangeIndex.bind(this)
     };
 
     return (
@@ -263,7 +184,7 @@ class BillIndex extends Component {
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
-                      loading={this.props.bill.is_load}
+                      loading={this.state.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
               {/*<Button type="primary" icon="plus-circle" size="default"*/}
                       {/*onClick={this.handleSave.bind(this)}>{constant.save}</Button>*/}
@@ -288,15 +209,12 @@ class BillIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
-                 loading={this.props.bill.is_load && !this.props.bill.is_detail} columns={columns}
-                 dataSource={this.props.bill.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+          <Table rowKey="bill_id"
+            className={style.layoutContentHeaderTable}
+                 loading={this.state.is_load} columns={columns}
+                 dataSource={this.props.bill.list} pagination={pagination}
                  bordered/>
-          <BillDetail is_load={this.props.bill.is_load}
-                      is_detail={this.props.bill.is_detail}
-                      handleSubmit={this.handleSubmit.bind(this)}
-                      handleCancel={this.handleCancel.bind(this)}
-                      ref="detail"/>
+          <BillDetail ref="detail"/>
         </div>
       </QueueAnim>
     );
@@ -308,5 +226,5 @@ BillIndex.propTypes = {};
 BillIndex = Form.create({})(BillIndex);
 
 export default connect(({bill}) => ({
-  bill,
+  bill
 }))(BillIndex);

@@ -1,12 +1,13 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {Modal, Button, message, Upload, Icon, Spin, Pagination} from 'antd';
 
 import constant from '../util/constant';
-import http from '../util/http';
 import database from '../util/database';
+import notification from '../util/notification';
+import request from '../util/request';
 import style from './ImageHelp.css';
 
-let request;
 
 class ImageHelp extends Component {
   constructor(props) {
@@ -14,7 +15,7 @@ class ImageHelp extends Component {
 
     this.state = {
       is_load: false,
-      is_visible: false,
+      is_show: false,
       is_preview: false,
       image: '',
       list: [],
@@ -25,18 +26,22 @@ class ImageHelp extends Component {
   }
 
   componentDidMount() {
+    notification.on('notification_image_help_' + this.props.name + '_show', this, function (data) {
+      this.setState({
+        is_show: true
+      });
 
+      this.handleLoad(1);
+    });
   }
 
   componentWillUnmount() {
-    if (typeof(request) != 'undefined') {
-      request.cancel();
-    }
+    notification.remove('notification_image_help_' + this.props.name + '_show', this);
   }
 
   handleOpen() {
     this.setState({
-      is_visible: true
+      is_show: true
     });
 
     // if (this.state.list.length > 0) {
@@ -47,7 +52,7 @@ class ImageHelp extends Component {
   }
 
   handleLoad(page_index) {
-    request = http({
+    request.post({
       url: '/file/admin/image/list',
       data: {
         file_name: '',
@@ -75,7 +80,7 @@ class ImageHelp extends Component {
       complete: function () {
 
       }.bind(this)
-    }).post();
+    });
   }
 
   handleBeforeUpload(file) {
@@ -113,7 +118,7 @@ class ImageHelp extends Component {
     }
 
     this.setState({
-      is_visible: false,
+      is_show: false,
       list: list
     });
   }
@@ -225,7 +230,7 @@ class ImageHelp extends Component {
       }
     }
 
-    this.props.handleSubmitReturn(list);
+    notification.emit('notification_image_help_' + this.props.name + '_Submit', list);
 
     this.handleCancel();
   }
@@ -272,7 +277,7 @@ class ImageHelp extends Component {
     };
 
     return (
-      <Modal title="我的图片" visible={this.state.is_visible} maskClosable={false} width={constant.detail_width}
+      <Modal title="我的图片" visible={this.state.is_show} maskClosable={false} width={constant.detail_width}
              onCancel={this.handleCancel.bind(this)}
              footer={[
                <div key="normal" style={{float: 'left', marginLeft: 10}}>
@@ -328,9 +333,9 @@ class ImageHelp extends Component {
 }
 
 ImageHelp.propTypes = {
-  type: React.PropTypes.string,
-  limit: React.PropTypes.number.isRequired,
-  handleSubmitReturn: React.PropTypes.func.isRequired
+  name: PropTypes.string.isRequired,
+  type: PropTypes.string,
+  limit: PropTypes.number.isRequired
 };
 
 ImageHelp.defaultProps = {

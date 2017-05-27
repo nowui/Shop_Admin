@@ -1,5 +1,6 @@
-import React, {Component, PropTypes} from 'react';
-import {Modal, Row, Col, Button, Table, Popconfirm} from 'antd';
+import React, {Component} from 'react';
+import {connect} from 'dva';
+import {Modal, Row, Col, Button, Table, Popconfirm, message} from 'antd';
 
 import constant from '../../util/constant';
 import style from '../style.css';
@@ -148,7 +149,7 @@ class CategoryTree extends Component {
                     onClick={this.handleSave.bind(this, this.state.category_id)}>{constant.save}</Button>
           </Col>
         </Row>
-        <Table size="middle" className={style.layoutContentHeaderTable} expandedRowKeys={this.state.expandedRowKeys}
+        <Table className={style.layoutContentHeaderTable} expandedRowKeys={this.state.expandedRowKeys}
                onExpand={this.handleExpand.bind(this)} columns={columns} dataSource={this.state.children}
                pagination={false}
                scroll={{y: constant.scrollModalHeight()}} bordered/>
@@ -158,12 +159,9 @@ class CategoryTree extends Component {
 }
 
 CategoryTree.propTypes = {
-  is_load: React.PropTypes.bool.isRequired,
-  is_tree: React.PropTypes.bool.isRequired,
-  handleSave: React.PropTypes.func.isRequired,
-  handleUpdate: React.PropTypes.func.isRequired,
-  handleDelete: React.PropTypes.func.isRequired,
-  handleCancel: React.PropTypes.func.isRequired
+
 };
 
-export default CategoryTree;
+export default connect(({categorye}) => ({
+  categorye
+}))(CategoryTree);

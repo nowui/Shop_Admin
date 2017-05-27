@@ -5,15 +5,11 @@ export default {
   namespace: 'admin',
 
   state: {
-    is_load: false,
-    is_detail: false,
-    action: '',
-    admin_id: '',
     admin_name: '',
-    list: [],
     total: 0,
     page_index: 1,
-    page_size: constant.page_size
+    page_size: constant.page_size,
+    list: []
   },
 
   reducers: {

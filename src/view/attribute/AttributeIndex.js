@@ -1,135 +1,132 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import AttributeDetail from './AttributeDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class AttributeIndex extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false
+    }
   }
 
   componentDidMount() {
-    this.props.form.setFieldsValue(this.props.attribute);
+    this.props.form.setFieldsValue({
+      attribute_name: this.props.attribute.attribute_name
+    });
 
-    this.handleSearch();
+    this.handleLoad();
+
+    notification.on('notification_attribute_index_load', this, function (data) {
+      this.handleLoad();
+    });
   }
 
   componentWillUnmount() {
-    this.handleReset();
+    notification.remove('notification_attribute_index_load', this);
   }
 
   handleSearch() {
-    let attribute_name = this.props.form.getFieldValue('attribute_name');
-    let page_index = 1;
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'attribute/fetch',
+        data: {
+          attribute_name: this.props.form.getFieldValue('attribute_name'),
+          page_index: 1
+        }
+      });
 
-    this.handleList(attribute_name, page_index);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
-  handleLoad(page_index) {
-    let attribute_name = this.props.attribute.attribute_name;
+  handleLoad() {
+    this.setState({
+      is_load: true
+    });
 
-    this.handleList(attribute_name, page_index);
-  }
-
-  handleList(attribute_name, page_index) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    request = http({
+    request.post({
       url: '/attribute/admin/list',
       data: {
-        attribute_name: attribute_name,
-        page_index: page_index,
+        attribute_name: this.props.attribute.attribute_name,
+        page_index: this.props.attribute.page_index,
         page_size: this.props.attribute.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].attribute_id;
-        }
-
         this.props.dispatch({
           type: 'attribute/fetch',
           data: {
-            attribute_name: attribute_name,
             total: json.total,
-            list: json.data,
-            page_index: page_index
+            list: json.data
           }
         });
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    }).post();
+    });
+  }
+
+  handleChangeIndex(page_index) {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'attribute/fetch',
+        data: {
+          page_index: page_index
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleChangeSize(page_index, page_size) {
-    this.props.dispatch({
-      type: 'attribute/fetch',
-      data: {
-        page_size: page_size
-      }
-    });
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'attribute/fetch',
+        data: {
+          page_index: page_index,
+          page_size: page_size
+        }
+      });
 
-    setTimeout(function () {
-      this.handleLoad(page_index);
-    }.bind(this), constant.timeout);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleSave() {
-    this.props.dispatch({
-      type: 'attribute/fetch',
-      data: {
-        is_detail: true,
-        action: 'save'
-      }
-    });
+    notification.emit('notification_attribute_detail_save', {});
   }
 
   handleUpdate(attribute_id) {
-    if (this.handleStart({
-        is_load: true,
-        is_detail: true,
-        action: 'update',
-        attribute_id: attribute_id
-      })) {
-      return;
-    }
-
-    request = http({
-      url: '/attribute/admin/find',
-      data: {
-        attribute_id: attribute_id
-      },
-      success: function (json) {
-        this.refs.detail.setFieldsValue(json.data);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    }).post();
+    notification.emit('notification_attribute_detail_update', {
+      attribute_id: attribute_id
+    });
   }
 
   handleDelete(attribute_id) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+    this.setState({
+      is_load: true
+    });
 
-    request = http({
+    request.post({
       url: '/attribute/delete',
       data: {
         attribute_id: attribute_id
@@ -137,86 +134,13 @@ class AttributeIndex extends Component {
       success: function (json) {
         message.success(constant.success);
 
-        setTimeout(function () {
-            this.handleLoad(this.props.attribute.page_index);
-        }.bind(this), constant.timeout);
+        this.handleLoad();
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    }).post();
-  }
-
-  handleSubmit(data) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    if (this.props.attribute.action == 'update') {
-      data.attribute_id = this.props.attribute.attribute_id;
-    }
-
-    request = http({
-      url: '/attribute/' + this.props.attribute.action,
-      data: data,
-      success: function (json) {
-        message.success(constant.success);
-
-        this.handleCancel();
-
-        setTimeout(function () {
-            this.handleLoad(this.props.attribute.page_index);
-        }.bind(this), constant.timeout);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    }).post();
-  }
-
-  handleCancel() {
-    this.props.dispatch({
-      type: 'attribute/fetch',
-      data: {
-        is_detail: false
-      }
-    });
-
-    this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleReset();
-  }
-
-  handleStart(data) {
-    if (this.props.attribute.is_load) {
-      return true;
-    }
-
-    this.props.dispatch({
-      type: 'attribute/fetch',
-      data: data
-    });
-
-    return false;
-  }
-
-  handleFinish() {
-    this.props.dispatch({
-      type: 'attribute/fetch',
-      data: {
-        is_load: false
-      }
-    });
-  }
-
-  handleReset() {
-    request.cancel();
-
-    this.props.dispatch({
-      type: 'attribute/fetch',
-      data: {
-        is_detail: false
-      }
     });
   }
 
@@ -236,7 +160,8 @@ class AttributeIndex extends Component {
           <a onClick={this.handleUpdate.bind(this, record.attribute_id)}>{constant.update}</a>
           <span className={style.divider}/>
           <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
-                      cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.attribute_id)}>
+                      cancelText={constant.popconfirm_cancel}
+                      onConfirm={this.handleDelete.bind(this, record.attribute_id)}>
             <a>{constant.delete}</a>
           </Popconfirm>
         </span>
@@ -245,15 +170,15 @@ class AttributeIndex extends Component {
 
     const pagination = {
       size: 'defalut',
-      total: this.props.attribute.total,
+      total: this.state.total,
       showTotal: function (total, range) {
         return '总共' + total + '条数据';
       },
-      current: this.props.attribute.page_index,
-      pageSize: this.props.attribute.page_size,
+      current: this.state.page_index,
+      pageSize: this.state.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
-      onChange: this.handleLoad.bind(this)
+      onChange: this.handleChangeIndex.bind(this)
     };
 
     return (
@@ -265,7 +190,7 @@ class AttributeIndex extends Component {
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
-                      loading={this.props.attribute.is_load}
+                      loading={this.state.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
               <Button type="primary" icon="plus-circle" size="default"
                       onClick={this.handleSave.bind(this)}>{constant.save}</Button>
@@ -290,15 +215,12 @@ class AttributeIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
-                 loading={this.props.attribute.is_load && !this.props.attribute.is_detail} columns={columns}
-                 dataSource={this.props.attribute.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+          <Table rowKey="attribute_id"
+                 className={style.layoutContentHeaderTable}
+                 loading={this.state.is_load} columns={columns}
+                 dataSource={this.props.attribute.list} pagination={pagination}
                  bordered/>
-          <AttributeDetail is_load={this.props.attribute.is_load}
-                      is_detail={this.props.attribute.is_detail}
-                      handleSubmit={this.handleSubmit.bind(this)}
-                      handleCancel={this.handleCancel.bind(this)}
-                      ref="detail"/>
+          <AttributeDetail ref="detail"/>
         </div>
       </QueueAnim>
     );
@@ -310,5 +232,5 @@ AttributeIndex.propTypes = {};
 AttributeIndex = Form.create({})(AttributeIndex);
 
 export default connect(({attribute}) => ({
-  attribute,
+  attribute
 }))(AttributeIndex);

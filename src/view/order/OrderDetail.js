@@ -1,7 +1,10 @@
-import React, {Component, PropTypes} from 'react';
-import {Modal, Form, Spin, Button, Input, Table} from 'antd';
+import React, {Component} from 'react';
+import {connect} from 'dva';
+import {Modal, Form, Spin, Button, Input, Table, Steps} from 'antd';
 
 import constant from '../../util/constant';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
 class OrderDetail extends Component {
@@ -9,53 +12,79 @@ class OrderDetail extends Component {
     super(props);
 
     this.state = {
+      is_load: false,
+      is_show: false,
       product_list: []
     }
   }
 
   componentDidMount() {
+    notification.on('notification_order_detail_update', this, function (data) {
+      this.setState({
+        is_show: true
+      });
 
+      this.handleLoad(data.order_id);
+    });
   }
 
   componentWillUnmount() {
-
+    notification.remove('notification_order_detail_update', this);
   }
 
-  handleSetFieldsValue(values) {
-    this.props.form.setFieldsValue(values);
-
-    for (let i = 0; i < values.product_list.length; i++) {
-      values.product_list[i].order_product_commission = JSON.parse(values.product_list[i].order_product_commission);
-    }
-
+  handleLoad(order_id) {
     this.setState({
-      product_list: values.product_list,
+      is_load: true
+    });
+
+    request.post({
+      url: '/order/admin/find',
+      data: {
+        order_id: order_id
+      },
+      success: function (json) {
+        this.props.form.setFieldsValue({
+          order_number: json.data.order_number,
+          order_delivery_name: json.data.order_delivery_name,
+          order_delivery_phone: json.data.order_delivery_phone,
+          order_delivery_address: json.data.order_delivery_address,
+          order_message: json.data.order_message,
+          order_amount: json.data.order_amount
+        });
+
+        for (let i = 0; i < json.data.product_list.length; i++) {
+          json.data.product_list[i].order_product_commission = JSON.parse(json.data.product_list[i].order_product_commission);
+        }
+
+        this.setState({
+          product_list: json.data.product_list,
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+
+      }.bind(this)
     });
   }
 
   handleSubmit() {
-    // this.props.form.validateFieldsAndScroll((errors, values) => {
-    //   if (!!errors) {
-    //     return;
-    //   }
-    //
-    //   this.props.handleSubmit(values);
-    // });
-
     this.handleCancel();
   }
 
   handleCancel() {
-    this.props.handleCancel();
-  }
+    this.setState({
+      is_show: false
+    });
 
-  handleReset() {
     this.props.form.resetFields();
   }
 
   render() {
     const FormItem = Form.Item;
     const {getFieldDecorator} = this.props.form;
+    const Step = Steps.Step;
 
     const columns = [{
       width: 120,
@@ -109,7 +138,7 @@ class OrderDetail extends Component {
 
     return (
       <Modal title={'订单表单'} maskClosable={false} width={constant.detail_width}
-             visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
+             visible={this.state.is_show} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
                        onClick={this.handleCancel.bind(this)}>关闭</Button>,
@@ -118,9 +147,17 @@ class OrderDetail extends Component {
                        onClick={this.handleSubmit.bind(this)}>确定</Button>
              ]}
       >
-        <Spin spinning={this.props.is_load}>
+        <Spin spinning={this.state.is_load}>
 
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+          <Steps current={1} className={style.formStep}>
+            <Step title="待付款" />
+            <Step title="待发货" />
+            <Step title="待收货" />
+            <Step title="订单完成" />
+            <Step title="订单取消" />
+          </Steps>
+
+          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem + ' ' + style.marginTop}
                     style={{width: constant.detail_form_item_width}} label="订单号">
             {
               getFieldDecorator('order_number', {
@@ -136,7 +173,7 @@ class OrderDetail extends Component {
           </FormItem>
 
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="收货人姓名">
+                    style={{width: constant.detail_form_item_width}} label="收货人">
             {
               getFieldDecorator('order_delivery_name', {
                 rules: [{
@@ -145,13 +182,13 @@ class OrderDetail extends Component {
                 }],
                 initialValue: ''
               })(
-                <Input type="text" placeholder={constant.placeholder + '收货人姓名'}/>
+                <Input type="text" placeholder={constant.placeholder + '收货人'}/>
               )
             }
           </FormItem>
 
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="收货人电话">
+                    style={{width: constant.detail_form_item_width}} label="手机号码">
             {
               getFieldDecorator('order_delivery_phone', {
                 rules: [{
@@ -160,7 +197,7 @@ class OrderDetail extends Component {
                 }],
                 initialValue: ''
               })(
-                <Input type="text" placeholder={constant.placeholder + '收货人电话'}/>
+                <Input type="text" placeholder={constant.placeholder + '手机号码'}/>
               )
             }
           </FormItem>
@@ -196,51 +233,6 @@ class OrderDetail extends Component {
           </FormItem>
 
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="商品金额">
-            {
-              getFieldDecorator('order_product_amount', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '商品金额'}/>
-              )
-            }
-          </FormItem>
-
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="运费金额">
-            {
-              getFieldDecorator('order_freight_amount', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '运费金额'}/>
-              )
-            }
-          </FormItem>
-
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="折扣金额">
-            {
-              getFieldDecorator('order_discount_amount', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '折扣金额'}/>
-              )
-            }
-          </FormItem>
-
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_width}} label="订单金额">
             {
               getFieldDecorator('order_amount', {
@@ -250,97 +242,7 @@ class OrderDetail extends Component {
                 }],
                 initialValue: ''
               })(
-                <Input type="text" placeholder={constant.placeholder + '折扣金额'}/>
-              )
-            }
-          </FormItem>
-
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="是否支付">
-            {
-              getFieldDecorator('order_is_pay', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '是否支付'}/>
-              )
-            }
-          </FormItem>
-
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="支付类型">
-            {
-              getFieldDecorator('order_pay_type', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '支付类型'}/>
-              )
-            }
-          </FormItem>
-
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="支付号">
-            {
-              getFieldDecorator('order_pay_number', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '支付号'}/>
-              )
-            }
-          </FormItem>
-
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="支付时间">
-            {
-              getFieldDecorator('order_pay_time', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '支付时间'}/>
-              )
-            }
-          </FormItem>
-
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="订单流程">
-            {
-              getFieldDecorator('order_flow', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '订单流程'}/>
-              )
-            }
-          </FormItem>
-
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="下单人等级">
-            {
-              getFieldDecorator('member_level_name', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '下单人等级'}/>
+                <Input type="text" placeholder={constant.placeholder + '订单金额'}/>
               )
             }
           </FormItem>
@@ -361,14 +263,11 @@ class OrderDetail extends Component {
 }
 
 OrderDetail.propTypes = {
-  is_load: React.PropTypes.bool.isRequired,
-  is_detail: React.PropTypes.bool.isRequired,
-  handleSubmit: React.PropTypes.func.isRequired,
-  handleCancel: React.PropTypes.func.isRequired
+
 };
 
-OrderDetail = Form.create({
-  withRef: true
-})(OrderDetail);
+OrderDetail = Form.create({})(OrderDetail);
 
-export default OrderDetail;
+export default connect(({order}) => ({
+  order
+}))(OrderDetail);

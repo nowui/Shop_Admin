@@ -1,50 +1,115 @@
-import React, {Component, PropTypes} from 'react';
-import {Modal, Form, Spin, Button, Input, Select} from 'antd';
+import React, {Component} from 'react';
+import {connect} from 'dva';
+import {Modal, Form, Spin, Button, Input, Select, message} from 'antd';
 
 import InputHtml from '../../component/InputHtml';
 
 import constant from '../../util/constant';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
 class ArticleDetail extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false,
+      is_show: false,
+      action: '',
+      article_id: ''
+    }
   }
 
   componentDidMount() {
+    notification.on('notification_article_detail_save', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'save'
+      });
+    });
 
+    notification.on('notification_article_detail_update', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'update',
+        article_id: data.article_id
+      });
+
+      setTimeout(function () {
+        this.handleLoad(data.article_id);
+      }.bind(this), 200);
+    });
   }
 
   componentWillUnmount() {
+    notification.remove('notification_article_detail_save', this);
 
+    notification.remove('notification_article_detail_update', this);
   }
 
-  handleSetFieldsValue(values) {
-    this.props.form.setFieldsValue(values);
+  handleLoad(article_id) {
+    this.setState({
+      is_load: true
+    });
 
-    this.refs.article_content.handleSetContent(values.article_content);
+    request.post({
+      url: '/article/admin/find',
+      data: {
+        article_id: article_id
+      },
+      success: function (json) {
+        this.props.form.setFieldsValue({
+          category_id: json.data.category_id,
+          article_name: json.data.article_name
+        });
+
+        this.refs.article_content.handleSetValue(json.data.article_content);
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+
+      }.bind(this)
+    });
   }
 
   handleSubmit() {
-    this.props.form.validateFields((errors, values) => {
+    this.props.form.validateFieldsAndScroll((errors, values) => {
       if (!!errors) {
         return;
       }
 
-      values.article_content = this.refs.article_content.handleGetContent();
+      values.article_id = this.state.article_id;
 
-      this.props.handleSubmit(values);
+      values.article_content = this.refs.article_content.handleGetValue();
+
+      request.post({
+        url: '/article/' + this.state.action,
+        data: values,
+        success: function (json) {
+          message.success(constant.success);
+
+          this.handleCancel();
+
+          notification.emit('notification_article_index_load', {});
+        }.bind(this),
+        complete: function () {
+
+        }.bind(this)
+      });
     });
   }
 
   handleCancel() {
-    this.props.handleCancel();
-  }
+    this.setState({
+      is_show: false
+    });
 
-  handleReset() {
     this.props.form.resetFields();
+
+    this.refs.article_content.handleReset();
   }
 
   render() {
@@ -54,7 +119,7 @@ class ArticleDetail extends Component {
 
     return (
       <Modal title={'表单'} maskClosable={false} width={constant.detail_width}
-             visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
+             visible={this.state.is_show} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
                        onClick={this.handleCancel.bind(this)}>关闭</Button>,
@@ -63,7 +128,7 @@ class ArticleDetail extends Component {
                        onClick={this.handleSubmit.bind(this)}>确定</Button>
              ]}
       >
-        <Spin spinning={this.props.is_load}>
+        <Spin spinning={this.state.is_load}>
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_width}} label="分类编号">
             {
@@ -78,7 +143,7 @@ class ArticleDetail extends Component {
                   width: '100%'
                 }} placeholder="请选择分类">
                   {
-                    this.props.category_list.map(function (item) {
+                    this.props.article.category_list.map(function (item) {
                       return (
                         <Option key={item.category_id} value={item.category_id}>{item.category_name}</Option>
                       )
@@ -113,15 +178,11 @@ class ArticleDetail extends Component {
 }
 
 ArticleDetail.propTypes = {
-  is_load: React.PropTypes.bool.isRequired,
-  is_detail: React.PropTypes.bool.isRequired,
-  category_list: React.PropTypes.array.isRequired,
-  handleSubmit: React.PropTypes.func.isRequired,
-  handleCancel: React.PropTypes.func.isRequired
+
 };
 
-ArticleDetail = Form.create({
-  withRef: true
-})(ArticleDetail);
+ArticleDetail = Form.create({})(ArticleDetail);
 
-export default ArticleDetail;
+export default connect(({article}) => ({
+  article
+}))(ArticleDetail);

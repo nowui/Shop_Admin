@@ -1,14 +1,13 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import RoleDetail from './RoleDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class RoleIndex extends Component {
   constructor(props) {
@@ -47,7 +46,7 @@ class RoleIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/role/admin/list',
       data: {
         role_name: role_name,
@@ -72,7 +71,7 @@ class RoleIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleChangeSize(page_index, page_size) {
@@ -108,7 +107,7 @@ class RoleIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/role/admin/find',
       data: {
         role_id: role_id
@@ -119,7 +118,7 @@ class RoleIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleDelete(role_id) {
@@ -129,7 +128,7 @@ class RoleIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/role/delete',
       data: {
         role_id: role_id
@@ -144,7 +143,7 @@ class RoleIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSubmit(data) {
@@ -158,7 +157,7 @@ class RoleIndex extends Component {
       data.role_id = this.props.role.role_id;
     }
 
-    request = http({
+    request.post({
       url: '/role/' + this.props.role.action,
       data: data,
       success: function (json) {
@@ -173,7 +172,7 @@ class RoleIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCancel() {
@@ -210,7 +209,6 @@ class RoleIndex extends Component {
   }
 
   handleReset() {
-    request.cancel();
 
     this.props.dispatch({
       type: 'role/fetch',
@@ -290,9 +288,9 @@ class RoleIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
+          <Table className={style.layoutContentHeaderTable}
                  loading={this.props.role.is_load && !this.props.role.is_detail} columns={columns}
-                 dataSource={this.props.role.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 dataSource={this.props.role.list} pagination={pagination}
                  bordered/>
           <RoleDetail is_load={this.props.role.is_load}
                       is_detail={this.props.role.is_detail}

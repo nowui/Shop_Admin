@@ -1,133 +1,132 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import CartDetail from './CartDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class CartIndex extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false
+    }
   }
 
   componentDidMount() {
-    this.handleSearch();
+    this.props.form.setFieldsValue({
+      cart_name: this.props.cart.cart_name
+    });
+
+    this.handleLoad();
+
+    notification.on('notification_cart_index_load', this, function (data) {
+      this.handleLoad();
+    });
   }
 
   componentWillUnmount() {
-    this.handleReset();
+    notification.remove('notification_cart_index_load', this);
   }
 
   handleSearch() {
-    let cart_name = this.props.form.getFieldValue('cart_name');
-    let page_index = 1;
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'cart/fetch',
+        data: {
+          cart_name: this.props.form.getFieldValue('cart_name'),
+          page_index: 1
+        }
+      });
 
-    this.handleList(cart_name, page_index);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
-  handleLoad(page_index) {
-    let cart_name = this.props.cart.cart_name;
+  handleLoad() {
+    this.setState({
+      is_load: true
+    });
 
-    this.handleList(cart_name, page_index);
-  }
-
-  handleList(cart_name, page_index) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    request = http({
+    request.post({
       url: '/cart/admin/list',
       data: {
-        cart_name: cart_name,
-        page_index: page_index,
+        cart_name: this.props.cart.cart_name,
+        page_index: this.props.cart.page_index,
         page_size: this.props.cart.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].cart_id;
-        }
-
         this.props.dispatch({
           type: 'cart/fetch',
           data: {
-            cart_name: cart_name,
             total: json.total,
-            list: json.data,
-            page_index: page_index
+            list: json.data
           }
         });
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    }).post();
+    });
+  }
+
+  handleChangeIndex(page_index) {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'cart/fetch',
+        data: {
+          page_index: page_index
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleChangeSize(page_index, page_size) {
-    this.props.dispatch({
-      type: 'cart/fetch',
-      data: {
-        page_size: page_size
-      }
-    });
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'cart/fetch',
+        data: {
+          page_index: page_index,
+          page_size: page_size
+        }
+      });
 
-    setTimeout(function () {
-      this.handleLoad(page_index);
-    }.bind(this), constant.timeout);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleSave() {
-    this.props.dispatch({
-      type: 'cart/fetch',
-      data: {
-        is_detail: true,
-        action: 'save'
-      }
-    });
+    notification.emit('notification_cart_detail_save', {});
   }
 
   handleUpdate(cart_id) {
-    if (this.handleStart({
-        is_load: true,
-        is_detail: true,
-        action: 'update',
-        cart_id: cart_id
-      })) {
-      return;
-    }
-
-    request = http({
-      url: '/cart/admin/find',
-      data: {
-        cart_id: cart_id
-      },
-      success: function (json) {
-        this.refs.detail.setFieldsValue(json.data);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    }).post();
+    notification.emit('notification_cart_detail_update', {
+      cart_id: cart_id
+    });
   }
 
   handleDelete(cart_id) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+    this.setState({
+      is_load: true
+    });
 
-    request = http({
+    request.post({
       url: '/cart/delete',
       data: {
         cart_id: cart_id
@@ -135,86 +134,13 @@ class CartIndex extends Component {
       success: function (json) {
         message.success(constant.success);
 
-        setTimeout(function () {
-            this.handleLoad(this.props.cart.page_index);
-        }.bind(this), constant.timeout);
+        this.handleLoad();
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    }).post();
-  }
-
-  handleSubmit(data) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    if (this.props.cart.action == 'update') {
-      data.cart_id = this.props.cart.cart_id;
-    }
-
-    request = http({
-      url: '/cart/' + this.props.cart.action,
-      data: data,
-      success: function (json) {
-        message.success(constant.success);
-
-        this.handleCancel();
-
-        setTimeout(function () {
-            this.handleLoad(this.props.cart.page_index);
-        }.bind(this), constant.timeout);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    }).post();
-  }
-
-  handleCancel() {
-    this.props.dispatch({
-      type: 'cart/fetch',
-      data: {
-        is_detail: false
-      }
-    });
-
-    this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleReset();
-  }
-
-  handleStart(data) {
-    if (this.props.cart.is_load) {
-      return true;
-    }
-
-    this.props.dispatch({
-      type: 'cart/fetch',
-      data: data
-    });
-
-    return false;
-  }
-
-  handleFinish() {
-    this.props.dispatch({
-      type: 'cart/fetch',
-      data: {
-        is_load: false
-      }
-    });
-  }
-
-  handleReset() {
-    request.cancel();
-
-    this.props.dispatch({
-      type: 'cart/fetch',
-      data: {
-        is_detail: false
-      }
     });
   }
 
@@ -263,7 +189,7 @@ class CartIndex extends Component {
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
-                      loading={this.props.cart.is_load}
+                      loading={this.state.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
               <Button type="primary" icon="plus-circle" size="default"
                       onClick={this.handleSave.bind(this)}>{constant.save}</Button>
@@ -288,15 +214,11 @@ class CartIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
-                 loading={this.props.cart.is_load && !this.props.cart.is_detail} columns={columns}
-                 dataSource={this.props.cart.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+          <Table className={style.layoutContentHeaderTable}
+                 loading={this.state.is_load} columns={columns}
+                 dataSource={this.props.cart.list} pagination={pagination}
                  bordered/>
-          <CartDetail is_load={this.props.cart.is_load}
-                      is_detail={this.props.cart.is_detail}
-                      handleSubmit={this.handleSubmit.bind(this)}
-                      handleCancel={this.handleCancel.bind(this)}
-                      ref="detail"/>
+          <CartDetail ref="detail"/>
         </div>
       </QueueAnim>
     );
@@ -308,5 +230,5 @@ CartIndex.propTypes = {};
 CartIndex = Form.create({})(CartIndex);
 
 export default connect(({cart}) => ({
-  cart,
+  cart
 }))(CartIndex);

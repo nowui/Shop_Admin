@@ -1,14 +1,13 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import ConfigDetail from './ConfigDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class ConfigIndex extends Component {
   constructor(props) {
@@ -47,7 +46,7 @@ class ConfigIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/config/admin/list',
       data: {
         config_name: config_name,
@@ -72,7 +71,7 @@ class ConfigIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleChangeSize(page_index, page_size) {
@@ -108,7 +107,7 @@ class ConfigIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/config/admin/find',
       data: {
         config_id: config_id
@@ -119,7 +118,7 @@ class ConfigIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleDelete(config_id) {
@@ -129,7 +128,7 @@ class ConfigIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/config/delete',
       data: {
         config_id: config_id
@@ -144,7 +143,7 @@ class ConfigIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCourseStudentSave() {
@@ -154,7 +153,7 @@ class ConfigIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/course/student/white/apply/save',
       data: {
 
@@ -165,7 +164,7 @@ class ConfigIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCourseApplyDelete() {
@@ -175,7 +174,7 @@ class ConfigIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/course/apply/all/delete',
       data: {
 
@@ -186,7 +185,7 @@ class ConfigIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSubmit(data) {
@@ -200,7 +199,7 @@ class ConfigIndex extends Component {
       data.config_id = this.props.config.config_id;
     }
 
-    request = http({
+    request.post({
       url: '/config/' + this.props.config.action,
       data: data,
       success: function (json) {
@@ -211,7 +210,7 @@ class ConfigIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCancel() {
@@ -248,9 +247,7 @@ class ConfigIndex extends Component {
   }
 
   handleReset() {
-    if (typeof(request) != 'undefined') {
-      request.cancel();
-    }
+
 
     this.props.dispatch({
       type: 'config/fetch',
@@ -333,9 +330,9 @@ class ConfigIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
+          <Table className={style.layoutContentHeaderTable}
                  loading={this.props.config.is_load && !this.props.config.is_detail} columns={columns}
-                 dataSource={this.props.config.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 dataSource={this.props.config.list} pagination={pagination}
                  bordered/>
           <ConfigDetail is_load={this.props.config.is_load}
                         is_detail={this.props.config.is_detail}

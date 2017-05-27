@@ -1,14 +1,13 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import MemberLevelDetail from './MemberLevelDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class MemberLevelIndex extends Component {
   constructor(props) {
@@ -45,7 +44,7 @@ class MemberLevelIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/member/level/admin/list',
       data: {
         member_level_name: member_level_name,
@@ -70,7 +69,7 @@ class MemberLevelIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleChangeSize(page_index, page_size) {
@@ -106,7 +105,7 @@ class MemberLevelIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/member/level/admin/find',
       data: {
         member_level_id: member_level_id
@@ -117,7 +116,7 @@ class MemberLevelIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleDelete(member_level_id) {
@@ -127,7 +126,7 @@ class MemberLevelIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/member/level/delete',
       data: {
         member_level_id: member_level_id
@@ -142,7 +141,7 @@ class MemberLevelIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSubmit(data) {
@@ -156,7 +155,7 @@ class MemberLevelIndex extends Component {
       data.member_level_id = this.props.member_level.member_level_id;
     }
 
-    request = http({
+    request.post({
       url: '/member/level/' + this.props.member_level.action,
       data: data,
       success: function (json) {
@@ -171,7 +170,7 @@ class MemberLevelIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCancel() {
@@ -208,7 +207,6 @@ class MemberLevelIndex extends Component {
   }
 
   handleReset() {
-    request.cancel();
 
     this.props.dispatch({
       type: 'member_level/fetch',
@@ -288,9 +286,9 @@ class MemberLevelIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
+          <Table className={style.layoutContentHeaderTable}
                  loading={this.props.member_level.is_load && !this.props.member_level.is_detail} columns={columns}
-                 dataSource={this.props.member_level.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 dataSource={this.props.member_level.list} pagination={pagination}
                  bordered/>
           <MemberLevelDetail is_load={this.props.member_level.is_load}
                       is_detail={this.props.member_level.is_detail}

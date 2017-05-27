@@ -1,14 +1,13 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import DistributorDetail from './DistributorDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class DistributorIndex extends Component {
   constructor(props) {
@@ -47,7 +46,7 @@ class DistributorIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/distributor/admin/list',
       data: {
         distributor_name: distributor_name,
@@ -72,7 +71,7 @@ class DistributorIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleChangeSize(page_index, page_size) {
@@ -108,7 +107,7 @@ class DistributorIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/distributor/admin/find',
       data: {
         distributor_id: distributor_id
@@ -119,7 +118,7 @@ class DistributorIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleDelete(distributor_id) {
@@ -129,7 +128,7 @@ class DistributorIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/distributor/delete',
       data: {
         distributor_id: distributor_id
@@ -144,7 +143,7 @@ class DistributorIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSubmit(data) {
@@ -158,7 +157,7 @@ class DistributorIndex extends Component {
       data.distributor_id = this.props.distributor.distributor_id;
     }
 
-    request = http({
+    request.post({
       url: '/distributor/' + this.props.distributor.action,
       data: data,
       success: function (json) {
@@ -173,7 +172,7 @@ class DistributorIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCancel() {
@@ -210,7 +209,6 @@ class DistributorIndex extends Component {
   }
 
   handleReset() {
-    request.cancel();
 
     this.props.dispatch({
       type: 'distributor/fetch',
@@ -291,9 +289,9 @@ class DistributorIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
+          <Table className={style.layoutContentHeaderTable}
                  loading={this.props.distributor.is_load && !this.props.distributor.is_detail} columns={columns}
-                 dataSource={this.props.distributor.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 dataSource={this.props.distributor.list} pagination={pagination}
                  bordered/>
           <DistributorDetail is_load={this.props.distributor.is_load}
                              is_detail={this.props.distributor.is_detail}

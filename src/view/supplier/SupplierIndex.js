@@ -1,14 +1,13 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import SupplierDetail from './SupplierDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class SupplierIndex extends Component {
   constructor(props) {
@@ -45,7 +44,7 @@ class SupplierIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/supplier/admin/list',
       data: {
         supplier_name: supplier_name,
@@ -70,7 +69,7 @@ class SupplierIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleChangeSize(page_index, page_size) {
@@ -106,7 +105,7 @@ class SupplierIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/supplier/admin/find',
       data: {
         supplier_id: supplier_id
@@ -117,7 +116,7 @@ class SupplierIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleDelete(supplier_id) {
@@ -127,7 +126,7 @@ class SupplierIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/supplier/delete',
       data: {
         supplier_id: supplier_id
@@ -142,7 +141,7 @@ class SupplierIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSubmit(data) {
@@ -156,7 +155,7 @@ class SupplierIndex extends Component {
       data.supplier_id = this.props.supplier.supplier_id;
     }
 
-    request = http({
+    request.post({
       url: '/supplier/' + this.props.supplier.action,
       data: data,
       success: function (json) {
@@ -171,7 +170,7 @@ class SupplierIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCancel() {
@@ -208,7 +207,6 @@ class SupplierIndex extends Component {
   }
 
   handleReset() {
-    request.cancel();
 
     this.props.dispatch({
       type: 'supplier/fetch',
@@ -289,9 +287,9 @@ class SupplierIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
+          <Table className={style.layoutContentHeaderTable}
                  loading={this.props.supplier.is_load && !this.props.supplier.is_detail} columns={columns}
-                 dataSource={this.props.supplier.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 dataSource={this.props.supplier.list} pagination={pagination}
                  bordered/>
           <SupplierDetail is_load={this.props.supplier.is_load}
                           is_detail={this.props.supplier.is_detail}

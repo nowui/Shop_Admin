@@ -5,15 +5,14 @@ export default {
   namespace: 'product',
 
   state: {
-    is_load: false,
-    is_detail: false,
-    action: '',
-    product_id: '',
     product_name: '',
-    list: [],
     total: 0,
     page_index: 1,
-    page_size: constant.page_size
+    page_size: constant.page_size,
+    list: [],
+    category_list: [],
+    brand_list: [],
+    member_level_list: []
   },
 
   reducers: {

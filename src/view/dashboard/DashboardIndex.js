@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Icon} from 'antd';
@@ -67,7 +67,7 @@ class DashboardIndex extends Component {
               }}>
                 <Icon type="team" className={style.boxesIcon}/>
               </div>
-              <h3 className={style.boxesText}>昨日用户注册数</h3>
+              <h3 className={style.boxesText}>昨日注册用户</h3>
               <div className={style.boxesNumber}>0</div>
             </Col>
           </Row>

@@ -5,15 +5,11 @@ export default {
   namespace: 'authorization',
 
   state: {
-    is_load: false,
-    is_detail: false,
-    action: '',
-    authorization_id: '',
     authorization_token: '',
-    list: [],
     total: 0,
     page_index: 1,
-    page_size: constant.page_size
+    page_size: constant.page_size,
+    list: []
   },
 
   reducers: {

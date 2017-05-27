@@ -1,39 +1,89 @@
-import React, {Component, PropTypes} from 'react';
-import {Modal, Form, Spin, Button, Input, InputNumber} from 'antd';
+import React, {Component} from 'react';
+import {connect} from 'dva';
+import {Modal, Form, Spin, Button, Input, message} from 'antd';
 
 import constant from '../../util/constant';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
 class BillDetail extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false,
+      is_show: false,
+      action: '',
+      bill_id: ''
+    }
   }
 
   componentDidMount() {
+    notification.on('notification_bill_detail_save', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'save'
+      });
+    });
 
-  }
+    notification.on('notification_bill_detail_update', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'update',
+        bill_id: data.bill_id
+      });
 
-  componentWillUnmount() {
-
-  }
-
-  handleSubmit() {
-    this.props.form.validateFields((errors, values) => {
-      if (!!errors) {
-        return;
-      }
-
-      this.props.handleSubmit(values);
+      this.handleLoad(data.bill_id);
     });
   }
 
-  handleCancel() {
-    this.props.handleCancel();
+  componentWillUnmount() {
+    notification.remove('notification_bill_detail_save', this);
+
+    notification.remove('notification_bill_detail_update', this);
   }
 
-  handleReset() {
+  handleLoad(bill_id) {
+    this.setState({
+      is_load: true
+    });
+
+    request.post({
+      url: '/bill/admin/find',
+      data: {
+        bill_id: bill_id
+      },
+      success: function (json) {
+        this.props.form.setFieldsValue({
+          object_id: json.data.object_id,
+          bill_type: json.data.bill_type,
+          bill_image: json.data.bill_image,
+          bill_name: json.data.bill_name,
+          bill_amount: json.data.bill_amount,
+          bill_is_income: json.data.bill_is_income,
+          bill_time: json.data.bill_time,
+          bill_status: json.data.bill_status
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+
+      }.bind(this)
+    });
+  }
+
+  handleSubmit() {
+    this.handleCancel();
+  }
+
+  handleCancel() {
+    this.setState({
+      is_show: false
+    });
+
     this.props.form.resetFields();
   }
 
@@ -43,7 +93,7 @@ class BillDetail extends Component {
 
     return (
       <Modal title={'表单'} maskClosable={false} width={constant.detail_width}
-             visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
+             visible={this.state.is_show} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
                        onClick={this.handleCancel.bind(this)}>关闭</Button>,
@@ -52,8 +102,8 @@ class BillDetail extends Component {
                        onClick={this.handleSubmit.bind(this)}>确定</Button>
              ]}
       >
-        <Spin spinning={this.props.is_load}>
-                                    
+        <Spin spinning={this.state.is_load}>
+          <form>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="外键编号">
               {
@@ -68,7 +118,7 @@ class BillDetail extends Component {
                 )
               }
             </FormItem>
-                        
+
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="账单类型">
               {
@@ -83,7 +133,7 @@ class BillDetail extends Component {
                 )
               }
             </FormItem>
-                        
+
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="账单图片">
               {
@@ -98,7 +148,7 @@ class BillDetail extends Component {
                 )
               }
             </FormItem>
-                        
+
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="账单名称">
               {
@@ -113,7 +163,7 @@ class BillDetail extends Component {
                 )
               }
             </FormItem>
-                        
+
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="账单金额">
               {
@@ -128,7 +178,7 @@ class BillDetail extends Component {
                 )
               }
             </FormItem>
-                        
+
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="是否收入">
               {
@@ -143,7 +193,7 @@ class BillDetail extends Component {
                 )
               }
             </FormItem>
-                        
+
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="账单时间">
               {
@@ -158,7 +208,7 @@ class BillDetail extends Component {
                 )
               }
             </FormItem>
-                        
+
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="账单状态">
               {
@@ -173,22 +223,17 @@ class BillDetail extends Component {
                 )
               }
             </FormItem>
-            
+          </form>
         </Spin>
       </Modal>
     );
   }
 }
 
-BillDetail.propTypes = {
-  is_load: React.PropTypes.bool.isRequired,
-  is_detail: React.PropTypes.bool.isRequired,
-  handleSubmit: React.PropTypes.func.isRequired,
-  handleCancel: React.PropTypes.func.isRequired
-};
+BillDetail.propTypes = {};
 
-BillDetail = Form.create({
-  withRef: true
-})(BillDetail);
+BillDetail = Form.create({})(BillDetail);
 
-export default BillDetail;
+export default connect(({bill}) => ({
+  bill
+}))(BillDetail);

@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
@@ -6,155 +6,134 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 import CategoryDetail from './CategoryDetail';
 import CategoryTree from './CategoryTree';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class CategoryIndex extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false
+    }
   }
 
   componentDidMount() {
-    this.props.form.setFieldsValue(this.props.category);
+    this.props.form.setFieldsValue({
+      category_name: this.props.category.category_name
+    });
 
-    this.handleSearch();
+    this.handleLoad();
+
+    notification.on('notification_category_index_load', this, function (data) {
+      this.handleLoad();
+    });
   }
 
   componentWillUnmount() {
-    this.handleReset();
+    notification.remove('notification_category_index_load', this);
   }
 
   handleSearch() {
-    let category_name = this.props.form.getFieldValue('category_name');
-    let page_index = 1;
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'category/fetch',
+        data: {
+          category_name: this.props.form.getFieldValue('category_name'),
+          page_index: 1
+        }
+      });
 
-    this.handleList(category_name, page_index);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
-  handleLoad(page_index) {
-    let category_name = this.props.category.category_name;
+  handleLoad() {
+    this.setState({
+      is_load: true
+    });
 
-    this.handleList(category_name, page_index);
-  }
-
-  handleList(category_name, page_index) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    request = http({
+    request.post({
       url: '/category/admin/list',
       data: {
-        category_name: category_name,
-        page_index: page_index,
+        category_name: this.props.category.category_name,
+        page_index: this.props.category.page_index,
         page_size: this.props.category.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].category_id;
-        }
-
         this.props.dispatch({
           type: 'category/fetch',
           data: {
-            category_name: category_name,
             total: json.total,
-            list: json.data,
-            page_index: page_index
+            list: json.data
           }
         });
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    }).post();
+    });
+  }
+
+  handleChangeIndex(page_index) {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'category/fetch',
+        data: {
+          page_index: page_index
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleChangeSize(page_index, page_size) {
-    this.props.dispatch({
-      type: 'category/fetch',
-      data: {
-        page_size: page_size
-      }
-    });
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'category/fetch',
+        data: {
+          page_index: page_index,
+          page_size: page_size
+        }
+      });
 
-    setTimeout(function () {
-      this.handleLoad(page_index);
-    }.bind(this), constant.timeout);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleSave(parent_id) {
-    this.props.dispatch({
-      type: 'category/fetch',
-      data: {
-        is_detail: true,
-        action: 'save',
-        parent_id: parent_id
-      }
-    });
+    notification.emit('notification_category_detail_save', {});
   }
 
   handleUpdate(category_id) {
-    if (this.handleStart({
-        is_load: true,
-        is_detail: true,
-        action: 'update',
-        category_id: category_id
-      })) {
-      return;
-    }
-
-    request = http({
-      url: '/category/admin/find',
-      data: {
-        category_id: category_id
-      },
-      success: function (json) {
-        this.refs.detail.setFieldsValue(json.data);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    }).post();
+    notification.emit('notification_category_detail_update', {
+      category_id: category_id
+    });
   }
 
   handleTree(category_id) {
-    if (this.handleStart({
-        is_load: true,
-        is_tree: true,
-        category_id: category_id
-      })) {
-      return;
-    }
-
-    request = http({
-      url: '/category/admin/tree/list',
-      data: {
-        category_id: category_id
-      },
-      success: function (json) {
-        this.refs.tree.setFieldsValue(json.data);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    }).post();
+    notification.emit('notification_category_tree_update', {
+      category_id: category_id
+    });
   }
 
   handleDelete(category_id) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+    this.setState({
+      is_load: true
+    });
 
-    request = http({
+    request.post({
       url: '/category/delete',
       data: {
         category_id: category_id
@@ -162,110 +141,13 @@ class CategoryIndex extends Component {
       success: function (json) {
         message.success(constant.success);
 
-        setTimeout(function () {
-          if (this.props.category.is_tree) {
-            this.handleTree(this.refs.tree.state.category_id);
-          } else {
-            this.handleLoad(this.props.category.page_index);
-          }
-        }.bind(this), constant.timeout);
+        this.handleLoad();
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    }).post();
-  }
-
-  handleSubmit(data) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    if (this.props.category.action == 'update') {
-      data.category_id = this.props.category.category_id;
-    }
-
-    if (this.props.category.action == 'save' && this.props.category.is_tree) {
-      data.parent_id = this.props.category.parent_id;
-    }
-
-    request = http({
-      url: '/category/' + this.props.category.action,
-      data: data,
-      success: function (json) {
-        message.success(constant.success);
-
-        this.handleCancel();
-
-        setTimeout(function () {
-          if (this.props.category.is_tree) {
-            this.handleTree(this.refs.tree.state.category_id);
-          } else {
-            this.handleLoad(this.props.category.page_index);
-          }
-        }.bind(this), constant.timeout);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    }).post();
-  }
-
-  handleCancel() {
-    this.props.dispatch({
-      type: 'category/fetch',
-      data: {
-        is_detail: false
-      }
-    });
-
-    this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleReset();
-  }
-
-  handleTreeCancel() {
-    this.props.dispatch({
-      type: 'category/fetch',
-      data: {
-        is_tree: false
-      }
-    });
-
-    this.refs.tree.handleReset();
-  }
-
-  handleStart(data) {
-    if (this.props.category.is_load) {
-      return true;
-    }
-
-    this.props.dispatch({
-      type: 'category/fetch',
-      data: data
-    });
-
-    return false;
-  }
-
-  handleFinish() {
-    this.props.dispatch({
-      type: 'category/fetch',
-      data: {
-        is_load: false
-      }
-    });
-  }
-
-  handleReset() {
-    request.cancel();
-
-    this.props.dispatch({
-      type: 'category/fetch',
-      data: {
-        is_detail: false,
-        is_tree: false
-      }
     });
   }
 
@@ -313,7 +195,7 @@ class CategoryIndex extends Component {
       pageSize: this.props.category.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
-      onChange: this.handleLoad.bind(this)
+      onChange: this.handleChangeIndex.bind(this)
     };
 
     return (
@@ -350,22 +232,13 @@ class CategoryIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
-                 loading={this.props.category.is_load && !this.props.category.is_detail} columns={columns}
-                 dataSource={this.props.category.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+          <Table rowKey="category_id"
+                 className={style.layoutContentHeaderTable}
+                 loading={this.state.is_load} columns={columns}
+                 dataSource={this.props.category.list} pagination={pagination}
                  bordered/>
-          <CategoryTree is_load={this.props.category.is_load}
-                        is_tree={this.props.category.is_tree}
-                        handleSave={this.handleSave.bind(this)}
-                        handleUpdate={this.handleUpdate.bind(this)}
-                        handleDelete={this.handleDelete.bind(this)}
-                        handleCancel={this.handleTreeCancel.bind(this)}
-                        ref="tree"/>
-          <CategoryDetail is_load={this.props.category.is_load}
-                          is_detail={this.props.category.is_detail}
-                          handleSubmit={this.handleSubmit.bind(this)}
-                          handleCancel={this.handleCancel.bind(this)}
-                          ref="detail"/>
+          <CategoryTree ref="tree"/>
+          <CategoryDetail ref="detail"/>
         </div>
       </QueueAnim>
     );
@@ -377,5 +250,5 @@ CategoryIndex.propTypes = {};
 CategoryIndex = Form.create({})(CategoryIndex);
 
 export default connect(({category}) => ({
-  category,
+  category
 }))(CategoryIndex);

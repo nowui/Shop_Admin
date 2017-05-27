@@ -2,14 +2,18 @@ import constant from '../util/constant';
 
 export default {
 
-  namespace: 'brand',
+  namespace: 'express',
 
   state: {
-    brand_name: '',
+    is_load: false,
+    is_detail: false,
+    action: '',
+    express_id: '',
+    express_name: '',
+    list: [],
     total: 0,
     page_index: 1,
-    page_size: constant.page_size,
-    list: []
+    page_size: constant.page_size
   },
 
   reducers: {

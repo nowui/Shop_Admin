@@ -1,14 +1,13 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, Select, message} from 'antd';
 
 import LogDetail from './LogDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class LogIndex extends Component {
   constructor(props) {
@@ -47,7 +46,7 @@ class LogIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/log/admin/list',
       data: {
         log_url: log_url,
@@ -72,7 +71,7 @@ class LogIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleChangeSize(page_index, page_size) {
@@ -108,7 +107,7 @@ class LogIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/log/admin/find',
       data: {
         log_id: log_id
@@ -119,7 +118,7 @@ class LogIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleDelete(log_id) {
@@ -129,7 +128,7 @@ class LogIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/log/delete',
       data: {
         log_id: log_id
@@ -144,7 +143,7 @@ class LogIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSubmit(data) {
@@ -158,7 +157,7 @@ class LogIndex extends Component {
       data.log_id = this.props.log.log_id;
     }
 
-    request = http({
+    request.post({
       url: '/log/' + this.props.log.action,
       data: data,
       success: function (json) {
@@ -173,7 +172,7 @@ class LogIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCancel() {
@@ -210,7 +209,6 @@ class LogIndex extends Component {
   }
 
   handleReset() {
-    request.cancel();
 
     this.props.dispatch({
       type: 'log/fetch',
@@ -335,9 +333,9 @@ class LogIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
+          <Table className={style.layoutContentHeaderTable}
                  loading={this.props.log.is_load && !this.props.log.is_detail} columns={columns}
-                 dataSource={this.props.log.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 dataSource={this.props.log.list} pagination={pagination}
                  bordered/>
           <LogDetail is_load={this.props.log.is_load}
                       is_detail={this.props.log.is_detail}

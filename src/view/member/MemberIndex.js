@@ -1,14 +1,13 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import MemberDetail from './MemberDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class MemberIndex extends Component {
   constructor(props) {
@@ -32,7 +31,7 @@ class MemberIndex extends Component {
   }
 
   handleMemberLevelList() {
-    http({
+    request.post({
       url: '/member/level/category/list',
       data: {},
       success: function (json) {
@@ -43,7 +42,7 @@ class MemberIndex extends Component {
       complete: function () {
 
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSearch() {
@@ -66,7 +65,7 @@ class MemberIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/member/admin/list',
       data: {
         member_name: member_name,
@@ -91,7 +90,7 @@ class MemberIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleChangeSize(page_index, page_size) {
@@ -127,7 +126,7 @@ class MemberIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/member/admin/find',
       data: {
         member_id: member_id
@@ -138,7 +137,7 @@ class MemberIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleDelete(member_id) {
@@ -148,7 +147,7 @@ class MemberIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/member/delete',
       data: {
         member_id: member_id
@@ -163,7 +162,7 @@ class MemberIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSubmit(data) {
@@ -177,7 +176,7 @@ class MemberIndex extends Component {
       data.member_id = this.props.member.member_id;
     }
 
-    request = http({
+    request.post({
       url: '/member/' + this.props.member.action,
       data: data,
       success: function (json) {
@@ -192,7 +191,7 @@ class MemberIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCancel() {
@@ -229,7 +228,6 @@ class MemberIndex extends Component {
   }
 
   handleReset() {
-    request.cancel();
 
     this.props.dispatch({
       type: 'member/fetch',
@@ -317,10 +315,9 @@ class MemberIndex extends Component {
             </Row>
           </Form>
           <Table rowKey="member_id"
-                 size="middle"
                  className={style.layoutContentHeaderTable}
                  loading={this.props.member.is_load && !this.props.member.is_detail} columns={columns}
-                 dataSource={this.props.member.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 dataSource={this.props.member.list} pagination={pagination}
                  bordered/>
           <MemberDetail is_load={this.props.member.is_load}
                         is_detail={this.props.member.is_detail}

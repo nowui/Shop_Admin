@@ -5,7 +5,7 @@ import {Modal, Form, Spin, Button, Input} from 'antd';
 import constant from '../../util/constant';
 import style from '../style.css';
 
-class DeliveryDetail extends Component {
+class ExpressDetail extends Component {
   constructor(props) {
     super(props);
 
@@ -21,7 +21,7 @@ class DeliveryDetail extends Component {
   }
 
   handleSubmit() {
-    this.props.form.validateFieldsAndScroll((errors, values) => {
+    this.props.form.validateFields((errors, values) => {
       if (!!errors) {
         return;
       }
@@ -43,7 +43,7 @@ class DeliveryDetail extends Component {
     const {getFieldDecorator} = this.props.form;
 
     return (
-      <Modal title={'快递地址表单'} maskClosable={false} width={constant.detail_width}
+      <Modal title={'表单'} maskClosable={false} width={constant.detail_width}
              visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
@@ -54,127 +54,119 @@ class DeliveryDetail extends Component {
              ]}
       >
         <Spin spinning={this.props.is_load}>
-
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="收货人">
+                      style={{width: constant.detail_form_item_width}} label="订单编号">
               {
-                getFieldDecorator('delivery_name', {
+                getFieldDecorator('order_id', {
                   rules: [{
                     required: true,
                     message: constant.required
                   }],
                   initialValue: ''
                 })(
-                  <Input type="text" placeholder={constant.placeholder + '收货人'}/>
+                  <Input type="text" placeholder={constant.placeholder + '订单编号'}/>
                 )
               }
             </FormItem>
-
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="手机号码">
+                      style={{width: constant.detail_form_item_width}} label="快递类型">
               {
-                getFieldDecorator('delivery_phone', {
+                getFieldDecorator('express_type', {
                   rules: [{
                     required: true,
                     message: constant.required
                   }],
                   initialValue: ''
                 })(
-                  <Input type="text" placeholder={constant.placeholder + '手机号码'}/>
+                  <Input type="text" placeholder={constant.placeholder + '快递类型'}/>
                 )
               }
             </FormItem>
-
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="省份">
+                      style={{width: constant.detail_form_item_width}} label="快递单号">
               {
-                getFieldDecorator('delivery_province', {
+                getFieldDecorator('express_number', {
                   rules: [{
                     required: true,
                     message: constant.required
                   }],
                   initialValue: ''
                 })(
-                  <Input type="text" placeholder={constant.placeholder + '省份'}/>
+                  <Input type="text" placeholder={constant.placeholder + '快递单号'}/>
                 )
               }
             </FormItem>
-
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="城市">
+                      style={{width: constant.detail_form_item_width}} label="快递结果">
               {
-                getFieldDecorator('delivery_city', {
+                getFieldDecorator('express_result', {
                   rules: [{
                     required: true,
                     message: constant.required
                   }],
                   initialValue: ''
                 })(
-                  <Input type="text" placeholder={constant.placeholder + '城市'}/>
+                  <Input type="text" placeholder={constant.placeholder + '快递结果'}/>
                 )
               }
             </FormItem>
-
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="区域">
+                      style={{width: constant.detail_form_item_width}} label="快递流程">
               {
-                getFieldDecorator('delivery_area', {
+                getFieldDecorator('express_flow', {
                   rules: [{
                     required: true,
                     message: constant.required
                   }],
                   initialValue: ''
                 })(
-                  <Input type="text" placeholder={constant.placeholder + '区域'}/>
+                  <Input type="text" placeholder={constant.placeholder + '快递流程'}/>
                 )
               }
             </FormItem>
-
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="街道">
+                      style={{width: constant.detail_form_item_width}} label="快递状态">
               {
-                getFieldDecorator('delivery_street', {
+                getFieldDecorator('express_status', {
                   rules: [{
                     required: true,
                     message: constant.required
                   }],
                   initialValue: ''
                 })(
-                  <Input type="text" placeholder={constant.placeholder + '街道'}/>
+                  <Input type="text" placeholder={constant.placeholder + '快递状态'}/>
                 )
               }
             </FormItem>
-
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="详细地址">
+                      style={{width: constant.detail_form_item_width}} label="快递跟踪">
               {
-                getFieldDecorator('delivery_address', {
+                getFieldDecorator('express_trace', {
                   rules: [{
                     required: true,
                     message: constant.required
                   }],
                   initialValue: ''
                 })(
-                  <Input type="text" placeholder={constant.placeholder + '详细地址'}/>
+                  <Input type="text" placeholder={constant.placeholder + '快递跟踪'}/>
                 )
               }
             </FormItem>
-
         </Spin>
       </Modal>
     );
   }
 }
 
-DeliveryDetail.propTypes = {
+ExpressDetail.propTypes = {
   is_load: PropTypes.bool.isRequired,
   is_detail: PropTypes.bool.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   handleCancel: PropTypes.func.isRequired
 };
 
-DeliveryDetail = Form.create({
+ExpressDetail = Form.create({
   withRef: true
-})(DeliveryDetail);
+})(ExpressDetail);
 
-export default DeliveryDetail;
+export default ExpressDetail;

@@ -1,14 +1,13 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import MemberTreeDetail from './MemberTreeDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class MemberTreeIndex extends Component {
   constructor(props) {
@@ -30,7 +29,7 @@ class MemberTreeIndex extends Component {
   }
 
   handleMemberLevelList() {
-    http({
+    request.post({
       url: '/member/level/category/list',
       data: {},
       success: function (json) {
@@ -41,7 +40,7 @@ class MemberTreeIndex extends Component {
       complete: function () {
 
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSearch() {
@@ -61,7 +60,7 @@ class MemberTreeIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/member/tree/list',
       data: {
 
@@ -83,7 +82,7 @@ class MemberTreeIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleChangeSize(page_index, page_size) {
@@ -119,7 +118,7 @@ class MemberTreeIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/member/admin/find',
       data: {
         member_id: member_id
@@ -130,7 +129,7 @@ class MemberTreeIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleDelete(member_id) {
@@ -140,7 +139,7 @@ class MemberTreeIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/member/delete',
       data: {
         member_id: member_id
@@ -155,7 +154,7 @@ class MemberTreeIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSubmit(data) {
@@ -169,7 +168,7 @@ class MemberTreeIndex extends Component {
       data.member_id = this.props.member_tree.member_id;
     }
 
-    request = http({
+    request.post({
       url: '/member/admin/member/level/update',
       data: data,
       success: function (json) {
@@ -184,7 +183,7 @@ class MemberTreeIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCancel() {
@@ -221,7 +220,6 @@ class MemberTreeIndex extends Component {
   }
 
   handleReset() {
-    request.cancel();
 
     this.props.dispatch({
       type: 'member_tree/fetch',
@@ -295,7 +293,7 @@ class MemberTreeIndex extends Component {
                  size="default"
                  className={style.layoutContentHeaderTable}
                  loading={this.props.member_tree.is_load && !this.props.member_tree.is_detail} columns={columns}
-                 dataSource={this.props.member_tree.list} pagination={false} scroll={{y: constant.scrollHeight()}}
+                 dataSource={this.props.member_tree.list} pagination={false}
                  bordered/>
           <MemberTreeDetail is_load={this.props.member_tree.is_load}
                         is_detail={this.props.member_tree.is_detail}

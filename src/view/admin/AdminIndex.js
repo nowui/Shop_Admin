@@ -1,135 +1,132 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import AdminDetail from './AdminDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class AdminIndex extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false
+    }
   }
 
   componentDidMount() {
-    this.props.form.setFieldsValue(this.props.admin);
+    this.props.form.setFieldsValue({
+      admin_name: this.props.admin.admin_name
+    });
 
-    this.handleSearch();
+    this.handleLoad();
+
+    notification.on('notification_admin_index_load', this, function (data) {
+      this.handleLoad();
+    });
   }
 
   componentWillUnmount() {
-    this.handleReset();
+    notification.remove('notification_product_index_load', this);
   }
 
   handleSearch() {
-    let admin_name = this.props.form.getFieldValue('admin_name');
-    let page_index = 1;
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'admin/fetch',
+        data: {
+          admin_name: this.props.form.getFieldValue('admin_name'),
+          page_index: 1
+        }
+      });
 
-    this.handleList(admin_name, page_index);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
-  handleLoad(page_index) {
-    let admin_name = this.props.admin.admin_name;
+  handleLoad() {
+    this.setState({
+      is_load: true
+    });
 
-    this.handleList(admin_name, page_index);
-  }
-
-  handleList(admin_name, page_index) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    request = http({
+    request.post({
       url: '/admin/admin/list',
       data: {
-        admin_name: admin_name,
-        page_index: page_index,
+        admin_name: this.props.admin.admin_name,
+        page_index: this.props.admin.page_index,
         page_size: this.props.admin.page_size
       },
       success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].admin_id;
-        }
-
         this.props.dispatch({
           type: 'admin/fetch',
           data: {
-            admin_name: admin_name,
             total: json.total,
-            list: json.data,
-            page_index: page_index
+            list: json.data
           }
         });
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    }).post();
+    });
+  }
+
+  handleChangeIndex(page_index) {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'admin/fetch',
+        data: {
+          page_index: page_index
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleChangeSize(page_index, page_size) {
-    this.props.dispatch({
-      type: 'admin/fetch',
-      data: {
-        page_size: page_size
-      }
-    });
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'admin/fetch',
+        data: {
+          page_index: page_index,
+          page_size: page_size
+        }
+      });
 
-    setTimeout(function () {
-      this.handleLoad(page_index);
-    }.bind(this), constant.timeout);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleSave() {
-    this.props.dispatch({
-      type: 'admin/fetch',
-      data: {
-        is_detail: true,
-        action: 'save'
-      }
-    });
+    notification.emit('notification_admin_detail_save', {});
   }
 
   handleUpdate(admin_id) {
-    if (this.handleStart({
-        is_load: true,
-        is_detail: true,
-        action: 'update',
-        admin_id: admin_id
-      })) {
-      return;
-    }
-
-    request = http({
-      url: '/admin/admin/find',
-      data: {
-        admin_id: admin_id
-      },
-      success: function (json) {
-        this.refs.detail.setFieldsValue(json.data);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    }).post();
+    notification.emit('notification_admin_detail_update', {
+      admin_id: admin_id
+    });
   }
 
   handleDelete(admin_id) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+    this.setState({
+      is_load: true
+    });
 
-    request = http({
+    request.post({
       url: '/admin/delete',
       data: {
         admin_id: admin_id
@@ -137,86 +134,13 @@ class AdminIndex extends Component {
       success: function (json) {
         message.success(constant.success);
 
-        setTimeout(function () {
-          this.handleLoad(this.props.admin.page_index);
-        }.bind(this), constant.timeout);
+        this.handleLoad();
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    }).post();
-  }
-
-  handleSubmit(data) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    if (this.props.admin.action == 'update') {
-      data.admin_id = this.props.admin.admin_id;
-    }
-
-    request = http({
-      url: '/admin/' + this.props.admin.action,
-      data: data,
-      success: function (json) {
-        message.success(constant.success);
-
-        this.handleCancel();
-
-        setTimeout(function () {
-          this.handleLoad(this.props.admin.page_index);
-        }.bind(this), constant.timeout);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    }).post();
-  }
-
-  handleCancel() {
-    this.props.dispatch({
-      type: 'admin/fetch',
-      data: {
-        is_detail: false
-      }
-    });
-
-    this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleReset();
-  }
-
-  handleStart(data) {
-    if (this.props.admin.is_load) {
-      return true;
-    }
-
-    this.props.dispatch({
-      type: 'admin/fetch',
-      data: data
-    });
-
-    return false;
-  }
-
-  handleFinish() {
-    this.props.dispatch({
-      type: 'admin/fetch',
-      data: {
-        is_load: false
-      }
-    });
-  }
-
-  handleReset() {
-    request.cancel();
-
-    this.props.dispatch({
-      type: 'admin/fetch',
-      data: {
-        is_detail: false
-      }
     });
   }
 
@@ -257,7 +181,7 @@ class AdminIndex extends Component {
       pageSize: this.props.admin.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
-      onChange: this.handleLoad.bind(this)
+      onChange: this.handleChangeIndex.bind(this)
     };
 
     return (
@@ -269,7 +193,7 @@ class AdminIndex extends Component {
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
-                      loading={this.props.admin.is_load}
+                      loading={this.state.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
               <Button type="primary" icon="plus-circle" size="default"
                       onClick={this.handleSave.bind(this)}>{constant.save}</Button>
@@ -294,16 +218,12 @@ class AdminIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
-                 loading={this.props.admin.is_load && !this.props.admin.is_detail} columns={columns}
-                 dataSource={this.props.admin.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+          <Table rowKey="admin_id"
+                 className={style.layoutContentHeaderTable}
+                 loading={this.state.is_load} columns={columns}
+                 dataSource={this.props.admin.list} pagination={pagination}
                  bordered/>
-          <AdminDetail is_load={this.props.admin.is_load}
-                       is_detail={this.props.admin.is_detail}
-                       action={this.props.admin.action}
-                       handleSubmit={this.handleSubmit.bind(this)}
-                       handleCancel={this.handleCancel.bind(this)}
-                       ref="detail"/>
+          <AdminDetail ref="detail"/>
         </div>
       </QueueAnim>
     );
@@ -315,5 +235,5 @@ AdminIndex.propTypes = {};
 AdminIndex = Form.create({})(AdminIndex);
 
 export default connect(({admin}) => ({
-  admin,
+  admin
 }))(AdminIndex);

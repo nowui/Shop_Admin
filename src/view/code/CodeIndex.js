@@ -1,13 +1,12 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, message} from 'antd';
 
 import constant from '../../util/constant';
-import http from '../../util/http';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class CodeIndex extends Component {
   constructor(props) {
@@ -23,8 +22,7 @@ class CodeIndex extends Component {
   }
 
   componentWillUnmount() {
-    request.cancel();
-  }
+      }
 
   handleSearch() {
     let page_index = 1;
@@ -43,7 +41,7 @@ class CodeIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/code/list',
       data: {
         page_index: page_index,
@@ -66,7 +64,7 @@ class CodeIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handSave() {
@@ -97,7 +95,7 @@ class CodeIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/code/save',
       data: {
         name_space: name_space,
@@ -109,7 +107,7 @@ class CodeIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleDelete(code_id) {
@@ -119,7 +117,7 @@ class CodeIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/code/delete',
       data: {
         code_id: code_id
@@ -134,7 +132,7 @@ class CodeIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSubmit(data) {
@@ -148,7 +146,7 @@ class CodeIndex extends Component {
       data.code_id = this.props.code.code_id;
     }
 
-    request = http({
+    request.post({
       url: '/code/' + this.props.code.action,
       data: data,
       success: function (json) {
@@ -163,7 +161,7 @@ class CodeIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCancel() {
@@ -277,9 +275,9 @@ class CodeIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
+          <Table className={style.layoutContentHeaderTable}
                  loading={this.props.code.is_load && !this.props.code.is_detail} columns={columns}
-                 dataSource={this.props.code.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 dataSource={this.props.code.list} pagination={pagination}
                  bordered/>
         </div>
       </QueueAnim>

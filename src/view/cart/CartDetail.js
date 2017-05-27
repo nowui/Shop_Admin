@@ -1,39 +1,104 @@
-import React, {Component, PropTypes} from 'react';
-import {Modal, Form, Spin, Button, Input, InputNumber} from 'antd';
+import React, {Component} from 'react';
+import {connect} from 'dva';
+import {Modal, Form, Spin, Button, Input, InputNumber, message} from 'antd';
 
 import constant from '../../util/constant';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
 class CartDetail extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false,
+      is_show: false,
+      action: '',
+      cart_id: ''
+    }
   }
 
   componentDidMount() {
+    notification.on('notification_cart_detail_save', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'save'
+      });
+    });
 
+    notification.on('notification_cart_detail_update', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'update',
+        cart_id: data.cart_id
+      });
+
+      this.handleLoad(data.cart_id);
+    });
   }
 
   componentWillUnmount() {
+    notification.remove('notification_cart_detail_save', this);
 
+    notification.remove('notification_cart_detail_update', this);
+  }
+
+  handleLoad(cart_id) {
+    this.setState({
+      is_load: true
+    });
+
+    request.post({
+      url: '/cart/admin/find',
+      data: {
+        cart_id: cart_id
+      },
+      success: function (json) {
+        this.props.form.setFieldsValue({
+          category_id: json.data.category_id,
+          cart_name: json.data.cart_name
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+
+      }.bind(this)
+    });
   }
 
   handleSubmit() {
-    this.props.form.validateFields((errors, values) => {
+    this.props.form.validateFieldsAndScroll((errors, values) => {
       if (!!errors) {
         return;
       }
 
-      this.props.handleSubmit(values);
+      values.cart_id = this.state.cart_id;
+
+      request.post({
+        url: '/cart/' + this.state.action,
+        data: values,
+        success: function (json) {
+          message.success(constant.success);
+
+          this.handleCancel();
+
+          notification.emit('notification_cart_index_load', {});
+        }.bind(this),
+        complete: function () {
+
+        }.bind(this)
+      });
     });
   }
 
   handleCancel() {
-    this.props.handleCancel();
-  }
+    this.setState({
+      is_show: false
+    });
 
-  handleReset() {
     this.props.form.resetFields();
   }
 
@@ -43,16 +108,17 @@ class CartDetail extends Component {
 
     return (
       <Modal title={'表单'} maskClosable={false} width={constant.detail_width}
-             visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
+             visible={this.state.is_show} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
                        onClick={this.handleCancel.bind(this)}>关闭</Button>,
                <Button key="submit" type="primary" size="default" icon="check-circle"
-                       loading={this.props.is_load}
+                       loading={this.state.is_load}
                        onClick={this.handleSubmit.bind(this)}>确定</Button>
              ]}
       >
-        <Spin spinning={this.props.is_load}>
+        <Spin spinning={this.state.is_load}>
+          <form>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="用户编号">
               {
@@ -91,26 +157,23 @@ class CartDetail extends Component {
                   }],
                   initialValue: 0
                 })(
-                  <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + '购物车商品数量'}
-                             min={0} max={999}/>
+                  <InputNumber type="text" className={style.formItemInput}
+                               placeholder={constant.placeholder + '购物车商品数量'}
+                               min={0} max={999}/>
                 )
               }
             </FormItem>
+          </form>
         </Spin>
       </Modal>
     );
   }
 }
 
-CartDetail.propTypes = {
-  is_load: React.PropTypes.bool.isRequired,
-  is_detail: React.PropTypes.bool.isRequired,
-  handleSubmit: React.PropTypes.func.isRequired,
-  handleCancel: React.PropTypes.func.isRequired
-};
+CartDetail.propTypes = {};
 
-CartDetail = Form.create({
-  withRef: true
-})(CartDetail);
+CartDetail = Form.create({})(CartDetail);
 
-export default CartDetail;
+export default connect(({cart}) => ({
+  cart
+}))(CartDetail);

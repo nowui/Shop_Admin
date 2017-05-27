@@ -1,180 +1,184 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import ProductDetail from './ProductDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class ProductIndex extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      category_list: [],
-      brand_list: [],
-      member_level_list: []
+      is_load: false
     }
   }
 
   componentDidMount() {
-    this.props.form.setFieldsValue(this.props.product);
-
-    this.handleSearch();
+    this.props.form.setFieldsValue({
+      product_name: this.props.product.product_name
+    });
 
     this.handleCategoryList();
 
     this.handleBrandList();
 
     this.handleMemberLevelList();
+
+    this.handleLoad();
+
+    notification.on('notification_product_index_load', this, function (data) {
+      this.handleLoad();
+    });
   }
 
   componentWillUnmount() {
-    this.handleReset();
+    notification.remove('notification_product_index_load', this);
   }
 
   handleCategoryList() {
-    http({
+    request.post({
       url: '/product/category/list',
       data: {},
       success: function (json) {
-        this.setState({
-          category_list: json.data
-        });
-      }.bind(this),
-      complete: function () {
-
-      }.bind(this)
-    }).post();
-  }
-
-  handleBrandList() {
-    http({
-      url: '/brand/category/list',
-      data: {},
-      success: function (json) {
-        this.setState({
-          brand_list: json.data
-        });
-      }.bind(this),
-      complete: function () {
-
-      }.bind(this)
-    }).post();
-  }
-
-  handleMemberLevelList() {
-    http({
-      url: '/member/level/category/list',
-      data: {},
-      success: function (json) {
-        this.setState({
-          member_level_list: json.data
-        });
-      }.bind(this),
-      complete: function () {
-
-      }.bind(this)
-    }).post();
-  }
-
-  handleSearch() {
-    let product_name = this.props.form.getFieldValue('product_name');
-    let page_index = 1;
-
-    this.handleList(product_name, page_index);
-  }
-
-  handleLoad(page_index) {
-    let product_name = this.props.product.product_name;
-
-    this.handleList(product_name, page_index);
-  }
-
-  handleList(product_name, page_index) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    request = http({
-      url: '/product/admin/list',
-      data: {
-        product_name: product_name,
-        page_index: page_index,
-        page_size: this.props.product.page_size
-      },
-      success: function (json) {
-        for (let i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].product_id;
-        }
-
         this.props.dispatch({
           type: 'product/fetch',
           data: {
-            product_name: product_name,
-            total: json.total,
-            list: json.data,
-            page_index: page_index
+            category_list: json.data
           }
         });
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+
       }.bind(this)
-    }).post();
+    });
+  }
+
+  handleBrandList() {
+    request.post({
+      url: '/brand/category/list',
+      data: {},
+      success: function (json) {
+        this.props.dispatch({
+          type: 'product/fetch',
+          data: {
+            brand_list: json.data
+          }
+        });
+      }.bind(this),
+      complete: function () {
+
+      }.bind(this)
+    });
+  }
+
+  handleMemberLevelList() {
+    request.post({
+      url: '/member/level/category/list',
+      data: {},
+      success: function (json) {
+        this.props.dispatch({
+          type: 'product/fetch',
+          data: {
+            member_level_list: json.data
+          }
+        });
+      }.bind(this),
+      complete: function () {
+
+      }.bind(this)
+    });
+  }
+
+  handleSearch() {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'product/fetch',
+        data: {
+          product_name: this.props.form.getFieldValue('product_name'),
+          page_index: 1
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
+  }
+
+  handleLoad() {
+    this.setState({
+      is_load: true
+    });
+
+    request.post({
+      url: '/product/admin/list',
+      data: {
+        product_name: this.props.product.product_name,
+        page_index: this.props.product.page_index,
+        page_size: this.props.product.page_size
+      },
+      success: function (json) {
+        this.props.dispatch({
+          type: 'product/fetch',
+          data: {
+            total: json.total,
+            list: json.data
+          }
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+      }.bind(this)
+    });
+  }
+
+  handleChangeIndex(page_index) {
+    new Promise(function(resolve, reject) {
+      this.props.dispatch({
+        type: 'product/fetch',
+        data: {
+          page_index: page_index
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function() {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleChangeSize(page_index, page_size) {
-    this.props.dispatch({
-      type: 'product/fetch',
-      data: {
-        page_size: page_size
-      }
-    });
+    new Promise(function(resolve, reject) {
+      this.props.dispatch({
+        type: 'product/fetch',
+        data: {
+          page_index: page_index,
+          page_size: page_size
+        }
+      });
 
-    setTimeout(function () {
-      this.handleLoad(page_index);
-    }.bind(this), constant.timeout);
+      resolve();
+    }.bind(this)).then(function() {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleSave() {
-    this.props.dispatch({
-      type: 'product/fetch',
-      data: {
-        is_detail: true,
-        action: 'save'
-      }
-    });
+    notification.emit('notification_product_detail_save', {});
   }
 
   handleUpdate(product_id) {
-    if (this.handleStart({
-        is_load: true,
-        is_detail: true,
-        action: 'update',
-        product_id: product_id
-      })) {
-      return;
-    }
-
-    request = http({
-      url: '/product/admin/find',
-      data: {
-        product_id: product_id
-      },
-      success: function (json) {
-        this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleSetFieldsValue(json.data);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    }).post();
+    notification.emit('notification_product_detail_update', {
+      product_id: product_id
+    });
   }
 
   handleDelete(product_id) {
@@ -184,7 +188,7 @@ class ProductIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/product/delete',
       data: {
         product_id: product_id
@@ -192,86 +196,11 @@ class ProductIndex extends Component {
       success: function (json) {
         message.success(constant.success);
 
-        setTimeout(function () {
-          this.handleLoad(this.props.product.page_index);
-        }.bind(this), constant.timeout);
+        this.handleLoad();
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+
       }.bind(this)
-    }).post();
-  }
-
-  handleSubmit(data) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    if (this.props.product.action == 'update') {
-      data.product_id = this.props.product.product_id;
-    }
-
-    request = http({
-      url: '/product/' + this.props.product.action,
-      data: data,
-      success: function (json) {
-        message.success(constant.success);
-
-        this.handleCancel();
-
-        setTimeout(function () {
-          this.handleLoad(this.props.product.page_index);
-        }.bind(this), constant.timeout);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    }).post();
-  }
-
-  handleCancel() {
-    this.props.dispatch({
-      type: 'product/fetch',
-      data: {
-        is_detail: false
-      }
-    });
-
-    this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleReset();
-  }
-
-  handleStart(data) {
-    if (this.props.product.is_load) {
-      return true;
-    }
-
-    this.props.dispatch({
-      type: 'product/fetch',
-      data: data
-    });
-
-    return false;
-  }
-
-  handleFinish() {
-    this.props.dispatch({
-      type: 'product/fetch',
-      data: {
-        is_load: false
-      }
-    });
-  }
-
-  handleReset() {
-    request.cancel();
-
-    this.props.dispatch({
-      type: 'product/fetch',
-      data: {
-        is_detail: false
-      }
     });
   }
 
@@ -313,7 +242,7 @@ class ProductIndex extends Component {
       pageSize: this.props.product.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
-      onChange: this.handleLoad.bind(this)
+      onChange: this.handleChangeIndex.bind(this)
     };
 
     return (
@@ -325,7 +254,7 @@ class ProductIndex extends Component {
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
-                      loading={this.props.product.is_load}
+                      loading={this.state.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
               <Button type="primary" icon="plus-circle" size="default"
                       onClick={this.handleSave.bind(this)}>{constant.save}</Button>
@@ -350,18 +279,12 @@ class ProductIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
-                 loading={this.props.product.is_load && !this.props.product.is_detail} columns={columns}
-                 dataSource={this.props.product.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+          <Table rowKey="product_id"
+                 className={style.layoutContentHeaderTable}
+                 loading={this.state.is_load} columns={columns}
+                 dataSource={this.props.product.list} pagination={pagination}
                  bordered/>
-          <ProductDetail is_load={this.props.product.is_load}
-                         is_detail={this.props.product.is_detail}
-                         category_list={this.state.category_list}
-                         brand_list={this.state.brand_list}
-                         member_level_list={this.state.member_level_list}
-                         handleSubmit={this.handleSubmit.bind(this)}
-                         handleCancel={this.handleCancel.bind(this)}
-                         ref="detail"/>
+          <ProductDetail ref="detail"/>
         </div>
       </QueueAnim>
     );
@@ -373,5 +296,5 @@ ProductIndex.propTypes = {};
 ProductIndex = Form.create({})(ProductIndex);
 
 export default connect(({product}) => ({
-  product,
+  product
 }))(ProductIndex);

@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {Modal, Form, Spin, Button, Input, InputNumber} from 'antd';
 
 import constant from '../../util/constant';
@@ -139,11 +140,11 @@ class SceneDetail extends Component {
 }
 
 SceneDetail.propTypes = {
-  is_load: React.PropTypes.bool.isRequired,
-  is_detail: React.PropTypes.bool.isRequired,
-  action: React.PropTypes.string.isRequired,
-  handleSubmit: React.PropTypes.func.isRequired,
-  handleCancel: React.PropTypes.func.isRequired
+  is_load: PropTypes.bool.isRequired,
+  is_detail: PropTypes.bool.isRequired,
+  action: PropTypes.string.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  handleCancel: PropTypes.func.isRequired
 };
 
 SceneDetail = Form.create({

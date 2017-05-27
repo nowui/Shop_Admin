@@ -1,8 +1,11 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {Modal, message} from 'antd';
 
 import ImageHelp from './ImageHelp';
 import constant from '../util/constant';
+import notification from '../util/notification';
+
 import style from './InputImage.css';
 
 class InputImage extends Component {
@@ -17,20 +20,48 @@ class InputImage extends Component {
   }
 
   componentDidMount() {
+    notification.on('notification_image_help_' + this.props.name + '_Submit', this, function (data) {
+      let array = this.state.list;
 
+      for (let i = 0; i < data.length; i++) {
+        let isNotExit = true;
+
+        for (let k = 0; k < this.state.list.length; k++) {
+          if (data[i].file_path == this.state.list[k].file_path) {
+            isNotExit = false;
+
+            break;
+          }
+        }
+
+        if (isNotExit) {
+          if (array.length < this.props.limit) {
+            array.push(data[i]);
+          }
+        }
+      }
+
+      this.setState({
+        list: array
+      });
+    });
   }
 
   componentWillUnmount() {
-
+    notification.remove('notification_image_help_' + this.props.name + '_Submit', this);
   }
 
-  handleSetList(list) {
+  handleGetValue() {
+    return this.state.list;
+  }
+
+  handleSetValue(data) {
     let array = [];
 
-    for (let i = 0; i < list.length; i++) {
+    for (let i = 0; i < data.length; i++) {
       array.push({
-        file_id: list[i].file_id,
-        file_path: list[i].file_path,
+        file_id: data[i].file_id,
+        file_path: data[i].file_path,
         status: false
       });
     }
@@ -38,10 +69,6 @@ class InputImage extends Component {
     this.setState({
       list: array
     });
-  }
-
-  handleGetList() {
-    return this.state.list;
   }
 
   handleBeforeUpload(file) {
@@ -101,8 +128,8 @@ class InputImage extends Component {
     });
   }
 
-  handleUpload() {
-    this.refs.image.handleOpen();
+  handleAdd() {
+    notification.emit('notification_image_help_' + this.props.name + '_show', {});
   }
 
   handleMouseOver(file_id) {
@@ -141,34 +168,6 @@ class InputImage extends Component {
     });
   }
 
-  handleSubmitReturn(list) {
-    let array = this.state.list;
-
-    for (let i = 0; i < list.length; i++) {
-      let isNotExit = true;
-
-      for (let k = 0; k < this.state.list.length; k++) {
-        if (list[i].file_path == this.state.list[k].file_path) {
-          isNotExit = false;
-
-          break;
-        }
-      }
-
-      if (isNotExit) {
-        //list[i] = list[i].replace(Helper.host, '');
-
-        if (array.length < this.props.limit) {
-          array.push(list[i]);
-        }
-      }
-    }
-
-    this.setState({
-      list: array
-    });
-  }
-
   handleReset() {
     this.setState({
       is_preview: false,
@@ -203,7 +202,7 @@ class InputImage extends Component {
         }
         {
           this.state.list.length < this.props.limit ?
-            <div className={style.button} onClick={this.handleUpload.bind(this)}>
+            <div className={style.button} onClick={this.handleAdd.bind(this)}>
               <i className={"anticon anticon-plus " + style.buttonIcon}/>
               <div className={"ant-upload-text " + style.buttonText}>添加图片</div>
             </div>
@@ -213,15 +212,16 @@ class InputImage extends Component {
         <Modal visible={this.state.is_preview} footer={null} onCancel={this.handleCancel.bind(this)}>
           <img alt="example" style={{width: '100%'}} src={this.state.image}/>
         </Modal>
-        <ImageHelp type={this.props.type} limit={this.props.limit} handleSubmitReturn={this.handleSubmitReturn.bind(this)} ref="image"/>
+        <ImageHelp name={this.props.name} type={this.props.type} limit={this.props.limit} ref="image"/>
       </div>
     );
   }
 }
 
 InputImage.propTypes = {
-  type: React.PropTypes.string,
-  limit: React.PropTypes.number
+  name: PropTypes.string.isRequired,
+  type: PropTypes.string,
+  limit: PropTypes.number
 };
 
 InputImage.defaultProps = {

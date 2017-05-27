@@ -1,14 +1,13 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import SceneDetail from './SceneDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class SceneIndex extends Component {
   constructor(props) {
@@ -45,7 +44,7 @@ class SceneIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/scene/admin/list',
       data: {
         scene_type: scene_type,
@@ -70,7 +69,7 @@ class SceneIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleChangeSize(page_index, page_size) {
@@ -106,7 +105,7 @@ class SceneIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/scene/admin/find',
       data: {
         scene_id: scene_id
@@ -117,7 +116,7 @@ class SceneIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleDelete(scene_id) {
@@ -127,7 +126,7 @@ class SceneIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/scene/delete',
       data: {
         scene_id: scene_id
@@ -142,7 +141,7 @@ class SceneIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSubmit(data) {
@@ -162,7 +161,7 @@ class SceneIndex extends Component {
       data.scene_id = this.props.scene.scene_id;
     }
 
-    request = http({
+    request.post({
       url: '/scene/' + this.props.scene.action,
       data: data,
       success: function (json) {
@@ -177,7 +176,7 @@ class SceneIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCancel() {
@@ -214,7 +213,6 @@ class SceneIndex extends Component {
   }
 
   handleReset() {
-    request.cancel();
 
     this.props.dispatch({
       type: 'scene/fetch',
@@ -334,9 +332,9 @@ class SceneIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
+          <Table className={style.layoutContentHeaderTable}
                  loading={this.props.scene.is_load && !this.props.scene.is_detail} columns={columns}
-                 dataSource={this.props.scene.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 dataSource={this.props.scene.list} pagination={pagination}
                  bordered/>
           <SceneDetail is_load={this.props.scene.is_load}
                        is_detail={this.props.scene.is_detail}

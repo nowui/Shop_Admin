@@ -1,42 +1,50 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import TinyMCE from 'react-tinymce';
 
 import ImageHelp from './ImageHelp'
 import constant from '../util/constant';
+import notification from '../util/notification';
 
-let editor;
+var editor;
 
 class InputHtml extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      content: ''
+      editor: ''
     }
   }
 
   componentDidMount() {
+    notification.on('notification_image_help_' + this.props.name + '_Submit', this, function (data) {
+      let html = '';
 
+      for (let i = 0; i < data.length; i++) {
+        html += '<img src="' + constant.host + data[i].file_path + '" />';
+      }
+
+      this.editor.insertContent(html);
+    });
   }
 
   componentWillUnmount() {
+    notification.remove('notification_image_help_' + this.props.name + '_Submit', this);
+
     this.editor.remove();
   }
 
-  handleSetContent(content) {
-    this.setState({
-      content: content
-    });
-
+  handleSetValue(content) {
     this.editor.setContent(content);
   }
 
-  handleGetContent() {
+  handleGetValue() {
     return this.editor.getContent();
   }
 
   handleReset() {
-    this.handleSetContent("");
+    this.handleSetValue("");
   }
 
   handleSubmitReturn(list) {
@@ -74,18 +82,20 @@ class InputHtml extends Component {
                 icon: 'mce-ico mce-i-browse',
                 tooltip: 'Insert image',
                 onclick: function () {
-                  this.refs.image.handleOpen();
+                  notification.emit('notification_image_help_' + this.props.name + '_show', {});
                 }.bind(this)
               });
             }.bind(this)
           }}
         />
-        <ImageHelp is_visible={false} type={'original'} limit={0} handleSubmitReturn={this.handleSubmitReturn.bind(this)} ref="image"/>
+        <ImageHelp name={this.props.name} type={'original'} limit={0} ref="image"/>
       </div>
     );
   }
 }
 
-InputHtml.propTypes = {};
+InputHtml.propTypes = {
+  name: PropTypes.string.isRequired
+};
 
 export default InputHtml;

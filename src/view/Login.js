@@ -1,11 +1,10 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import {routerRedux} from 'dva/router';
 import {Card, message, Spin, Form, Input, Button} from 'antd';
 
 import constant from '../util/constant';
 import database from '../util/database';
-import http from '../util/http';
 import style from './style.css';
 
 class Login extends Component {
@@ -35,7 +34,7 @@ class Login extends Component {
         is_load: true
       });
 
-      http({
+      request.post({
         url: '/admin/login',
         data: values,
         success: function (json) {
@@ -55,7 +54,7 @@ class Login extends Component {
             is_load: false
           });
         }.bind(this)
-      }).post();
+      });
     });
   }
 

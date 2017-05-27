@@ -1,14 +1,13 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import DeliveryDetail from './DeliveryDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class DeliveryIndex extends Component {
   constructor(props) {
@@ -47,7 +46,7 @@ class DeliveryIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/delivery/admin/list',
       data: {
         delivery_name: delivery_name,
@@ -72,7 +71,7 @@ class DeliveryIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleChangeSize(page_index, page_size) {
@@ -108,7 +107,7 @@ class DeliveryIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/delivery/admin/find',
       data: {
         delivery_id: delivery_id
@@ -119,7 +118,7 @@ class DeliveryIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleDelete(delivery_id) {
@@ -129,7 +128,7 @@ class DeliveryIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/delivery/delete',
       data: {
         delivery_id: delivery_id
@@ -144,7 +143,7 @@ class DeliveryIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSubmit(data) {
@@ -158,7 +157,7 @@ class DeliveryIndex extends Component {
       data.delivery_id = this.props.delivery.delivery_id;
     }
 
-    request = http({
+    request.post({
       url: '/delivery/' + this.props.delivery.action,
       data: data,
       success: function (json) {
@@ -173,7 +172,7 @@ class DeliveryIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCancel() {
@@ -210,7 +209,6 @@ class DeliveryIndex extends Component {
   }
 
   handleReset() {
-    request.cancel();
 
     this.props.dispatch({
       type: 'delivery/fetch',
@@ -293,9 +291,9 @@ class DeliveryIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
+          <Table className={style.layoutContentHeaderTable}
                  loading={this.props.delivery.is_load && !this.props.delivery.is_detail} columns={columns}
-                 dataSource={this.props.delivery.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 dataSource={this.props.delivery.list} pagination={pagination}
                  bordered/>
           <DeliveryDetail is_load={this.props.delivery.is_load}
                       is_detail={this.props.delivery.is_detail}

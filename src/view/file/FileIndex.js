@@ -1,14 +1,13 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import FileDetail from './FileDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class FileIndex extends Component {
   constructor(props) {
@@ -47,7 +46,7 @@ class FileIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/file/admin/list',
       data: {
         file_name: file_name,
@@ -72,7 +71,7 @@ class FileIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleChangeSize(page_index, page_size) {
@@ -108,7 +107,7 @@ class FileIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/file/admin/find',
       data: {
         file_id: file_id
@@ -119,7 +118,7 @@ class FileIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleDelete(file_id) {
@@ -129,7 +128,7 @@ class FileIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/file/delete',
       data: {
         file_id: file_id
@@ -144,7 +143,7 @@ class FileIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSubmit(data) {
@@ -158,7 +157,7 @@ class FileIndex extends Component {
       data.file_id = this.props.file.file_id;
     }
 
-    request = http({
+    request.post({
       url: '/file/' + this.props.file.action,
       data: data,
       success: function (json) {
@@ -173,7 +172,7 @@ class FileIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCancel() {
@@ -210,7 +209,6 @@ class FileIndex extends Component {
   }
 
   handleReset() {
-    request.cancel();
 
     this.props.dispatch({
       type: 'file/fetch',
@@ -290,9 +288,9 @@ class FileIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
+          <Table className={style.layoutContentHeaderTable}
                  loading={this.props.file.is_load && !this.props.file.is_detail} columns={columns}
-                 dataSource={this.props.file.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 dataSource={this.props.file.list} pagination={pagination}
                  bordered/>
           <FileDetail is_load={this.props.file.is_load}
                       is_detail={this.props.file.is_detail}

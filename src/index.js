@@ -35,6 +35,7 @@ app.model(require('./model/supplier'));
 app.model(require('./model/scene'));
 app.model(require('./model/bill'));
 app.model(require('./model/cart'));
+app.model(require('./model/express'));
 
 app.model(require('./model/article'));
 

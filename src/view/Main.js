@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
 import {routerRedux, Link} from 'dva/router';
-import {Layout, Menu, Icon, Badge} from 'antd';
+import {Layout, Menu, Icon} from 'antd';
 
 import constant from '../util/constant';
 import database from '../util/database';
-import http from '../util/http';
+import request from '../util/request';
 import style from './style.css';
 
 class Main extends Component {
@@ -21,7 +21,7 @@ class Main extends Component {
   }
 
   componentDidMount() {
-    http({
+    request.post({
       url: '/admin/menu',
       data: {
 
@@ -52,7 +52,7 @@ class Main extends Component {
       complete: function () {
 
       }.bind(this)
-    }).post();
+    });
   }
 
   componentWillUnmount() {
@@ -132,7 +132,7 @@ class Main extends Component {
             {/*type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}*/}
             {/*onClick={this.handleToggle.bind(this)}*/}
           {/*/>*/}
-          {/*<Badge count={5} className={style.notification}>*/}
+          {/*<Badge count={5} className={style.notification} style={{boxShadow: 'none'}}>*/}
             {/*<Link to=''><Icon type="notification" className={style.notificationMessage}/></Link>*/}
           {/*</Badge>*/}
           {/*<Link to=''><Icon type="user" className={style.user}/></Link>*/}

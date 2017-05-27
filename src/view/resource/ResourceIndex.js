@@ -1,14 +1,13 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import ResourceDetail from './ResourceDetail';
 import constant from '../../util/constant';
-import http from '../../util/http';
+import request from '../../util/request';
 import style from '../style.css';
 
-let request;
 
 class ResourceIndex extends Component {
   constructor(props) {
@@ -47,7 +46,7 @@ class ResourceIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/resource/admin/list',
       data: {
         resource_name: resource_name,
@@ -72,7 +71,7 @@ class ResourceIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleChangeSize(page_index, page_size) {
@@ -108,7 +107,7 @@ class ResourceIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/resource/admin/find',
       data: {
         resource_id: resource_id
@@ -119,7 +118,7 @@ class ResourceIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleDelete(resource_id) {
@@ -129,7 +128,7 @@ class ResourceIndex extends Component {
       return;
     }
 
-    request = http({
+    request.post({
       url: '/resource/delete',
       data: {
         resource_id: resource_id
@@ -144,7 +143,7 @@ class ResourceIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleSubmit(data) {
@@ -158,7 +157,7 @@ class ResourceIndex extends Component {
       data.resource_id = this.props.resource.resource_id;
     }
 
-    request = http({
+    request.post({
       url: '/resource/' + this.props.resource.action,
       data: data,
       success: function (json) {
@@ -173,7 +172,7 @@ class ResourceIndex extends Component {
       complete: function () {
         this.handleFinish();
       }.bind(this)
-    }).post();
+    });
   }
 
   handleCancel() {
@@ -210,7 +209,6 @@ class ResourceIndex extends Component {
   }
 
   handleReset() {
-    request.cancel();
 
     this.props.dispatch({
       type: 'resource/fetch',
@@ -290,9 +288,9 @@ class ResourceIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table size="middle" className={style.layoutContentHeaderTable}
+          <Table className={style.layoutContentHeaderTable}
                  loading={this.props.resource.is_load && !this.props.resource.is_detail} columns={columns}
-                 dataSource={this.props.resource.list} pagination={pagination} scroll={{y: constant.scrollHeight()}}
+                 dataSource={this.props.resource.list} pagination={pagination}
                  bordered/>
           <ResourceDetail is_load={this.props.resource.is_load}
                       is_detail={this.props.resource.is_detail}
