@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
-import {Row, Col, Button, Form, Input, Table, Popconfirm, Select, message} from 'antd';
+import {Row, Col, Button, Form, Input, Table, Select, message} from 'antd';
 
 import LogDetail from './LogDetail';
 import constant from '../../util/constant';
+import notification from '../../util/notification';
 import request from '../../util/request';
 import style from '../style.css';
 
@@ -13,120 +14,121 @@ class LogIndex extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false
+    }
   }
 
   componentDidMount() {
-    this.props.form.setFieldsValue(this.props.log);
+    this.props.form.setFieldsValue({
+      log_url: this.props.log.log_url
+    });
 
-    this.handleSearch();
+    this.handleLoad();
+
+    notification.on('notification_log_index_load', this, function (data) {
+      this.handleLoad();
+    });
   }
 
   componentWillUnmount() {
-    this.handleReset();
+    notification.remove('notification_log_index_load', this);
   }
 
   handleSearch() {
-    var log_url = this.props.form.getFieldValue('log_url');
-    var page_index = 1;
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'log/fetch',
+        data: {
+          log_url: this.props.form.getFieldValue('log_url'),
+          log_code: this.props.form.getFieldValue('log_code'),
+          log_platform: this.props.form.getFieldValue('log_platform'),
+          page_index: 1
+        }
+      });
 
-    this.handleList(log_url, page_index);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
-  handleLoad(page_index) {
-    var log_url = this.props.log.log_url;
-
-    this.handleList(log_url, page_index);
-  }
-
-  handleList(log_url, page_index) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+  handleLoad() {
+    this.setState({
+      is_load: true
+    });
 
     request.post({
       url: '/log/admin/list',
       data: {
-        log_url: log_url,
-        page_index: page_index,
+        log_url: this.props.log.log_url,
+        log_code: this.props.log.log_code,
+        log_platform: this.props.log.log_platform,
+        page_index: this.props.log.page_index,
         page_size: this.props.log.page_size
       },
       success: function (json) {
-        for (var i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].log_id;
-        }
-
         this.props.dispatch({
           type: 'log/fetch',
           data: {
-            log_url: log_url,
             total: json.total,
-            list: json.data,
-            page_index: page_index
+            list: json.data
           }
         });
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
     });
+  }
+
+  handleChangeIndex(page_index) {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'log/fetch',
+        data: {
+          page_index: page_index
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleChangeSize(page_index, page_size) {
-    this.props.dispatch({
-      type: 'log/fetch',
-      data: {
-        page_size: page_size
-      }
-    });
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'log/fetch',
+        data: {
+          page_index: page_index,
+          page_size: page_size
+        }
+      });
 
-    setTimeout(function () {
-      this.handleLoad(page_index);
-    }.bind(this), constant.timeout);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleSave() {
-    this.props.dispatch({
-      type: 'log/fetch',
-      data: {
-        is_detail: true,
-        action: 'save'
-      }
-    });
+    notification.emit('notification_log_detail_save', {});
   }
 
   handleUpdate(log_id) {
-    if (this.handleStart({
-        is_load: true,
-        is_detail: true,
-        action: 'update',
-        log_id: log_id
-      })) {
-      return;
-    }
-
-    request.post({
-      url: '/log/admin/find',
-      data: {
-        log_id: log_id
-      },
-      success: function (json) {
-        this.refs.detail.setFieldsValue(json.data);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
+    notification.emit('notification_log_detail_update', {
+      log_id: log_id
     });
   }
 
   handleDelete(log_id) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+    this.setState({
+      is_load: true
+    });
 
     request.post({
       url: '/log/delete',
@@ -136,85 +138,13 @@ class LogIndex extends Component {
       success: function (json) {
         message.success(constant.success);
 
-        setTimeout(function () {
-            this.handleLoad(this.props.log.page_index);
-        }.bind(this), constant.timeout);
+        this.handleLoad();
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    });
-  }
-
-  handleSubmit(data) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    if (this.props.log.action == 'update') {
-      data.log_id = this.props.log.log_id;
-    }
-
-    request.post({
-      url: '/log/' + this.props.log.action,
-      data: data,
-      success: function (json) {
-        message.success(constant.success);
-
-        this.handleCancel();
-
-        setTimeout(function () {
-            this.handleLoad(this.props.log.page_index);
-        }.bind(this), constant.timeout);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    });
-  }
-
-  handleCancel() {
-    this.props.dispatch({
-      type: 'log/fetch',
-      data: {
-        is_detail: false
-      }
-    });
-
-    this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleReset();
-  }
-
-  handleStart(data) {
-    if (this.props.log.is_load) {
-      return true;
-    }
-
-    this.props.dispatch({
-      type: 'log/fetch',
-      data: data
-    });
-
-    return false;
-  }
-
-  handleFinish() {
-    this.props.dispatch({
-      type: 'log/fetch',
-      data: {
-        is_load: false
-      }
-    });
-  }
-
-  handleReset() {
-
-    this.props.dispatch({
-      type: 'log/fetch',
-      data: {
-        is_detail: false
-      }
     });
   }
 
@@ -253,11 +183,6 @@ class LogIndex extends Component {
       render: (text, record, index) => (
         <span>
           <a onClick={this.handleUpdate.bind(this, record.log_id)}>{constant.find}</a>
-          {/*<span className={style.divider}/>*/}
-          {/*<Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}*/}
-                      {/*cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.log_id)}>*/}
-            {/*<a>记录</a>*/}
-          {/*</Popconfirm>*/}
         </span>
       )
     }];
@@ -272,7 +197,7 @@ class LogIndex extends Component {
       pageSize: this.props.log.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
-      onChange: this.handleLoad.bind(this)
+      onChange: this.handleChangeIndex.bind(this)
     };
 
     return (
@@ -283,8 +208,8 @@ class LogIndex extends Component {
               <div className={style.layoutContentHeaderTitle}>日志列表</div>
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
-              <Button type="default" icon="search" size="default"
-                      loading={this.props.log.is_load}
+              <Button type="primary" icon="search" size="default"
+                      loading={this.state.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
             </Col>
           </Row>
@@ -333,15 +258,12 @@ class LogIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
-                 loading={this.props.log.is_load && !this.props.log.is_detail} columns={columns}
+          <Table rowKey="log_id"
+                 className={style.layoutContentHeaderTable}
+                 loading={this.state.is_load} columns={columns}
                  dataSource={this.props.log.list} pagination={pagination}
                  bordered/>
-          <LogDetail is_load={this.props.log.is_load}
-                      is_detail={this.props.log.is_detail}
-                      handleSubmit={this.handleSubmit.bind(this)}
-                      handleCancel={this.handleCancel.bind(this)}
-                      ref="detail"/>
+          <LogDetail ref="detail"/>
         </div>
       </QueueAnim>
     );
@@ -353,5 +275,5 @@ LogIndex.propTypes = {};
 LogIndex = Form.create({})(LogIndex);
 
 export default connect(({log}) => ({
-  log,
+  log
 }))(LogIndex);

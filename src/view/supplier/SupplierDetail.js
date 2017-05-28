@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import {Modal, Form, Spin, Button, Input, Checkbox} from 'antd';
+import {connect} from 'dva';
+import {Modal, Form, Spin, Button, Input, Checkbox, message} from 'antd';
 
 import constant from '../../util/constant';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
 class SupplierDetail extends Component {
@@ -10,16 +12,61 @@ class SupplierDetail extends Component {
     super(props);
 
     this.state = {
-      isChange: false
+      is_load: false,
+      is_show: false,
+      action: '',
+      attribute_id: ''
     }
   }
 
   componentDidMount() {
+    notification.on('notification_attribute_detail_save', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'save'
+      });
+    });
 
+    notification.on('notification_attribute_detail_update', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'update',
+        attribute_id: data.attribute_id
+      });
+
+      this.handleLoad(data.attribute_id);
+    });
   }
 
   componentWillUnmount() {
+    notification.remove('notification_attribute_detail_save', this);
 
+    notification.remove('notification_attribute_detail_update', this);
+  }
+
+  handleLoad(attribute_id) {
+    this.setState({
+      is_load: true
+    });
+
+    request.post({
+      url: '/attribute/admin/find',
+      data: {
+        attribute_id: attribute_id
+      },
+      success: function (json) {
+        this.props.form.setFieldsValue({
+          category_id: json.data.category_id,
+          attribute_name: json.data.attribute_name
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+
+      }.bind(this)
+    });
   }
 
   handleSubmit() {
@@ -28,30 +75,31 @@ class SupplierDetail extends Component {
         return;
       }
 
-      if (!this.state.isChange && this.props.action == 'update') {
-        values.user_account = '';
-      }
+      values.attribute_id = this.state.attribute_id;
 
-      this.props.handleSubmit(values);
-    });
-  }
+      request.post({
+        url: '/attribute/' + this.state.action,
+        data: values,
+        success: function (json) {
+          message.success(constant.success);
 
-  handleChange(e) {
-    this.setState({
-      isChange: e.target.checked
+          this.handleCancel();
+
+          notification.emit('notification_attribute_index_load', {});
+        }.bind(this),
+        complete: function () {
+
+        }.bind(this)
+      });
     });
   }
 
   handleCancel() {
-    this.props.handleCancel();
-  }
-
-  handleReset() {
-    this.props.form.resetFields();
-
     this.setState({
-      isChange: false
+      is_show: false
     });
+
+    this.props.form.resetFields();
   }
 
   render() {
@@ -60,19 +108,17 @@ class SupplierDetail extends Component {
 
     return (
       <Modal title={'供应商表单'} maskClosable={false} width={constant.detail_width}
-             visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
+             visible={this.state.is_show} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
                        onClick={this.handleCancel.bind(this)}>关闭</Button>,
                <Button key="submit" type="primary" size="default" icon="check-circle"
-                       loading={this.props.is_load}
+                       loading={this.state.is_load}
                        onClick={this.handleSubmit.bind(this)}>确定</Button>
              ]}
       >
-        <Spin spinning={this.props.is_load}>
-          {getFieldDecorator('user_id')(
-            <Input type="hidden"/>
-          )}
+        <Spin spinning={this.state.is_load}>
+          <form>
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_width}} label="名称">
             {
@@ -135,6 +181,7 @@ class SupplierDetail extends Component {
               )
             }
           </FormItem>
+          </form>
         </Spin>
       </Modal>
     );
@@ -142,15 +189,11 @@ class SupplierDetail extends Component {
 }
 
 SupplierDetail.propTypes = {
-  is_load: PropTypes.bool.isRequired,
-  is_detail: PropTypes.bool.isRequired,
-  action: PropTypes.string.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
-  handleCancel: PropTypes.func.isRequired
+
 };
 
-SupplierDetail = Form.create({
-  withRef: true
-})(SupplierDetail);
+SupplierDetail = Form.create({})(SupplierDetail);
 
-export default SupplierDetail;
+export default connect(({attribute}) => ({
+  supplier
+}))(SupplierDetail);

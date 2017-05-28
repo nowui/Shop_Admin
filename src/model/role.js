@@ -5,15 +5,11 @@ export default {
   namespace: 'role',
 
   state: {
-    is_load: false,
-    is_detail: false,
-    action: '',
-    role_id: '',
     role_name: '',
-    list: [],
     total: 0,
     page_index: 1,
-    page_size: constant.page_size
+    page_size: constant.page_size,
+    list: []
   },
 
   reducers: {

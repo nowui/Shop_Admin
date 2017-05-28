@@ -5,6 +5,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import ConfigDetail from './ConfigDetail';
 import constant from '../../util/constant';
+import notification from '../../util/notification';
 import request from '../../util/request';
 import style from '../style.css';
 
@@ -13,120 +14,117 @@ class ConfigIndex extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false
+    }
   }
 
   componentDidMount() {
-    this.props.form.setFieldsValue(this.props.config);
+    this.props.form.setFieldsValue({
+      config_name: this.props.config.config_name
+    });
 
-    // this.handleSearch();
+    this.handleLoad();
+
+    notification.on('notification_config_index_load', this, function (data) {
+      this.handleLoad();
+    });
   }
 
   componentWillUnmount() {
-    this.handleReset();
+    notification.remove('notification_config_index_load', this);
   }
 
   handleSearch() {
-    var config_name = this.props.form.getFieldValue('config_name');
-    var page_index = 1;
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'config/fetch',
+        data: {
+          config_name: this.props.form.getFieldValue('config_name'),
+          page_index: 1
+        }
+      });
 
-    this.handleList(config_name, page_index);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
-  handleLoad(page_index) {
-    var config_name = this.props.config.config_name;
-
-    this.handleList(config_name, page_index);
-  }
-
-  handleList(config_name, page_index) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+  handleLoad() {
+    this.setState({
+      is_load: true
+    });
 
     request.post({
       url: '/config/admin/list',
       data: {
-        config_name: config_name,
-        page_index: page_index,
+        config_name: this.props.config.config_name,
+        page_index: this.props.config.page_index,
         page_size: this.props.config.page_size
       },
       success: function (json) {
-        for (var i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].config_id;
-        }
-
         this.props.dispatch({
           type: 'config/fetch',
           data: {
-            config_name: config_name,
             total: json.total,
-            list: json.data,
-            page_index: page_index
+            list: json.data
           }
         });
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
     });
+  }
+
+  handleChangeIndex(page_index) {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'config/fetch',
+        data: {
+          page_index: page_index
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleChangeSize(page_index, page_size) {
-    this.props.dispatch({
-      type: 'config/fetch',
-      data: {
-        page_size: page_size
-      }
-    });
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'config/fetch',
+        data: {
+          page_index: page_index,
+          page_size: page_size
+        }
+      });
 
-    setTimeout(function () {
-      this.handleLoad(page_index);
-    }.bind(this), constant.timeout);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleSave() {
-    this.props.dispatch({
-      type: 'config/fetch',
-      data: {
-        is_detail: true,
-        action: 'save'
-      }
-    });
+    notification.emit('notification_config_detail_save', {});
   }
 
   handleUpdate(config_id) {
-    if (this.handleStart({
-        is_load: true,
-        is_detail: true,
-        action: 'update',
-        config_id: config_id
-      })) {
-      return;
-    }
-
-    request.post({
-      url: '/config/admin/find',
-      data: {
-        config_id: config_id
-      },
-      success: function (json) {
-        this.refs.detail.setFieldsValue(json.data);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
+    notification.emit('notification_config_detail_update', {
+      config_id: config_id
     });
   }
 
   handleDelete(config_id) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+    this.setState({
+      is_load: true
+    });
 
     request.post({
       url: '/config/delete',
@@ -136,124 +134,13 @@ class ConfigIndex extends Component {
       success: function (json) {
         message.success(constant.success);
 
-        setTimeout(function () {
-          this.handleLoad(this.props.config.page_index);
-        }.bind(this), constant.timeout);
+        this.handleLoad();
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    });
-  }
-
-  handleCourseStudentSave() {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    request.post({
-      url: '/course/student/white/apply/save',
-      data: {
-
-      },
-      success: function (json) {
-        message.success(constant.success);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    });
-  }
-
-  handleCourseApplyDelete() {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    request.post({
-      url: '/course/apply/all/delete',
-      data: {
-
-      },
-      success: function (json) {
-        message.success(constant.success);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    });
-  }
-
-  handleSubmit(data) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    if (this.props.config.action == 'update') {
-      data.config_id = this.props.config.config_id;
-    }
-
-    request.post({
-      url: '/config/' + this.props.config.action,
-      data: data,
-      success: function (json) {
-        message.success(constant.success);
-
-        this.handleCancel();
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    });
-  }
-
-  handleCancel() {
-    this.props.dispatch({
-      type: 'config/fetch',
-      data: {
-        is_detail: false
-      }
-    });
-
-    this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleReset();
-  }
-
-  handleStart(data) {
-    if (this.props.config.is_load) {
-      return true;
-    }
-
-    this.props.dispatch({
-      type: 'config/fetch',
-      data: data
-    });
-
-    return false;
-  }
-
-  handleFinish() {
-    this.props.dispatch({
-      type: 'config/fetch',
-      data: {
-        is_load: false
-      }
-    });
-  }
-
-  handleReset() {
-
-
-    this.props.dispatch({
-      type: 'config/fetch',
-      data: {
-        is_detail: false
-      }
     });
   }
 
@@ -271,26 +158,27 @@ class ConfigIndex extends Component {
       render: (text, record, index) => (
         <span>
           <a onClick={this.handleUpdate.bind(this, record.config_id)}>{constant.update}</a>
-          {/*<span className={style.divider}/>*/}
-          {/*<Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}*/}
-          {/*cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.config_id)}>*/}
-          {/*<a>{constant.delete}</a>*/}
-          {/*</Popconfirm>*/}
+          <span className={style.divider}/>
+          <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
+                      cancelText={constant.popconfirm_cancel}
+                      onConfirm={this.handleDelete.bind(this, record.config_id)}>
+            <a>{constant.delete}</a>
+          </Popconfirm>
         </span>
       )
     }];
 
     const pagination = {
       size: 'defalut',
-      total: this.props.config.total,
+      total: this.state.total,
       showTotal: function (total, range) {
         return '总共' + total + '条数据';
       },
-      current: this.props.config.page_index,
-      pageSize: this.props.config.page_size,
+      current: this.state.page_index,
+      pageSize: this.state.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
-      onChange: this.handleLoad.bind(this)
+      onChange: this.handleChangeIndex.bind(this)
     };
 
     return (
@@ -301,14 +189,6 @@ class ConfigIndex extends Component {
               <div className={style.layoutContentHeaderTitle}>系统配置列表</div>
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
-              {/*<Button type="default" icon="lock" size="default" className={style.layoutContentHeaderMenuButton}*/}
-                      {/*loading={this.props.config.is_load}*/}
-                      {/*onClick={this.handleCourseStudentSave.bind(this)}>设置课程白名单</Button>*/}
-              {/*<Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}*/}
-                          {/*cancelText={constant.popconfirm_cancel}*/}
-                          {/*onConfirm={this.handleCourseApplyDelete.bind(this)}>*/}
-                {/*<Button type="default" icon="delete" size="default">删除选课数据</Button>*/}
-              {/*</Popconfirm>*/}
             </Col>
           </Row>
           <Form className={style.layoutContentHeaderSearch}>
@@ -331,14 +211,10 @@ class ConfigIndex extends Component {
             </Row>
           </Form>
           <Table className={style.layoutContentHeaderTable}
-                 loading={this.props.config.is_load && !this.props.config.is_detail} columns={columns}
+                 loading={this.state.is_load} columns={columns}
                  dataSource={this.props.config.list} pagination={pagination}
                  bordered/>
-          <ConfigDetail is_load={this.props.config.is_load}
-                        is_detail={this.props.config.is_detail}
-                        handleSubmit={this.handleSubmit.bind(this)}
-                        handleCancel={this.handleCancel.bind(this)}
-                        ref="detail"/>
+          <ConfigDetail ref="detail"/>
         </div>
       </QueueAnim>
     );
@@ -350,5 +226,5 @@ ConfigIndex.propTypes = {};
 ConfigIndex = Form.create({})(ConfigIndex);
 
 export default connect(({config}) => ({
-  config,
+  config
 }))(ConfigIndex);

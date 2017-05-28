@@ -1,40 +1,104 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import {Modal, Form, Spin, Button, Input} from 'antd';
+import {connect} from 'dva';
+import {Modal, Form, Spin, Button, Input, message} from 'antd';
 
 import constant from '../../util/constant';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
 class ExpressDetail extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false,
+      is_show: false,
+      action: '',
+      express_id: ''
+    }
   }
 
   componentDidMount() {
+    notification.on('notification_express_detail_save', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'save'
+      });
+    });
 
+    notification.on('notification_express_detail_update', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'update',
+        express_id: data.express_id
+      });
+
+      this.handleLoad(data.express_id);
+    });
   }
 
   componentWillUnmount() {
+    notification.remove('notification_express_detail_save', this);
 
+    notification.remove('notification_express_detail_update', this);
+  }
+
+  handleLoad(express_id) {
+    this.setState({
+      is_load: true
+    });
+
+    request.post({
+      url: '/express/admin/find',
+      data: {
+        express_id: express_id
+      },
+      success: function (json) {
+        this.props.form.setFieldsValue({
+          category_id: json.data.category_id,
+          express_name: json.data.express_name
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+
+      }.bind(this)
+    });
   }
 
   handleSubmit() {
-    this.props.form.validateFields((errors, values) => {
+    this.props.form.validateFieldsAndScroll((errors, values) => {
       if (!!errors) {
         return;
       }
 
-      this.props.handleSubmit(values);
+      values.express_id = this.state.express_id;
+
+      request.post({
+        url: '/express/' + this.state.action,
+        data: values,
+        success: function (json) {
+          message.success(constant.success);
+
+          this.handleCancel();
+
+          notification.emit('notification_express_index_load', {});
+        }.bind(this),
+        complete: function () {
+
+        }.bind(this)
+      });
     });
   }
 
   handleCancel() {
-    this.props.handleCancel();
-  }
+    this.setState({
+      is_show: false
+    });
 
-  handleReset() {
     this.props.form.resetFields();
   }
 
@@ -44,16 +108,17 @@ class ExpressDetail extends Component {
 
     return (
       <Modal title={'表单'} maskClosable={false} width={constant.detail_width}
-             visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
+             visible={this.state.is_show} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
                        onClick={this.handleCancel.bind(this)}>关闭</Button>,
                <Button key="submit" type="primary" size="default" icon="check-circle"
-                       loading={this.props.is_load}
+                       loading={this.state.is_load}
                        onClick={this.handleSubmit.bind(this)}>确定</Button>
              ]}
       >
-        <Spin spinning={this.props.is_load}>
+        <Spin spinning={this.state.is_load}>
+          <from>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="订单编号">
               {
@@ -152,6 +217,7 @@ class ExpressDetail extends Component {
                 )
               }
             </FormItem>
+          </from>
         </Spin>
       </Modal>
     );
@@ -159,14 +225,11 @@ class ExpressDetail extends Component {
 }
 
 ExpressDetail.propTypes = {
-  is_load: PropTypes.bool.isRequired,
-  is_detail: PropTypes.bool.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
-  handleCancel: PropTypes.func.isRequired
+
 };
 
-ExpressDetail = Form.create({
-  withRef: true
-})(ExpressDetail);
+ExpressDetail = Form.create({})(ExpressDetail);
 
-export default ExpressDetail;
+export default connect(({express}) => ({
+  express
+}))(ExpressDetail);

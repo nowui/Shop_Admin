@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import {Modal, Form, Spin, Button, Input, InputNumber} from 'antd';
+import {connect} from 'dva';
+import {Modal, Form, Spin, Button, Input, message} from 'antd';
 
 import constant from '../../util/constant';
 import style from '../style.css';
@@ -9,15 +9,62 @@ class ConfigDetail extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false,
+      is_show: false,
+      action: '',
+      config_id: ''
+    }
   }
 
   componentDidMount() {
+    notification.on('notification_config_detail_save', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'save'
+      });
+    });
 
+    notification.on('notification_config_detail_update', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'update',
+        config_id: data.config_id
+      });
+
+      this.handleLoad(data.config_id);
+    });
   }
 
   componentWillUnmount() {
+    notification.remove('notification_config_detail_save', this);
 
+    notification.remove('notification_config_detail_update', this);
+  }
+
+  handleLoad(config_id) {
+    this.setState({
+      is_load: true
+    });
+
+    request.post({
+      url: '/config/admin/find',
+      data: {
+        config_id: config_id
+      },
+      success: function (json) {
+        this.props.form.setFieldsValue({
+          category_id: json.data.category_id,
+          config_name: json.data.config_name
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+
+      }.bind(this)
+    });
   }
 
   handleSubmit() {
@@ -26,15 +73,30 @@ class ConfigDetail extends Component {
         return;
       }
 
-      this.props.handleSubmit(values);
+      values.config_id = this.state.config_id;
+
+      request.post({
+        url: '/config/' + this.state.action,
+        data: values,
+        success: function (json) {
+          message.success(constant.success);
+
+          this.handleCancel();
+
+          notification.emit('notification_config_index_load', {});
+        }.bind(this),
+        complete: function () {
+
+        }.bind(this)
+      });
     });
   }
 
   handleCancel() {
-    this.props.handleCancel();
-  }
+    this.setState({
+      is_show: false
+    });
 
-  handleReset() {
     this.props.form.resetFields();
   }
 
@@ -44,17 +106,17 @@ class ConfigDetail extends Component {
 
     return (
       <Modal title={'系统配置表单'} maskClosable={false} width={constant.detail_width}
-             visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
+             visible={this.state.is_show} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
                        onClick={this.handleCancel.bind(this)}>关闭</Button>,
                <Button key="submit" type="primary" size="default" icon="check-circle"
-                       loading={this.props.is_load}
+                       loading={this.state.is_load}
                        onClick={this.handleSubmit.bind(this)}>确定</Button>
              ]}
       >
-        <Spin spinning={this.props.is_load}>
-
+        <Spin spinning={this.state.is_load}>
+<form>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="开始时间">
               {
@@ -84,7 +146,7 @@ class ConfigDetail extends Component {
                 )
               }
             </FormItem>
-
+</form>
         </Spin>
       </Modal>
     );
@@ -92,14 +154,11 @@ class ConfigDetail extends Component {
 }
 
 ConfigDetail.propTypes = {
-  is_load: PropTypes.bool.isRequired,
-  is_detail: PropTypes.bool.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
-  handleCancel: PropTypes.func.isRequired
+
 };
 
-ConfigDetail = Form.create({
-  withRef: true
-})(ConfigDetail);
+ConfigDetail = Form.create({})(ConfigDetail);
 
-export default ConfigDetail;
+export default connect(({config}) => ({
+  config
+}))(ConfigDetail);

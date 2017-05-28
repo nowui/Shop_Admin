@@ -199,7 +199,7 @@ class AuthorizationIndex extends Component {
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default"
-                      loading={this.props.authorization.is_load}
+                      loading={this.state.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
             </Col>
           </Row>

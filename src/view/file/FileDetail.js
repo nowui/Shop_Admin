@@ -1,40 +1,83 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import {Modal, Form, Spin, Button, Input, InputNumber} from 'antd';
+import {connect} from 'dva';
+import {Modal, Form, Spin, Button, Input, InputNumber, message} from 'antd';
 
 import constant from '../../util/constant';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
 class FileDetail extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false,
+      is_show: false,
+      action: '',
+      file_id: ''
+    }
   }
 
   componentDidMount() {
+    notification.on('notification_file_detail_save', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'save'
+      });
+    });
 
-  }
+    notification.on('notification_file_detail_update', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'update',
+        file_id: data.file_id
+      });
 
-  componentWillUnmount() {
-
-  }
-
-  handleSubmit() {
-    this.props.form.validateFieldsAndScroll((errors, values) => {
-      if (!!errors) {
-        return;
-      }
-
-      this.props.handleSubmit(values);
+      this.handleLoad(data.file_id);
     });
   }
 
-  handleCancel() {
-    this.props.handleCancel();
+  componentWillUnmount() {
+    notification.remove('notification_file_detail_save', this);
+
+    notification.remove('notification_file_detail_update', this);
   }
 
-  handleReset() {
+  handleLoad(file_id) {
+    this.setState({
+      is_load: true
+    });
+
+    request.post({
+      url: '/file/admin/find',
+      data: {
+        file_id: file_id
+      },
+      success: function (json) {
+        this.props.form.setFieldsValue({
+          category_id: json.data.category_id,
+          file_name: json.data.file_name
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+
+      }.bind(this)
+    });
+  }
+
+  handleSubmit() {
+    this.handleCancel();
+  }
+
+  handleCancel() {
+    this.setState({
+      is_show: false
+    });
+
     this.props.form.resetFields();
   }
 
@@ -44,16 +87,17 @@ class FileDetail extends Component {
 
     return (
       <Modal title={'表单'} maskClosable={false} width={constant.detail_width}
-             visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
+             visible={this.state.is_show} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
                        onClick={this.handleCancel.bind(this)}>关闭</Button>,
                <Button key="submit" type="primary" size="default" icon="check-circle"
-                       loading={this.props.is_load}
+                       loading={this.state.is_load}
                        onClick={this.handleSubmit.bind(this)}>确定</Button>
              ]}
       >
-        <Spin spinning={this.props.is_load}>
+        <Spin spinning={this.state.is_load}>
+          <from>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="">
               {
@@ -139,6 +183,7 @@ class FileDetail extends Component {
                 )
               }
             </FormItem>
+          </from>
         </Spin>
       </Modal>
     );
@@ -146,14 +191,11 @@ class FileDetail extends Component {
 }
 
 FileDetail.propTypes = {
-  is_load: PropTypes.bool.isRequired,
-  is_detail: PropTypes.bool.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
-  handleCancel: PropTypes.func.isRequired
+
 };
 
-FileDetail = Form.create({
-  withRef: true
-})(FileDetail);
+FileDetail = Form.create({})(FileDetail);
 
-export default FileDetail;
+export default connect(({file}) => ({
+  file
+}))(FileDetail);

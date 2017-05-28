@@ -1,40 +1,88 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import {Modal, Form, Spin, Button, Input} from 'antd';
+import {connect} from 'dva';
+import {Modal, Form, Spin, Button, Input, message} from 'antd';
 
 import constant from '../../util/constant';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
 class DeliveryDetail extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false,
+      is_show: false,
+      action: '',
+      delivery_id: ''
+    }
   }
 
   componentDidMount() {
+    notification.on('notification_delivery_detail_save', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'save'
+      });
+    });
 
-  }
+    notification.on('notification_delivery_detail_update', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'update',
+        delivery_id: data.delivery_id
+      });
 
-  componentWillUnmount() {
-
-  }
-
-  handleSubmit() {
-    this.props.form.validateFieldsAndScroll((errors, values) => {
-      if (!!errors) {
-        return;
-      }
-
-      this.props.handleSubmit(values);
+      this.handleLoad(data.delivery_id);
     });
   }
 
-  handleCancel() {
-    this.props.handleCancel();
+  componentWillUnmount() {
+    notification.remove('notification_delivery_detail_save', this);
+
+    notification.remove('notification_delivery_detail_update', this);
   }
 
-  handleReset() {
+  handleLoad(delivery_id) {
+    this.setState({
+      is_load: true
+    });
+
+    request.post({
+      url: '/delivery/admin/find',
+      data: {
+        delivery_id: delivery_id
+      },
+      success: function (json) {
+        this.props.form.setFieldsValue({
+          delivery_name: json.data.delivery_name,
+          delivery_phone: json.data.delivery_phone,
+          delivery_province: json.data.delivery_province,
+          delivery_city: json.data.delivery_city,
+          delivery_area: json.data.delivery_area,
+          delivery_street: json.data.delivery_street,
+          delivery_address: json.data.delivery_address
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+
+      }.bind(this)
+    });
+  }
+
+  handleSubmit() {
+    this.handleCancel();
+  }
+
+  handleCancel() {
+    this.setState({
+      is_show: false
+    });
+
     this.props.form.resetFields();
   }
 
@@ -44,17 +92,17 @@ class DeliveryDetail extends Component {
 
     return (
       <Modal title={'快递地址表单'} maskClosable={false} width={constant.detail_width}
-             visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
+             visible={this.state.is_show} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
                        onClick={this.handleCancel.bind(this)}>关闭</Button>,
                <Button key="submit" type="primary" size="default" icon="check-circle"
-                       loading={this.props.is_load}
+                       loading={this.state.is_load}
                        onClick={this.handleSubmit.bind(this)}>确定</Button>
              ]}
       >
-        <Spin spinning={this.props.is_load}>
-
+        <Spin spinning={this.state.is_load}>
+          <form>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="收货人">
               {
@@ -159,22 +207,17 @@ class DeliveryDetail extends Component {
                 )
               }
             </FormItem>
-
+          </form>
         </Spin>
       </Modal>
     );
   }
 }
 
-DeliveryDetail.propTypes = {
-  is_load: PropTypes.bool.isRequired,
-  is_detail: PropTypes.bool.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
-  handleCancel: PropTypes.func.isRequired
-};
+DeliveryDetail.propTypes = {};
 
-DeliveryDetail = Form.create({
-  withRef: true
-})(DeliveryDetail);
+DeliveryDetail = Form.create({})(DeliveryDetail);
 
-export default DeliveryDetail;
+export default connect(({delivery}) => ({
+  delivery
+}))(DeliveryDetail);

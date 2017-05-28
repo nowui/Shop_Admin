@@ -5,6 +5,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import MemberDetail from './MemberDetail';
 import constant from '../../util/constant';
+import notification from '../../util/notification';
 import request from '../../util/request';
 import style from '../style.css';
 
@@ -14,20 +15,71 @@ class MemberIndex extends Component {
     super(props);
 
     this.state = {
-      member_level_list: []
+      is_load: false
     }
   }
 
   componentDidMount() {
-    this.props.form.setFieldsValue(this.props.member);
+    this.props.form.setFieldsValue({
+      member_name: this.props.member.member_name
+    });
 
-    this.handleSearch();
+    this.handleLoad();
 
     this.handleMemberLevelList();
+
+    notification.on('notification_member_index_load', this, function (data) {
+      this.handleLoad();
+    });
   }
 
   componentWillUnmount() {
-    this.handleReset();
+    notification.remove('notification_member_index_load', this);
+  }
+
+  handleSearch() {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'member/fetch',
+        data: {
+          member_name: this.props.form.getFieldValue('member_name'),
+          page_index: 1
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
+  }
+
+  handleLoad() {
+    this.setState({
+      is_load: true
+    });
+
+    request.post({
+      url: '/member/admin/list',
+      data: {
+        member_name: this.props.member.member_name,
+        page_index: this.props.member.page_index,
+        page_size: this.props.member.page_size
+      },
+      success: function (json) {
+        this.props.dispatch({
+          type: 'member/fetch',
+          data: {
+            total: json.total,
+            list: json.data
+          }
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+      }.bind(this)
+    });
   }
 
   handleMemberLevelList() {
@@ -35,117 +87,64 @@ class MemberIndex extends Component {
       url: '/member/level/category/list',
       data: {},
       success: function (json) {
-        this.setState({
-          member_level_list: json.data
-        });
-      }.bind(this),
-      complete: function () {
-
-      }.bind(this)
-    });
-  }
-
-  handleSearch() {
-    var member_name = this.props.form.getFieldValue('member_name');
-    var page_index = 1;
-
-    this.handleList(member_name, page_index);
-  }
-
-  handleLoad(page_index) {
-    var member_name = this.props.member.member_name;
-
-    this.handleList(member_name, page_index);
-  }
-
-  handleList(member_name, page_index) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    request.post({
-      url: '/member/admin/list',
-      data: {
-        member_name: member_name,
-        page_index: page_index,
-        page_size: this.props.member.page_size
-      },
-      success: function (json) {
-        for (var i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].member_id;
-        }
-
         this.props.dispatch({
           type: 'member/fetch',
           data: {
-            member_name: member_name,
-            total: json.total,
-            list: json.data,
-            page_index: page_index
+            member_level_list: json.data
           }
         });
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+
       }.bind(this)
     });
+  }
+
+  handleChangeIndex(page_index) {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'member/fetch',
+        data: {
+          page_index: page_index
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleChangeSize(page_index, page_size) {
-    this.props.dispatch({
-      type: 'member/fetch',
-      data: {
-        page_size: page_size
-      }
-    });
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'member/fetch',
+        data: {
+          page_index: page_index,
+          page_size: page_size
+        }
+      });
 
-    setTimeout(function () {
-      this.handleLoad(page_index);
-    }.bind(this), constant.timeout);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleSave() {
-    this.props.dispatch({
-      type: 'member/fetch',
-      data: {
-        is_detail: true,
-        action: 'save'
-      }
-    });
+    notification.emit('notification_member_detail_save', {});
   }
 
   handleUpdate(member_id) {
-    if (this.handleStart({
-        is_load: true,
-        is_detail: true,
-        action: 'update',
-        member_id: member_id
-      })) {
-      return;
-    }
-
-    request.post({
-      url: '/member/admin/find',
-      data: {
-        member_id: member_id
-      },
-      success: function (json) {
-        this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleSetFieldsValue(json.data);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
+    notification.emit('notification_member_detail_update', {
+      member_id: member_id
     });
   }
 
   handleDelete(member_id) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+    this.setState({
+      is_load: true
+    });
 
     request.post({
       url: '/member/delete',
@@ -155,85 +154,13 @@ class MemberIndex extends Component {
       success: function (json) {
         message.success(constant.success);
 
-        setTimeout(function () {
-          this.handleLoad(this.props.member.page_index);
-        }.bind(this), constant.timeout);
+        this.handleLoad();
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    });
-  }
-
-  handleSubmit(data) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    if (this.props.member.action == 'update') {
-      data.member_id = this.props.member.member_id;
-    }
-
-    request.post({
-      url: '/member/' + this.props.member.action,
-      data: data,
-      success: function (json) {
-        message.success(constant.success);
-
-        this.handleCancel();
-
-        setTimeout(function () {
-          this.handleLoad(this.props.member.page_index);
-        }.bind(this), constant.timeout);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    });
-  }
-
-  handleCancel() {
-    this.props.dispatch({
-      type: 'member/fetch',
-      data: {
-        is_detail: false
-      }
-    });
-
-    this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleReset();
-  }
-
-  handleStart(data) {
-    if (this.props.member.is_load) {
-      return true;
-    }
-
-    this.props.dispatch({
-      type: 'member/fetch',
-      data: data
-    });
-
-    return false;
-  }
-
-  handleFinish() {
-    this.props.dispatch({
-      type: 'member/fetch',
-      data: {
-        is_load: false
-      }
-    });
-  }
-
-  handleReset() {
-
-    this.props.dispatch({
-      type: 'member/fetch',
-      data: {
-        is_detail: false
-      }
     });
   }
 
@@ -246,8 +173,8 @@ class MemberIndex extends Component {
       dataIndex: 'member_name',
       render: (text, record, index) => (
         <span style={{ position: 'relative' }}>
-          <img style={{ position: 'absolute', top: 4, left: 4, width: '30px', height: '30px' }} src={record.user_avatar} />
-          <div style={{ position: 'absolute', left: 40, width: '300px', lineHeight: '39px' }}>{record.member_name}</div>
+          <img style={{ position: 'absolute', top: 4, left: 4, width: '43px', height: '43px' }} src={record.user_avatar} />
+          <div style={{ position: 'absolute', left: 55, width: '300px', lineHeight: '51px' }}>{record.member_name}</div>
         </span>
       )
     }, {
@@ -277,7 +204,7 @@ class MemberIndex extends Component {
       pageSize: this.props.member.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
-      onChange: this.handleLoad.bind(this)
+      onChange: this.handleChangeIndex.bind(this)
     };
 
     return (
@@ -289,7 +216,7 @@ class MemberIndex extends Component {
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
-                      loading={this.props.member.is_load}
+                      loading={this.state.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
               <Button type="primary" icon="plus-circle" size="default"
                       onClick={this.handleSave.bind(this)}>{constant.save}</Button>
@@ -316,16 +243,10 @@ class MemberIndex extends Component {
           </Form>
           <Table rowKey="member_id"
                  className={style.layoutContentHeaderTable}
-                 loading={this.props.member.is_load && !this.props.member.is_detail} columns={columns}
+                 loading={this.state.is_load} columns={columns}
                  dataSource={this.props.member.list} pagination={pagination}
                  bordered/>
-          <MemberDetail is_load={this.props.member.is_load}
-                        is_detail={this.props.member.is_detail}
-                        action={this.props.member.action}
-                        member_level_list={this.state.member_level_list}
-                        handleSubmit={this.handleSubmit.bind(this)}
-                        handleCancel={this.handleCancel.bind(this)}
-                        ref="detail"/>
+          <MemberDetail ref="detail"/>
         </div>
       </QueueAnim>
     );
@@ -337,5 +258,5 @@ MemberIndex.propTypes = {};
 MemberIndex = Form.create({})(MemberIndex);
 
 export default connect(({member}) => ({
-  member,
+  member
 }))(MemberIndex);

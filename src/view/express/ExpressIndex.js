@@ -5,6 +5,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import ExpressDetail from './ExpressDetail';
 import constant from '../../util/constant';
+import notification from '../../util/notification';
 import request from '../../util/request';
 import style from '../style.css';
 
@@ -13,118 +14,117 @@ class ExpressIndex extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false
+    }
   }
 
   componentDidMount() {
-    this.handleSearch();
+    this.props.form.setFieldsValue({
+      express_name: this.props.express.express_name
+    });
+
+    this.handleLoad();
+
+    notification.on('notification_express_index_load', this, function (data) {
+      this.handleLoad();
+    });
   }
 
   componentWillUnmount() {
-    this.handleReset();
+    notification.remove('notification_express_index_load', this);
   }
 
   handleSearch() {
-    var express_name = this.props.form.getFieldValue('express_name');
-    var page_index = 1;
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'express/fetch',
+        data: {
+          express_name: this.props.form.getFieldValue('express_name'),
+          page_index: 1
+        }
+      });
 
-    this.handleList(express_name, page_index);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
-  handleLoad(page_index) {
-    var express_name = this.props.express.express_name;
-
-    this.handleList(express_name, page_index);
-  }
-
-  handleList(express_name, page_index) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+  handleLoad() {
+    this.setState({
+      is_load: true
+    });
 
     request.post({
       url: '/express/admin/list',
       data: {
-        express_name: express_name,
-        page_index: page_index,
+        express_name: this.props.express.express_name,
+        page_index: this.props.express.page_index,
         page_size: this.props.express.page_size
       },
       success: function (json) {
-        for (var i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].express_id;
-        }
-
         this.props.dispatch({
           type: 'express/fetch',
           data: {
-            express_name: express_name,
             total: json.total,
-            list: json.data,
-            page_index: page_index
+            list: json.data
           }
         });
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
     });
+  }
+
+  handleChangeIndex(page_index) {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'express/fetch',
+        data: {
+          page_index: page_index
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleChangeSize(page_index, page_size) {
-    this.props.dispatch({
-      type: 'express/fetch',
-      data: {
-        page_size: page_size
-      }
-    });
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'express/fetch',
+        data: {
+          page_index: page_index,
+          page_size: page_size
+        }
+      });
 
-    setTimeout(function () {
-      this.handleLoad(page_index);
-    }.bind(this), constant.timeout);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleSave() {
-    this.props.dispatch({
-      type: 'express/fetch',
-      data: {
-        is_detail: true,
-        action: 'save'
-      }
-    });
+    notification.emit('notification_express_detail_save', {});
   }
 
   handleUpdate(express_id) {
-    if (this.handleStart({
-        is_load: true,
-        is_detail: true,
-        action: 'update',
-        express_id: express_id
-      })) {
-      return;
-    }
-
-    request.post({
-      url: '/express/admin/find',
-      data: {
-        express_id: express_id
-      },
-      success: function (json) {
-        this.refs.detail.setFieldsValue(json.data);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
+    notification.emit('notification_express_detail_update', {
+      express_id: express_id
     });
   }
 
   handleDelete(express_id) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+    this.setState({
+      is_load: true
+    });
 
     request.post({
       url: '/express/delete',
@@ -134,85 +134,13 @@ class ExpressIndex extends Component {
       success: function (json) {
         message.success(constant.success);
 
-        setTimeout(function () {
-            this.handleLoad(this.props.express.page_index);
-        }.bind(this), constant.timeout);
+        this.handleLoad();
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    });
-  }
-
-  handleSubmit(data) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    if (this.props.express.action == 'update') {
-      data.express_id = this.props.express.express_id;
-    }
-
-    request.post({
-      url: '/express/' + this.props.express.action,
-      data: data,
-      success: function (json) {
-        message.success(constant.success);
-
-        this.handleCancel();
-
-        setTimeout(function () {
-            this.handleLoad(this.props.express.page_index);
-        }.bind(this), constant.timeout);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    });
-  }
-
-  handleCancel() {
-    this.props.dispatch({
-      type: 'express/fetch',
-      data: {
-        is_detail: false
-      }
-    });
-
-    this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleReset();
-  }
-
-  handleStart(data) {
-    if (this.props.express.is_load) {
-      return true;
-    }
-
-    this.props.dispatch({
-      type: 'express/fetch',
-      data: data
-    });
-
-    return false;
-  }
-
-  handleFinish() {
-    this.props.dispatch({
-      type: 'express/fetch',
-      data: {
-        is_load: false
-      }
-    });
-  }
-
-  handleReset() {
-
-    this.props.dispatch({
-      type: 'express/fetch',
-      data: {
-        is_detail: false
-      }
     });
   }
 
@@ -245,7 +173,7 @@ class ExpressIndex extends Component {
       pageSize: this.props.express.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
-      onChange: this.handleLoad.bind(this)
+      onChange: this.handleChangeIndex.bind(this)
     };
 
     return (
@@ -257,7 +185,7 @@ class ExpressIndex extends Component {
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
-                      loading={this.props.express.is_load}
+                      loading={this.state.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
               <Button type="primary" icon="plus-circle" size="default"
                       onClick={this.handleSave.bind(this)}>{constant.save}</Button>
@@ -282,15 +210,12 @@ class ExpressIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
-                 loading={this.props.express.is_load && !this.props.express.is_detail} columns={columns}
+          <Table rowKey="express_id"
+            className={style.layoutContentHeaderTable}
+                 loading={this.state.is_load} columns={columns}
                  dataSource={this.props.express.list} pagination={pagination}
                  bordered/>
-          <ExpressDetail is_load={this.props.express.is_load}
-                      is_detail={this.props.express.is_detail}
-                      handleSubmit={this.handleSubmit.bind(this)}
-                      handleCancel={this.handleCancel.bind(this)}
-                      ref="detail"/>
+          <ExpressDetail ref="detail"/>
         </div>
       </QueueAnim>
     );
@@ -302,5 +227,5 @@ ExpressIndex.propTypes = {};
 ExpressIndex = Form.create({})(ExpressIndex);
 
 export default connect(({express}) => ({
-  express,
+  express
 }))(ExpressIndex);

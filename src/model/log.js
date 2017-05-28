@@ -5,15 +5,13 @@ export default {
   namespace: 'log',
 
   state: {
-    is_load: false,
-    is_detail: false,
-    action: '',
-    log_id: '',
-    log_name: '',
-    list: [],
+    log_url: '',
+    log_code: '',
+    log_platform: '',
     total: 0,
     page_index: 1,
-    page_size: constant.page_size
+    page_size: constant.page_size,
+    list: []
   },
 
   reducers: {

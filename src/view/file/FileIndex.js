@@ -5,6 +5,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import FileDetail from './FileDetail';
 import constant from '../../util/constant';
+import notification from '../../util/notification';
 import request from '../../util/request';
 import style from '../style.css';
 
@@ -13,120 +14,117 @@ class FileIndex extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false
+    }
   }
 
   componentDidMount() {
-    this.props.form.setFieldsValue(this.props.file);
+    this.props.form.setFieldsValue({
+      file_name: this.props.file.file_name
+    });
 
-    this.handleSearch();
+    this.handleLoad();
+
+    notification.on('notification_file_index_load', this, function (data) {
+      this.handleLoad();
+    });
   }
 
   componentWillUnmount() {
-    this.handleReset();
+    notification.remove('notification_file_index_load', this);
   }
 
   handleSearch() {
-    var file_name = this.props.form.getFieldValue('file_name');
-    var page_index = 1;
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'file/fetch',
+        data: {
+          file_name: this.props.form.getFieldValue('file_name'),
+          page_index: 1
+        }
+      });
 
-    this.handleList(file_name, page_index);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
-  handleLoad(page_index) {
-    var file_name = this.props.file.file_name;
-
-    this.handleList(file_name, page_index);
-  }
-
-  handleList(file_name, page_index) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+  handleLoad() {
+    this.setState({
+      is_load: true
+    });
 
     request.post({
       url: '/file/admin/list',
       data: {
-        file_name: file_name,
-        page_index: page_index,
+        file_name: this.props.file.file_name,
+        page_index: this.props.file.page_index,
         page_size: this.props.file.page_size
       },
       success: function (json) {
-        for (var i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].file_id;
-        }
-
         this.props.dispatch({
           type: 'file/fetch',
           data: {
-            file_name: file_name,
             total: json.total,
-            list: json.data,
-            page_index: page_index
+            list: json.data
           }
         });
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
     });
+  }
+
+  handleChangeIndex(page_index) {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'file/fetch',
+        data: {
+          page_index: page_index
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleChangeSize(page_index, page_size) {
-    this.props.dispatch({
-      type: 'file/fetch',
-      data: {
-        page_size: page_size
-      }
-    });
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'file/fetch',
+        data: {
+          page_index: page_index,
+          page_size: page_size
+        }
+      });
 
-    setTimeout(function () {
-      this.handleLoad(page_index);
-    }.bind(this), constant.timeout);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleSave() {
-    this.props.dispatch({
-      type: 'file/fetch',
-      data: {
-        is_detail: true,
-        action: 'save'
-      }
-    });
+    notification.emit('notification_file_detail_save', {});
   }
 
   handleUpdate(file_id) {
-    if (this.handleStart({
-        is_load: true,
-        is_detail: true,
-        action: 'update',
-        file_id: file_id
-      })) {
-      return;
-    }
-
-    request.post({
-      url: '/file/admin/find',
-      data: {
-        file_id: file_id
-      },
-      success: function (json) {
-        this.refs.detail.setFieldsValue(json.data);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
+    notification.emit('notification_file_detail_update', {
+      file_id: file_id
     });
   }
 
   handleDelete(file_id) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+    this.setState({
+      is_load: true
+    });
 
     request.post({
       url: '/file/delete',
@@ -136,85 +134,13 @@ class FileIndex extends Component {
       success: function (json) {
         message.success(constant.success);
 
-        setTimeout(function () {
-            this.handleLoad(this.props.file.page_index);
-        }.bind(this), constant.timeout);
+        this.handleLoad();
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    });
-  }
-
-  handleSubmit(data) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    if (this.props.file.action == 'update') {
-      data.file_id = this.props.file.file_id;
-    }
-
-    request.post({
-      url: '/file/' + this.props.file.action,
-      data: data,
-      success: function (json) {
-        message.success(constant.success);
-
-        this.handleCancel();
-
-        setTimeout(function () {
-            this.handleLoad(this.props.file.page_index);
-        }.bind(this), constant.timeout);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    });
-  }
-
-  handleCancel() {
-    this.props.dispatch({
-      type: 'file/fetch',
-      data: {
-        is_detail: false
-      }
-    });
-
-    this.refs.detail.refs.wrappedComponent.refs.formWrappedComponent.handleReset();
-  }
-
-  handleStart(data) {
-    if (this.props.file.is_load) {
-      return true;
-    }
-
-    this.props.dispatch({
-      type: 'file/fetch',
-      data: data
-    });
-
-    return false;
-  }
-
-  handleFinish() {
-    this.props.dispatch({
-      type: 'file/fetch',
-      data: {
-        is_load: false
-      }
-    });
-  }
-
-  handleReset() {
-
-    this.props.dispatch({
-      type: 'file/fetch',
-      data: {
-        is_detail: false
-      }
     });
   }
 
@@ -251,7 +177,7 @@ class FileIndex extends Component {
       pageSize: this.props.file.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
-      onChange: this.handleLoad.bind(this)
+      onChange: this.handleChangeIndex.bind(this)
     };
 
     return (
@@ -263,7 +189,7 @@ class FileIndex extends Component {
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
-                      loading={this.props.file.is_load}
+                      loading={this.state.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
               <Button type="primary" icon="plus-circle" size="default"
                       onClick={this.handleSave.bind(this)}>{constant.save}</Button>
@@ -288,15 +214,12 @@ class FileIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
-                 loading={this.props.file.is_load && !this.props.file.is_detail} columns={columns}
+          <Table rowKey="file_id"
+                 className={style.layoutContentHeaderTable}
+                 loading={this.state.is_load} columns={columns}
                  dataSource={this.props.file.list} pagination={pagination}
                  bordered/>
-          <FileDetail is_load={this.props.file.is_load}
-                      is_detail={this.props.file.is_detail}
-                      handleSubmit={this.handleSubmit.bind(this)}
-                      handleCancel={this.handleCancel.bind(this)}
-                      ref="detail"/>
+          <FileDetail ref="detail"/>
         </div>
       </QueueAnim>
     );
@@ -308,5 +231,5 @@ FileIndex.propTypes = {};
 FileIndex = Form.create({})(FileIndex);
 
 export default connect(({file}) => ({
-  file,
+  file
 }))(FileIndex);

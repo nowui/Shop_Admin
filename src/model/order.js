@@ -5,7 +5,6 @@ export default {
   namespace: 'order',
 
   state: {
-    order_id: '',
     order_number: '',
     total: 0,
     page_index: 1,

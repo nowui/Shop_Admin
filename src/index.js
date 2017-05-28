@@ -30,7 +30,6 @@ app.model(require('./model/member'));
 app.model(require('./model/member_tree'));
 app.model(require('./model/member_level'));
 app.model(require('./model/order'));
-app.model(require('./model/distributor'));
 app.model(require('./model/supplier'));
 app.model(require('./model/scene'));
 app.model(require('./model/bill'));

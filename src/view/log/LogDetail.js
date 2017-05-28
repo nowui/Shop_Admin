@@ -1,34 +1,113 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import {Modal, Form, Spin, Button, Input} from 'antd';
+import {connect} from 'dva';
+import {Modal, Form, Spin, Button, Input, message} from 'antd';
 
 import constant from '../../util/constant';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
 class LogDetail extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false,
+      is_show: false,
+      action: '',
+      log_id: ''
+    }
   }
 
   componentDidMount() {
+    notification.on('notification_log_detail_save', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'save'
+      });
+    });
 
+    notification.on('notification_log_detail_update', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'update',
+        log_id: data.log_id
+      });
+
+      this.handleLoad(data.log_id);
+    });
   }
 
   componentWillUnmount() {
+    notification.remove('notification_log_detail_save', this);
 
+    notification.remove('notification_log_detail_update', this);
+  }
+
+  handleLoad(log_id) {
+    this.setState({
+      is_load: true
+    });
+
+    request.post({
+      url: '/log/admin/find',
+      data: {
+        log_id: log_id
+      },
+      success: function (json) {
+        this.props.form.setFieldsValue({
+          log_url: json.data.log_url,
+          log_request: json.data.log_request,
+          log_response: json.data.log_response,
+          authorization_id: json.data.authorization_id,
+          user_id: json.data.user_id,
+          log_code: json.data.log_code,
+          log_platform: json.data.log_platform,
+          log_version: json.data.log_version,
+          log_ip_address: json.data.log_ip_address,
+          log_create_time: json.data.log_create_time,
+          log_run_time: json.data.log_run_time
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+
+      }.bind(this)
+    });
   }
 
   handleSubmit() {
-    this.props.handleCancel();
+    this.props.form.validateFieldsAndScroll((errors, values) => {
+      if (!!errors) {
+        return;
+      }
+
+      values.log_id = this.state.log_id;
+
+      request.post({
+        url: '/log/' + this.state.action,
+        data: values,
+        success: function (json) {
+          message.success(constant.success);
+
+          this.handleCancel();
+
+          notification.emit('notification_log_index_load', {});
+        }.bind(this),
+        complete: function () {
+
+        }.bind(this)
+      });
+    });
   }
 
   handleCancel() {
-    this.props.handleCancel();
-  }
+    this.setState({
+      is_show: false
+    });
 
-  handleReset() {
     this.props.form.resetFields();
   }
 
@@ -38,16 +117,17 @@ class LogDetail extends Component {
 
     return (
       <Modal title={'日志表单'} maskClosable={false} width={constant.detail_width}
-             visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
+             visible={this.state.is_show} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
                        onClick={this.handleCancel.bind(this)}>关闭</Button>,
                <Button key="submit" type="primary" size="default" icon="check-circle"
-                       loading={this.props.is_load}
+                       loading={this.state.is_load}
                        onClick={this.handleSubmit.bind(this)}>确定</Button>
              ]}
       >
-        <Spin spinning={this.props.is_load}>
+        <Spin spinning={this.state.is_load}>
+          <from>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="请求地址">
               {
@@ -202,21 +282,17 @@ class LogDetail extends Component {
                 )
               }
             </FormItem>
+          </from>
         </Spin>
       </Modal>
     );
   }
 }
 
-LogDetail.propTypes = {
-  is_load: PropTypes.bool.isRequired,
-  is_detail: PropTypes.bool.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
-  handleCancel: PropTypes.func.isRequired
-};
+LogDetail.propTypes = {};
 
-LogDetail = Form.create({
-  withRef: true
-})(LogDetail);
+LogDetail = Form.create({})(LogDetail);
 
-export default LogDetail;
+export default connect(({log}) => ({
+  log
+}))(LogDetail);

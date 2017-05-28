@@ -20,7 +20,6 @@ import MemberIndex from './view/member/MemberIndex';
 import MemberTreeIndex from './view/member/MemberTreeIndex';
 import MemberLevelIndex from './view/member/MemberLevelIndex';
 import OrderIndex from './view/order/OrderIndex';
-import DistributorIndex from './view/distributor/DistributorIndex';
 import SupplierIndex from './view/supplier/SupplierIndex';
 import SceneIndex from './view/scene/SceneIndex';
 import BillIndex from './view/bill/BillIndex';
@@ -66,7 +65,6 @@ function RouterConfig({history}) {
           <Route path="member/tree/index" component={MemberTreeIndex}/>
           <Route path="member/level/index" component={MemberLevelIndex}/>
           <Route path="order/index" component={OrderIndex}/>
-          <Route path="distributor/index" component={DistributorIndex}/>
           <Route path="supplier/index" component={SupplierIndex}/>
           <Route path="scene/index" component={SceneIndex}/>
           <Route path="bill/index" component={BillIndex}/>

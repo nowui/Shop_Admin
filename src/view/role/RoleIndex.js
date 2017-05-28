@@ -5,6 +5,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 
 import RoleDetail from './RoleDetail';
 import constant from '../../util/constant';
+import notification from '../../util/notification';
 import request from '../../util/request';
 import style from '../style.css';
 
@@ -13,120 +14,117 @@ class RoleIndex extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false
+    }
   }
 
   componentDidMount() {
-    this.props.form.setFieldsValue(this.props.role);
+    this.props.form.setFieldsValue({
+      role_name: this.props.role.role_name
+    });
 
-    this.handleSearch();
+    this.handleLoad();
+
+    notification.on('notification_role_index_load', this, function (data) {
+      this.handleLoad();
+    });
   }
 
   componentWillUnmount() {
-    this.handleReset();
+    notification.remove('notification_role_index_load', this);
   }
 
   handleSearch() {
-    var role_name = this.props.form.getFieldValue('role_name');
-    var page_index = 1;
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'role/fetch',
+        data: {
+          role_name: this.props.form.getFieldValue('role_name'),
+          page_index: 1
+        }
+      });
 
-    this.handList(role_name, page_index);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
-  handLoad(page_index) {
-    var role_name = this.props.role.role_name;
-
-    this.handList(role_name, page_index);
-  }
-
-  handList(role_name, page_index) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+  handleLoad() {
+    this.setState({
+      is_load: true
+    });
 
     request.post({
       url: '/role/admin/list',
       data: {
-        role_name: role_name,
-        page_index: page_index,
+        role_name: this.props.role.role_name,
+        page_index: this.props.role.page_index,
         page_size: this.props.role.page_size
       },
       success: function (json) {
-        for (var i = 0; i < json.data.length; i++) {
-          json.data[i].key = json.data[i].role_id;
-        }
-
         this.props.dispatch({
           type: 'role/fetch',
           data: {
-            role_name: role_name,
             total: json.total,
-            list: json.data,
-            page_index: page_index
+            list: json.data
           }
         });
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
     });
+  }
+
+  handleChangeIndex(page_index) {
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'role/fetch',
+        data: {
+          page_index: page_index
+        }
+      });
+
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
   handleChangeSize(page_index, page_size) {
-    this.props.dispatch({
-      type: 'role/fetch',
-      data: {
-        page_size: page_size
-      }
-    });
+    new Promise(function (resolve, reject) {
+      this.props.dispatch({
+        type: 'role/fetch',
+        data: {
+          page_index: page_index,
+          page_size: page_size
+        }
+      });
 
-    setTimeout(function () {
-      this.handLoad(page_index);
-    }.bind(this), constant.timeout);
+      resolve();
+    }.bind(this)).then(function () {
+      this.handleLoad();
+    }.bind(this));
   }
 
-  handSave() {
-    this.props.dispatch({
-      type: 'role/fetch',
-      data: {
-        is_detail: true,
-        action: 'save'
-      }
-    });
+  handleSave() {
+    notification.emit('notification_role_detail_save', {});
   }
 
-  handUpdate(role_id) {
-    if (this.handleStart({
-        is_load: true,
-        is_detail: true,
-        action: 'update',
-        role_id: role_id
-      })) {
-      return;
-    }
-
-    request.post({
-      url: '/role/admin/find',
-      data: {
-        role_id: role_id
-      },
-      success: function (json) {
-        this.refs.detail.setFieldsValue(json.data);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
+  handleUpdate(role_id) {
+    notification.emit('notification_role_detail_update', {
+      role_id: role_id
     });
   }
 
   handleDelete(role_id) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
+    this.setState({
+      is_load: true
+    });
 
     request.post({
       url: '/role/delete',
@@ -136,85 +134,13 @@ class RoleIndex extends Component {
       success: function (json) {
         message.success(constant.success);
 
-        setTimeout(function () {
-          this.handLoad(this.props.role.page_index);
-        }.bind(this), constant.timeout);
+        this.handleLoad();
       }.bind(this),
       complete: function () {
-        this.handleFinish();
+        this.setState({
+          is_load: false
+        });
       }.bind(this)
-    });
-  }
-
-  handleSubmit(data) {
-    if (this.handleStart({
-        is_load: true
-      })) {
-      return;
-    }
-
-    if (this.props.role.action == 'update') {
-      data.role_id = this.props.role.role_id;
-    }
-
-    request.post({
-      url: '/role/' + this.props.role.action,
-      data: data,
-      success: function (json) {
-        message.success(constant.success);
-
-        this.handleCancel();
-
-        setTimeout(function () {
-          this.handLoad(this.props.role.page_index);
-        }.bind(this), constant.timeout);
-      }.bind(this),
-      complete: function () {
-        this.handleFinish();
-      }.bind(this)
-    });
-  }
-
-  handleCancel() {
-    this.props.dispatch({
-      type: 'role/fetch',
-      data: {
-        is_detail: false
-      }
-    });
-
-    this.refs.detail.resetFields();
-  }
-
-  handleStart(data) {
-    if (this.props.role.is_load) {
-      return true;
-    }
-
-    this.props.dispatch({
-      type: 'role/fetch',
-      data: data
-    });
-
-    return false;
-  }
-
-  handleFinish() {
-    this.props.dispatch({
-      type: 'role/fetch',
-      data: {
-        is_load: false
-      }
-    });
-  }
-
-  handleReset() {
-
-    this.props.dispatch({
-      type: 'role/fetch',
-      data: {
-        is_detail: false
-      }
     });
   }
 
@@ -231,7 +157,7 @@ class RoleIndex extends Component {
       dataIndex: '',
       render: (text, record, index) => (
         <span>
-          <a onClick={this.handUpdate.bind(this, record.role_id)}>{constant.update}</a>
+          <a onClick={this.handleUpdate.bind(this, record.role_id)}>{constant.update}</a>
           <span className={style.divider}/>
           <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
                       cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.role_id)}>
@@ -251,7 +177,7 @@ class RoleIndex extends Component {
       pageSize: this.props.role.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
-      onChange: this.handLoad.bind(this)
+      onChange: this.handleChangeIndex.bind(this)
     };
 
     return (
@@ -263,10 +189,10 @@ class RoleIndex extends Component {
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
-                      loading={this.props.role.is_load}
+                      loading={this.state.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
               <Button type="primary" icon="plus-circle" size="default"
-                      onClick={this.handSave.bind(this)}>{constant.save}</Button>
+                      onClick={this.handleSave.bind(this)}>{constant.save}</Button>
             </Col>
           </Row>
           <Form className={style.layoutContentHeaderSearch}>
@@ -288,15 +214,12 @@ class RoleIndex extends Component {
               </Col>
             </Row>
           </Form>
-          <Table className={style.layoutContentHeaderTable}
-                 loading={this.props.role.is_load && !this.props.role.is_detail} columns={columns}
+          <Table rowKey="role_id"
+                 className={style.layoutContentHeaderTable}
+                 loading={this.state.is_load} columns={columns}
                  dataSource={this.props.role.list} pagination={pagination}
                  bordered/>
-          <RoleDetail is_load={this.props.role.is_load}
-                      is_detail={this.props.role.is_detail}
-                      handleSubmit={this.handleSubmit.bind(this)}
-                      handleCancel={this.handleCancel.bind(this)}
-                      ref="detail"/>
+          <RoleDetail ref="detail"/>
         </div>
       </QueueAnim>
     );
@@ -308,5 +231,5 @@ RoleIndex.propTypes = {};
 RoleIndex = Form.create({})(RoleIndex);
 
 export default connect(({role}) => ({
-  role,
+  role
 }))(RoleIndex);

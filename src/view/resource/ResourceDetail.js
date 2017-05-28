@@ -1,23 +1,72 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import {Modal, Form, Spin, Button, Input, InputNumber} from 'antd';
+import {connect} from 'dva';
+import {Modal, Form, Spin, Button, Input, InputNumber, message} from 'antd';
 
 import constant from '../../util/constant';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
 class ResourceDetail extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      is_load: false,
+      is_show: false,
+      action: '',
+      resource_id: ''
+    }
   }
 
   componentDidMount() {
+    notification.on('notification_resource_detail_save', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'save'
+      });
+    });
 
+    notification.on('notification_resource_detail_update', this, function (data) {
+      this.setState({
+        is_show: true,
+        action: 'update',
+        resource_id: data.resource_id
+      });
+
+      this.handleLoad(data.resource_id);
+    });
   }
 
   componentWillUnmount() {
+    notification.remove('notification_resource_detail_save', this);
 
+    notification.remove('notification_resource_detail_update', this);
+  }
+
+  handleLoad(resource_id) {
+    this.setState({
+      is_load: true
+    });
+
+    request.post({
+      url: '/resource/admin/find',
+      data: {
+        resource_id: resource_id
+      },
+      success: function (json) {
+        this.props.form.setFieldsValue({
+          category_id: json.data.category_id,
+          resource_name: json.data.resource_name
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+
+      }.bind(this)
+    });
   }
 
   handleSubmit() {
@@ -26,15 +75,30 @@ class ResourceDetail extends Component {
         return;
       }
 
-      this.props.handleSubmit(values);
+      values.resource_id = this.state.resource_id;
+
+      request.post({
+        url: '/resource/' + this.state.action,
+        data: values,
+        success: function (json) {
+          message.success(constant.success);
+
+          this.handleCancel();
+
+          notification.emit('notification_resource_index_load', {});
+        }.bind(this),
+        complete: function () {
+
+        }.bind(this)
+      });
     });
   }
 
   handleCancel() {
-    this.props.handleCancel();
-  }
+    this.setState({
+      is_show: false
+    });
 
-  handleReset() {
     this.props.form.resetFields();
   }
 
@@ -44,16 +108,17 @@ class ResourceDetail extends Component {
 
     return (
       <Modal title={'资源表单'} maskClosable={false} width={constant.detail_width}
-             visible={this.props.is_detail} onCancel={this.handleCancel.bind(this)}
+             visible={this.state.is_show} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
                        onClick={this.handleCancel.bind(this)}>关闭</Button>,
                <Button key="submit" type="primary" size="default" icon="check-circle"
-                       loading={this.props.is_load}
+                       loading={this.state.is_load}
                        onClick={this.handleSubmit.bind(this)}>确定</Button>
              ]}
       >
-        <Spin spinning={this.props.is_load}>
+        <Spin spinning={this.state.is_load}>
+          <form>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="资源类型">
               {
@@ -117,6 +182,7 @@ class ResourceDetail extends Component {
                 )
               }
             </FormItem>
+          </form>
         </Spin>
       </Modal>
     );
@@ -124,14 +190,11 @@ class ResourceDetail extends Component {
 }
 
 ResourceDetail.propTypes = {
-  is_load: PropTypes.bool.isRequired,
-  is_detail: PropTypes.bool.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
-  handleCancel: PropTypes.func.isRequired
+
 };
 
-ResourceDetail = Form.create({
-  withRef: true
-})(ResourceDetail);
+ResourceDetail = Form.create({})(ResourceDetail);
 
-export default ResourceDetail;
+export default connect(({resource}) => ({
+  resource
+}))(ResourceDetail);
