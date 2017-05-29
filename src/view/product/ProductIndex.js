@@ -24,13 +24,13 @@ class ProductIndex extends Component {
       product_name: this.props.product.product_name
     });
 
+    this.handleLoad();
+
     this.handleCategoryList();
 
     this.handleBrandList();
 
     this.handleMemberLevelList();
-
-    this.handleLoad();
 
     notification.on('notification_product_index_load', this, function (data) {
       this.handleLoad();
@@ -263,7 +263,7 @@ class ProductIndex extends Component {
           <Form className={style.layoutContentHeaderSearch}>
             <Row>
               <Col span={8}>
-                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="名称">
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="名称">
                   {
                     getFieldDecorator('product_name', {
                       initialValue: ''

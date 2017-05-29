@@ -206,7 +206,7 @@ class AuthorizationIndex extends Component {
           <Form className={style.layoutContentHeaderSearch}>
             <Row>
               <Col span={8}>
-                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="Token">
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="Token">
                   {
                     getFieldDecorator('authorization_token', {
                       initialValue: ''

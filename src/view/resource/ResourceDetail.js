@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
-import {Modal, Form, Spin, Button, Input, InputNumber, message} from 'antd';
+import {Modal, Form, Spin, Button, Input, InputNumber, Select, message} from 'antd';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
@@ -104,6 +104,7 @@ class ResourceDetail extends Component {
 
   render() {
     const FormItem = Form.Item;
+    const Option = Select.Option;
     const {getFieldDecorator} = this.props.form;
 
     return (
@@ -127,9 +128,12 @@ class ResourceDetail extends Component {
                     required: true,
                     message: constant.required
                   }],
-                  initialValue: ''
+                  initialValue: 'URL'
                 })(
-                  <Input type="text" placeholder={constant.placeholder + '资源类型'}/>
+                  <Select placeholder="请选择资源类型" className={style.formItemInput}>
+                    <Option key="URL" value="URL">菜单</Option>
+                    <Option key="BUTTON" value="BUTTON">按钮</Option>
+                  </Select>
                 )
               }
             </FormItem>
@@ -178,7 +182,7 @@ class ResourceDetail extends Component {
                   initialValue: 0
                 })(
                   <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + '资源排序'}
-                             min={0} max={999}/>
+                               min={0} max={999}/>
                 )
               }
             </FormItem>
@@ -189,9 +193,7 @@ class ResourceDetail extends Component {
   }
 }
 
-ResourceDetail.propTypes = {
-
-};
+ResourceDetail.propTypes = {};
 
 ResourceDetail = Form.create({})(ResourceDetail);
 

@@ -216,7 +216,7 @@ class LogIndex extends Component {
           <Form className={style.layoutContentHeaderSearch}>
             <Row>
               <Col span={8}>
-                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="请求地址">
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="请求地址">
                   {
                     getFieldDecorator('log_url', {
                       initialValue: ''
@@ -227,7 +227,7 @@ class LogIndex extends Component {
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="请求状态">
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="请求状态">
                   {
                     getFieldDecorator('log_code', {
                     })(
@@ -242,7 +242,7 @@ class LogIndex extends Component {
                 </FormItem>
               </Col>
               <Col span={8}>
-                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="请求平台">
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="请求平台">
                   {
                     getFieldDecorator('log_platform', {
                     })(

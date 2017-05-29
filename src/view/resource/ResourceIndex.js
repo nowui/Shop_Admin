@@ -26,6 +26,8 @@ class ResourceIndex extends Component {
 
     this.handleLoad();
 
+    this.handleCategoryList();
+
     notification.on('notification_resource_index_load', this, function (data) {
       this.handleLoad();
     });
@@ -67,8 +69,7 @@ class ResourceIndex extends Component {
         this.props.dispatch({
           type: 'resource/fetch',
           data: {
-            total: json.total,
-            list: json.data
+            list: json.data.children
           }
         });
       }.bind(this),
@@ -76,6 +77,24 @@ class ResourceIndex extends Component {
         this.setState({
           is_load: false
         });
+      }.bind(this)
+    });
+  }
+
+  handleCategoryList() {
+    request.post({
+      url: '/resource/category/list',
+      data: {},
+      success: function (json) {
+        this.props.dispatch({
+          type: 'resource/fetch',
+          data: {
+            category_list: json.data
+          }
+        });
+      }.bind(this),
+      complete: function () {
+
       }.bind(this)
     });
   }
@@ -198,7 +217,7 @@ class ResourceIndex extends Component {
           <Form className={style.layoutContentHeaderSearch}>
             <Row>
               <Col span={8}>
-                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="名称">
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="名称">
                   {
                     getFieldDecorator('resource_name', {
                       initialValue: ''
@@ -217,7 +236,7 @@ class ResourceIndex extends Component {
           <Table rowKey="resource_id"
                  className={style.layoutContentHeaderTable}
                  loading={this.state.is_load} columns={columns}
-                 dataSource={this.props.resource.list} pagination={pagination}
+                 dataSource={this.props.resource.list} pagination={false}
                  bordered/>
           <ResourceDetail ref="detail"/>
         </div>

@@ -58,8 +58,7 @@ class AdminDetail extends Component {
       success: function (json) {
         this.props.form.setFieldsValue({
           admin_name: json.data.admin_name,
-          user_account: json.data.user_account,
-          user_password: json.data.user_password
+          user_account: json.data.user_account
         });
       }.bind(this),
       complete: function () {
@@ -173,7 +172,7 @@ class AdminDetail extends Component {
                     required: this.state.action == 'save',
                     message: constant.required
                   }],
-                  initialValue: ''
+                  initialValue: '1'
                 })(
                   <Input type="text" placeholder={constant.placeholder + '密码'}/>
                 )

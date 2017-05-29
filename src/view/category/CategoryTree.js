@@ -174,8 +174,8 @@ class CategoryTree extends Component {
       dataIndex: 'category_name'
     }, {
       width: 150,
-      title: '键值',
-      dataIndex: 'category_key'
+      title: '数值',
+      dataIndex: 'category_value'
     }, {
       width: 100,
       title: '排序',
@@ -216,7 +216,8 @@ class CategoryTree extends Component {
                     onClick={this.handleSave.bind(this, this.state.category_id)}>{constant.save}</Button>
           </Col>
         </Row>
-        <Table className={style.layoutContentHeaderTable} expandedRowKeys={this.state.expandedRowKeys}
+        <Table rowKey="category_id"
+               className={style.layoutContentHeaderTable} expandedRowKeys={this.state.expandedRowKeys}
                onExpand={this.handleExpand.bind(this)} columns={columns} dataSource={this.state.children}
                pagination={false}
                bordered/>

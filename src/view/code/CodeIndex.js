@@ -208,7 +208,7 @@ class CodeIndex extends Component {
           <Form className={style.layoutContentHeaderSearch}>
             <Row>
               <Col span={8}>
-                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="命名空间">
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="命名空间">
                   {
                     getFieldDecorator('name_space', {
                       initialValue: ''

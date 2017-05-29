@@ -199,7 +199,7 @@ class SupplierIndex extends Component {
           <Form className={style.layoutContentHeaderSearch}>
             <Row>
               <Col span={8}>
-                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="名称">
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="名称">
                   {
                     getFieldDecorator('supplier_name', {
                       initialValue: ''
