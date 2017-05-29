@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
-import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
+import {Row, Col, Button, Form, Input, Table, TreeSelect, Popconfirm, message} from 'antd';
 
 import RoleDetail from './RoleDetail';
 import constant from '../../util/constant';
@@ -25,6 +25,8 @@ class RoleIndex extends Component {
     });
 
     this.handleLoad();
+
+    this.handleCategoryList();
 
     notification.on('notification_role_index_load', this, function (data) {
       this.handleLoad();
@@ -78,6 +80,40 @@ class RoleIndex extends Component {
         });
       }.bind(this)
     });
+  }
+
+  handleCategoryList() {
+    request.post({
+      url: '/role/category/list',
+      data: {},
+      success: function (json) {
+        this.handleFormat(json.data.children);
+
+        this.props.dispatch({
+          type: 'role/fetch',
+          data: {
+            category_list: json.data.children
+          }
+        });
+      }.bind(this),
+      complete: function () {
+
+      }.bind(this)
+    });
+  }
+
+  handleFormat(children) {
+    if (typeof (children) == 'undefined') {
+      return;
+    }
+
+    for (var i = 0; i < children.length; i++) {
+      children[i].key = children[i].category_id;
+      children[i].value = children[i].category_id;
+      children[i].label = children[i].category_name;
+
+      this.handleFormat(children[i].children);
+    }
   }
 
   handleChangeIndex(page_index) {
@@ -198,6 +234,22 @@ class RoleIndex extends Component {
           <Form className={style.layoutContentHeaderSearch}>
             <Row>
               <Col span={8}>
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="所属分类">
+                  {
+                    getFieldDecorator('category_id', {
+                      initialValue: ''
+                    })(
+                      <TreeSelect
+                        placeholder="请选择所属分类"
+                        allowClear
+                        treeDefaultExpandAll
+                        treeData={this.props.role.category_list}
+                      />
+                    )
+                  }
+                </FormItem>
+              </Col>
+              <Col span={8}>
                 <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="名称">
                   {
                     getFieldDecorator('role_name', {
@@ -207,8 +259,6 @@ class RoleIndex extends Component {
                     )
                   }
                 </FormItem>
-              </Col>
-              <Col span={8}>
               </Col>
               <Col span={8}>
               </Col>

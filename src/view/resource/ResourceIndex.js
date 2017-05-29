@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
-import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
+import {Row, Col, Button, Form, Input, Table, TreeSelect, Popconfirm, message} from 'antd';
 
 import ResourceDetail from './ResourceDetail';
 import constant from '../../util/constant';
@@ -21,6 +21,7 @@ class ResourceIndex extends Component {
 
   componentDidMount() {
     this.props.form.setFieldsValue({
+      category_id: this.props.resource.category_id,
       resource_name: this.props.resource.resource_name
     });
 
@@ -42,6 +43,7 @@ class ResourceIndex extends Component {
       this.props.dispatch({
         type: 'resource/fetch',
         data: {
+          category_id: this.props.form.getFieldValue('category_id'),
           resource_name: this.props.form.getFieldValue('resource_name'),
           page_index: 1
         }
@@ -69,7 +71,7 @@ class ResourceIndex extends Component {
         this.props.dispatch({
           type: 'resource/fetch',
           data: {
-            list: json.data.children
+            list: json.data
           }
         });
       }.bind(this),
@@ -86,10 +88,12 @@ class ResourceIndex extends Component {
       url: '/resource/category/list',
       data: {},
       success: function (json) {
+        this.handleFormat(json.data.children);
+
         this.props.dispatch({
           type: 'resource/fetch',
           data: {
-            category_list: json.data
+            category_list: json.data.children
           }
         });
       }.bind(this),
@@ -97,6 +101,20 @@ class ResourceIndex extends Component {
 
       }.bind(this)
     });
+  }
+
+  handleFormat(children) {
+    if (typeof (children) == 'undefined') {
+      return;
+    }
+
+    for (var i = 0; i < children.length; i++) {
+      children[i].key = children[i].category_id;
+      children[i].value = children[i].category_id;
+      children[i].label = children[i].category_name;
+
+      this.handleFormat(children[i].children);
+    }
   }
 
   handleChangeIndex(page_index) {
@@ -217,6 +235,22 @@ class ResourceIndex extends Component {
           <Form className={style.layoutContentHeaderSearch}>
             <Row>
               <Col span={8}>
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="所属分类">
+                  {
+                    getFieldDecorator('category_id', {
+                      initialValue: ''
+                    })(
+                      <TreeSelect
+                        placeholder="请选择所属分类"
+                        allowClear
+                        treeDefaultExpandAll
+                        treeData={this.props.resource.category_list}
+                      />
+                    )
+                  }
+                </FormItem>
+              </Col>
+              <Col span={8}>
                 <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="名称">
                   {
                     getFieldDecorator('resource_name', {
@@ -226,8 +260,6 @@ class ResourceIndex extends Component {
                     )
                   }
                 </FormItem>
-              </Col>
-              <Col span={8}>
               </Col>
               <Col span={8}>
               </Col>

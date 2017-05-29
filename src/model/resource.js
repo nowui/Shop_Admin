@@ -5,6 +5,7 @@ export default {
   namespace: 'resource',
 
   state: {
+    category_id: '',
     resource_name: '',
     total: 0,
     page_index: 1,

@@ -175,7 +175,7 @@ class LogIndex extends Component {
     }, {
       width: 150,
       title: '创建时间',
-      dataIndex: 'log_create_time'
+      dataIndex: 'system_create_time'
     }, {
       width: 90,
       title: constant.action,
@@ -231,8 +231,7 @@ class LogIndex extends Component {
                   {
                     getFieldDecorator('log_code', {
                     })(
-                      <Select placeholder="请选择请求状态" className={style.formItemInput}>
-                        <Option key="" value="">全部</Option>
+                      <Select allowClear placeholder="请选择请求状态" className={style.formItemInput}>
                         <Option key="200" value="200">200</Option>
                         <Option key="400" value="400">400</Option>
                         <Option key="500" value="500">500</Option>
@@ -246,8 +245,7 @@ class LogIndex extends Component {
                   {
                     getFieldDecorator('log_platform', {
                     })(
-                      <Select placeholder="请选择请求平台" className={style.formItemInput}>
-                        <Option key="" value="">全部</Option>
+                      <Select allowClear placeholder="请选择请求平台" className={style.formItemInput}>
                         <Option key="IOS" value="IOS">IOS</Option>
                         <Option key="WEB" value="WEB">WEB</Option>
                         <Option key="ADMIN" value="ADMIN">ADMIN</Option>

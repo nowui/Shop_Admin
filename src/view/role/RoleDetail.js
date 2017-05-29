@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
-import {Modal, Form, Spin, Button, Input, InputNumber, message} from 'antd';
+import {Modal, Form, Spin, Button, Input, InputNumber, TreeSelect, message} from 'antd';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
@@ -56,6 +56,7 @@ class RoleDetail extends Component {
       },
       success: function (json) {
         this.props.form.setFieldsValue({
+          category_id: json.data.category_id,
           role_name: json.data.role_name,
           role_key: json.data.role_key,
           role_sort: json.data.role_sort
@@ -119,56 +120,73 @@ class RoleDetail extends Component {
              ]}
       >
         <Spin spinning={this.state.is_load}>
-          <from>
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="角色名称">
-            {
-              getFieldDecorator('role_name', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '角色名称'}/>
-              )
-            }
-          </FormItem>
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="角色键值">
-            {
-              getFieldDecorator('role_key', {
-                initialValue: ''
-              })(
-                <Input type="text" placeholder={constant.placeholder + '角色键值'}/>
-              )
-            }
-          </FormItem>
-          <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_width}} label="角色排序">
-            {
-              getFieldDecorator('role_sort', {
-                rules: [{
-                  required: true,
-                  message: constant.required
-                }],
-                initialValue: 0
-              })(
-                <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + '角色排序'}
-                             min={0} max={999}/>
-              )
-            }
-          </FormItem>
-          </from>
+          <form>
+            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="所属分类">
+              {
+                getFieldDecorator('category_id', {
+                  rules: [{
+                    required: true,
+                    message: constant.required
+                  }],
+                  initialValue: ''
+                })(
+                  <TreeSelect
+                    placeholder="请选择所属分类"
+                    allowClear
+                    treeDefaultExpandAll
+                    treeData={this.props.role.category_list}
+                  />
+                )
+              }
+            </FormItem>
+            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="角色名称">
+              {
+                getFieldDecorator('role_name', {
+                  rules: [{
+                    required: true,
+                    message: constant.required
+                  }],
+                  initialValue: ''
+                })(
+                  <Input type="text" placeholder={constant.placeholder + '角色名称'}/>
+                )
+              }
+            </FormItem>
+            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="角色键值">
+              {
+                getFieldDecorator('role_key', {
+                  initialValue: ''
+                })(
+                  <Input type="text" placeholder={constant.placeholder + '角色键值'}/>
+                )
+              }
+            </FormItem>
+            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="角色排序">
+              {
+                getFieldDecorator('role_sort', {
+                  rules: [{
+                    required: true,
+                    message: constant.required
+                  }],
+                  initialValue: 0
+                })(
+                  <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + '角色排序'}
+                               min={0} max={999}/>
+                )
+              }
+            </FormItem>
+          </form>
         </Spin>
       </Modal>
     );
   }
 }
 
-RoleDetail.propTypes = {
-
-};
+RoleDetail.propTypes = {};
 
 RoleDetail = Form.create({})(RoleDetail);
 

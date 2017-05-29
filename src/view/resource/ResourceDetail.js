@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
-import {Modal, Form, Spin, Button, Input, InputNumber, Select, message} from 'antd';
+import {Modal, Form, Spin, Button, Input, InputNumber, Select, TreeSelect, message} from 'antd';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
@@ -57,7 +57,11 @@ class ResourceDetail extends Component {
       success: function (json) {
         this.props.form.setFieldsValue({
           category_id: json.data.category_id,
-          resource_name: json.data.resource_name
+          resource_type: json.data.resource_type,
+          resource_name: json.data.resource_name,
+          resource_key: json.data.resource_key,
+          resource_value: json.data.resource_value,
+          resource_sort: json.data.resource_sort
         });
       }.bind(this),
       complete: function () {
@@ -121,6 +125,25 @@ class ResourceDetail extends Component {
         <Spin spinning={this.state.is_load}>
           <form>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="所属分类">
+              {
+                getFieldDecorator('category_id', {
+                  rules: [{
+                    required: true,
+                    message: constant.required
+                  }],
+                  initialValue: ''
+                })(
+                  <TreeSelect
+                    placeholder="请选择所属分类"
+                    allowClear
+                    treeDefaultExpandAll
+                    treeData={this.props.resource.category_list}
+                  />
+                )
+              }
+            </FormItem>
+            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="资源类型">
               {
                 getFieldDecorator('resource_type', {
@@ -131,7 +154,7 @@ class ResourceDetail extends Component {
                   initialValue: 'URL'
                 })(
                   <Select placeholder="请选择资源类型" className={style.formItemInput}>
-                    <Option key="URL" value="URL">菜单</Option>
+                    <Option key="URL" value="URL">链接</Option>
                     <Option key="BUTTON" value="BUTTON">按钮</Option>
                   </Select>
                 )
