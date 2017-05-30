@@ -219,7 +219,7 @@ class SupplierIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.supplier.list} pagination={pagination}
                  bordered/>
-          <SupplierDetail ref="detail"/>
+          <SupplierDetail/>
         </div>
       </QueueAnim>
     );

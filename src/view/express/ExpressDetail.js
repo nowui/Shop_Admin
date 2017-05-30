@@ -77,6 +77,10 @@ class ExpressDetail extends Component {
 
       values.express_id = this.state.express_id;
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/express/' + this.state.action,
         data: values,
@@ -88,7 +92,9 @@ class ExpressDetail extends Component {
           notification.emit('notification_express_index_load', {});
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

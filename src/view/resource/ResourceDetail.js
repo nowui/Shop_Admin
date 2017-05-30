@@ -81,6 +81,10 @@ class ResourceDetail extends Component {
 
       values.resource_id = this.state.resource_id;
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/resource/' + this.state.action,
         data: values,
@@ -92,7 +96,9 @@ class ResourceDetail extends Component {
           notification.emit('notification_resource_index_load', {});
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

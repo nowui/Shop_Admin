@@ -78,6 +78,10 @@ class MemberLevelDetail extends Component {
 
       values.member_level_id = this.state.member_level_id;
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/member/level/' + this.state.action,
         data: values,
@@ -89,7 +93,9 @@ class MemberLevelDetail extends Component {
           notification.emit('notification_member_level_index_load', {});
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

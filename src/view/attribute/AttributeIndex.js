@@ -220,7 +220,7 @@ class AttributeIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.attribute.list} pagination={pagination}
                  bordered/>
-          <AttributeDetail ref="detail"/>
+          <AttributeDetail/>
         </div>
       </QueueAnim>
     );

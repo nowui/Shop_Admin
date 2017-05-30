@@ -211,7 +211,7 @@ class OrderIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.order.list} pagination={pagination}
                  bordered/>
-          <OrderDetail ref="detail"/>
+          <OrderDetail/>
         </div>
       </QueueAnim>
     );

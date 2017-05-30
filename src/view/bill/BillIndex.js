@@ -214,7 +214,7 @@ class BillIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.bill.list} pagination={pagination}
                  bordered/>
-          <BillDetail ref="detail"/>
+          <BillDetail/>
         </div>
       </QueueAnim>
     );

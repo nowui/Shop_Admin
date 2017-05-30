@@ -219,7 +219,7 @@ class BrandIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.brand.list} pagination={pagination}
                  bordered/>
-          <BrandDetail ref="detail"/>
+          <BrandDetail/>
         </div>
       </QueueAnim>
     );

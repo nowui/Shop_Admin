@@ -86,6 +86,10 @@ class LogDetail extends Component {
 
       values.log_id = this.state.log_id;
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/log/' + this.state.action,
         data: values,
@@ -97,7 +101,9 @@ class LogDetail extends Component {
           notification.emit('notification_log_index_load', {});
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

@@ -77,6 +77,10 @@ class AttributeDetail extends Component {
 
       values.attribute_id = this.state.attribute_id;
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/attribute/' + this.state.action,
         data: values,
@@ -88,7 +92,9 @@ class AttributeDetail extends Component {
           notification.emit('notification_attribute_index_load', {});
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

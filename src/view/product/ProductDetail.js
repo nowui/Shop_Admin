@@ -198,6 +198,10 @@ class ProductDetail extends Component {
 
       values.commission_list = commission_list;
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/product/' + this.state.action,
         data: values,
@@ -209,7 +213,9 @@ class ProductDetail extends Component {
           notification.emit('notification_product_index_load', {});
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

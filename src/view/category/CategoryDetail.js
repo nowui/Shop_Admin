@@ -93,6 +93,10 @@ class CategoryDetail extends Component {
         values.parent_id = this.state.parent_id;
       }
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/category/' + this.state.action,
         data: values,
@@ -108,7 +112,9 @@ class CategoryDetail extends Component {
           }
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

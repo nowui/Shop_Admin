@@ -3,6 +3,8 @@ import {connect} from 'dva';
 import {Modal, Form, Spin, Button, Input, message} from 'antd';
 
 import constant from '../../util/constant';
+import notification from '../../util/notification';
+import request from '../../util/request';
 import style from '../style.css';
 
 class ConfigDetail extends Component {
@@ -75,6 +77,10 @@ class ConfigDetail extends Component {
 
       values.config_id = this.state.config_id;
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/config/' + this.state.action,
         data: values,
@@ -86,7 +92,9 @@ class ConfigDetail extends Component {
           notification.emit('notification_config_index_load', {});
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

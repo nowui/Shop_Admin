@@ -259,7 +259,7 @@ class SceneIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.scene.list} pagination={pagination}
                  bordered/>
-          <SceneDetail ref="detail"/>
+          <SceneDetail/>
         </div>
       </QueueAnim>
     );

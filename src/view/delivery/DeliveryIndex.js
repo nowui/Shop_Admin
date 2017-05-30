@@ -222,7 +222,7 @@ class DeliveryIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.delivery.list} pagination={pagination}
                  bordered/>
-          <DeliveryDetail ref="detail"/>
+          <DeliveryDetail/>
         </div>
       </QueueAnim>
     );

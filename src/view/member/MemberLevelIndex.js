@@ -219,7 +219,7 @@ class MemberLevelIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.member_level.list} pagination={pagination}
                  bordered/>
-          <MemberLevelDetail ref="detail"/>
+          <MemberLevelDetail/>
         </div>
       </QueueAnim>
     );

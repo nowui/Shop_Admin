@@ -215,7 +215,7 @@ class ExpressIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.express.list} pagination={pagination}
                  bordered/>
-          <ExpressDetail ref="detail"/>
+          <ExpressDetail/>
         </div>
       </QueueAnim>
     );

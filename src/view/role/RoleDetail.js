@@ -79,6 +79,10 @@ class RoleDetail extends Component {
 
       values.role_id = this.state.role_id;
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/role/' + this.state.action,
         data: values,
@@ -90,7 +94,9 @@ class RoleDetail extends Component {
           notification.emit('notification_role_index_load', {});
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

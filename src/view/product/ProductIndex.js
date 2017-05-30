@@ -284,7 +284,7 @@ class ProductIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.product.list} pagination={pagination}
                  bordered/>
-          <ProductDetail ref="detail"/>
+          <ProductDetail/>
         </div>
       </QueueAnim>
     );

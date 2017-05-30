@@ -88,6 +88,10 @@ class MemberDetail extends Component {
         values.user_account = '';
       }
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/member/' + this.state.action,
         data: values,
@@ -99,7 +103,9 @@ class MemberDetail extends Component {
           notification.emit('notification_member_index_load', {});
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

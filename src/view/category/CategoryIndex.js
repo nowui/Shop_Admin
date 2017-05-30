@@ -242,7 +242,7 @@ class CategoryIndex extends Component {
                  dataSource={this.props.category.list} pagination={pagination}
                  bordered/>
           <CategoryTree ref="tree"/>
-          <CategoryDetail ref="detail"/>
+          <CategoryDetail/>
         </div>
       </QueueAnim>
     );

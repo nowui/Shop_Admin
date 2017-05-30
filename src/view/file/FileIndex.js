@@ -219,7 +219,7 @@ class FileIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.file.list} pagination={pagination}
                  bordered/>
-          <FileDetail ref="detail"/>
+          <FileDetail/>
         </div>
       </QueueAnim>
     );

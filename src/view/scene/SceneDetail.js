@@ -77,6 +77,10 @@ class SceneDetail extends Component {
 
       values.scene_id = this.state.scene_id;
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/scene/' + this.state.action,
         data: values,
@@ -88,7 +92,9 @@ class SceneDetail extends Component {
           notification.emit('notification_scene_index_load', {});
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

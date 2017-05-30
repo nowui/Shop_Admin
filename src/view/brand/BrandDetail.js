@@ -97,6 +97,10 @@ class BrandDetail extends Component {
 
       values.brand_content = this.refs.brand_content.handleGetValue();
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/brand/' + this.state.action,
         data: values,
@@ -108,7 +112,9 @@ class BrandDetail extends Component {
           notification.emit('notification_brand_index_load', {});
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

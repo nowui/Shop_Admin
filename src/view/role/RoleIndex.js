@@ -4,6 +4,7 @@ import QueueAnim from 'rc-queue-anim';
 import {Row, Col, Button, Form, Input, Table, TreeSelect, Popconfirm, message} from 'antd';
 
 import RoleDetail from './RoleDetail';
+import RoleResource from './RoleResource';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
 import request from '../../util/request';
@@ -157,6 +158,12 @@ class RoleIndex extends Component {
     });
   }
 
+  handleResourceUpdate(role_id) {
+    notification.emit('notification_role_resource_update', {
+      role_id: role_id
+    });
+  }
+
   handleDelete(role_id) {
     this.setState({
       is_load: true
@@ -185,15 +192,25 @@ class RoleIndex extends Component {
     const {getFieldDecorator} = this.props.form;
 
     const columns = [{
+      width: 150,
+      title: '分类',
+      dataIndex: 'category_name'
+    }, {
       title: '名称',
       dataIndex: 'role_name'
     }, {
-      width: 90,
+      width: 150,
+      title: '键值',
+      dataIndex: 'role_key'
+    }, {
+      width: 135,
       title: constant.action,
       dataIndex: '',
       render: (text, record, index) => (
         <span>
           <a onClick={this.handleUpdate.bind(this, record.role_id)}>{constant.update}</a>
+          <span className={style.divider}/>
+          <a onClick={this.handleResourceUpdate.bind(this, record.role_id)}>权限</a>
           <span className={style.divider}/>
           <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
                       cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.role_id)}>
@@ -269,7 +286,8 @@ class RoleIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.role.list} pagination={pagination}
                  bordered/>
-          <RoleDetail ref="detail"/>
+          <RoleDetail/>
+          <RoleResource/>
         </div>
       </QueueAnim>
     );

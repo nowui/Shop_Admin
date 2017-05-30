@@ -223,7 +223,7 @@ class AdminIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.admin.list} pagination={pagination}
                  bordered/>
-          <AdminDetail ref="detail"/>
+          <AdminDetail/>
         </div>
       </QueueAnim>
     );

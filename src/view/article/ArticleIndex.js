@@ -236,7 +236,7 @@ class ArticleIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.article.list} pagination={pagination}
                  bordered/>
-          <ArticleDetail ref="detail"/>
+          <ArticleDetail/>
         </div>
       </QueueAnim>
     );

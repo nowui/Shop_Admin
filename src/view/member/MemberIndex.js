@@ -246,7 +246,7 @@ class MemberIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.member.list} pagination={pagination}
                  bordered/>
-          <MemberDetail ref="detail"/>
+          <MemberDetail/>
         </div>
       </QueueAnim>
     );

@@ -77,6 +77,10 @@ class CartDetail extends Component {
 
       values.cart_id = this.state.cart_id;
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/cart/' + this.state.action,
         data: values,
@@ -88,7 +92,9 @@ class CartDetail extends Component {
           notification.emit('notification_cart_index_load', {});
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

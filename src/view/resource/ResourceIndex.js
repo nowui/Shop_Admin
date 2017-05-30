@@ -63,6 +63,7 @@ class ResourceIndex extends Component {
     request.post({
       url: '/resource/admin/list',
       data: {
+        category_id: this.props.resource.category_id,
         resource_name: this.props.resource.resource_name,
         page_index: this.props.resource.page_index,
         page_size: this.props.resource.page_size
@@ -71,6 +72,7 @@ class ResourceIndex extends Component {
         this.props.dispatch({
           type: 'resource/fetch',
           data: {
+            total: json.total,
             list: json.data
           }
         });
@@ -186,8 +188,24 @@ class ResourceIndex extends Component {
     const {getFieldDecorator} = this.props.form;
 
     const columns = [{
+      width: 130,
+      title: '分类',
+      dataIndex: 'category_name'
+    }, {
       title: '名称',
       dataIndex: 'resource_name'
+    }, {
+      width: 150,
+      title: '键值',
+      dataIndex: 'resource_key'
+    }, {
+      width: 150,
+      title: '数值',
+      dataIndex: 'resource_value'
+    }, {
+      width: 50,
+      title: '排序',
+      dataIndex: 'resource_sort'
     }, {
       width: 90,
       title: constant.action,
@@ -268,9 +286,9 @@ class ResourceIndex extends Component {
           <Table rowKey="resource_id"
                  className={style.layoutContentHeaderTable}
                  loading={this.state.is_load} columns={columns}
-                 dataSource={this.props.resource.list} pagination={false}
+                 dataSource={this.props.resource.list} pagination={pagination}
                  bordered/>
-          <ResourceDetail ref="detail"/>
+          <ResourceDetail/>
         </div>
       </QueueAnim>
     );

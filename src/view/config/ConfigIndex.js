@@ -214,7 +214,7 @@ class ConfigIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.config.list} pagination={pagination}
                  bordered/>
-          <ConfigDetail ref="detail"/>
+          <ConfigDetail/>
         </div>
       </QueueAnim>
     );

@@ -152,7 +152,7 @@ class AuthorizationIndex extends Component {
       title: 'Token',
       dataIndex: 'authorization_token',
       render: (text, record, index) => (
-        <div>{record.authorization_token.substring(0, 50)}...</div>
+        <div>{record.authorization_token.substring(0, 48)}...</div>
       )
     }, {
       width: 100,
@@ -227,7 +227,7 @@ class AuthorizationIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.authorization.list} pagination={pagination}
                  bordered/>
-          <AuthorizationDetail ref="detail"/>
+          <AuthorizationDetail/>
         </div>
       </QueueAnim>
     );

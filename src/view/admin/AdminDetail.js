@@ -82,6 +82,10 @@ class AdminDetail extends Component {
         values.user_account = '';
       }
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/admin/' + this.state.action,
         data: values,
@@ -93,7 +97,9 @@ class AdminDetail extends Component {
           notification.emit('notification_admin_index_load', {});
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

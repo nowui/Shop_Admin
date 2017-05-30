@@ -218,7 +218,7 @@ class CartIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.cart.list} pagination={pagination}
                  bordered/>
-          <CartDetail ref="detail"/>
+          <CartDetail/>
         </div>
       </QueueAnim>
     );

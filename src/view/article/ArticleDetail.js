@@ -85,6 +85,10 @@ class ArticleDetail extends Component {
 
       values.article_content = this.refs.article_content.handleGetValue();
 
+      this.setState({
+        is_load: true
+      });
+
       request.post({
         url: '/article/' + this.state.action,
         data: values,
@@ -96,7 +100,9 @@ class ArticleDetail extends Component {
           notification.emit('notification_article_index_load', {});
         }.bind(this),
         complete: function () {
-
+          this.setState({
+            is_load: false
+          });
         }.bind(this)
       });
     });

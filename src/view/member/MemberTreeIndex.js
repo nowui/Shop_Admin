@@ -207,7 +207,7 @@ class MemberTreeIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.member_tree.list} pagination={false}
                  bordered/>
-          <MemberDetail ref="detail"/>
+          <MemberDetail/>
         </div>
       </QueueAnim>
     );

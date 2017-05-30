@@ -261,7 +261,7 @@ class LogIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.log.list} pagination={pagination}
                  bordered/>
-          <LogDetail ref="detail"/>
+          <LogDetail/>
         </div>
       </QueueAnim>
     );
