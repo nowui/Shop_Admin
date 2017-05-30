@@ -90,12 +90,12 @@ class ResourceIndex extends Component {
       url: '/resource/category/list',
       data: {},
       success: function (json) {
-        this.handleFormat(json.data.children);
+        this.handleFormat(json.data);
 
         this.props.dispatch({
           type: 'resource/fetch',
           data: {
-            category_list: json.data.children
+            category_list: json.data
           }
         });
       }.bind(this),

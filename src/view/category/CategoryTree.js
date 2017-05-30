@@ -58,12 +58,10 @@ class CategoryTree extends Component {
         category_id: this.state.category_id
       },
       success: function (json) {
-        var expandedRowKeys = this.checkList(json.data.children);
+        var expandedRowKeys = this.checkList(json.data);
 
         this.setState({
-          category_id: json.data.category_id,
-          category_name: json.data.category_name,
-          children: json.data.children,
+          children: json.data,
           expandedRowKeys: expandedRowKeys
         });
       }.bind(this),
@@ -73,17 +71,6 @@ class CategoryTree extends Component {
         });
 
       }.bind(this)
-    });
-  }
-
-  setFieldsValue(data) {
-    var expandedRowKeys = this.checkList(data.children);
-
-    this.setState({
-      category_id: data.category_id,
-      category_name: data.category_name,
-      children: data.children,
-      expandedRowKeys: expandedRowKeys
     });
   }
 

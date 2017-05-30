@@ -88,12 +88,12 @@ class RoleIndex extends Component {
       url: '/role/category/list',
       data: {},
       success: function (json) {
-        this.handleFormat(json.data.children);
+        this.handleFormat(json.data);
 
         this.props.dispatch({
           type: 'role/fetch',
           data: {
-            category_list: json.data.children
+            category_list: json.data
           }
         });
       }.bind(this),
