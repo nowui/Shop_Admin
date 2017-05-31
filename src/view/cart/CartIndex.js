@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 import CartDetail from './CartDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -56,7 +56,7 @@ class CartIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/cart/admin/list',
       data: {
         cart_name: this.props.cart.cart_name,
@@ -126,7 +126,7 @@ class CartIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/cart/delete',
       data: {
         cart_id: cart_id

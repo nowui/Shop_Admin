@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, message} from 'antd';
 import DeliveryDetail from './DeliveryDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -56,7 +56,7 @@ class DeliveryIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/delivery/admin/list',
       data: {
         delivery_name: this.props.delivery.delivery_name,
@@ -126,7 +126,7 @@ class DeliveryIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/delivery/delete',
       data: {
         delivery_id: delivery_id

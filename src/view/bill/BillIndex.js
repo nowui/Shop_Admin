@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 import BillDetail from './BillDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -56,7 +56,7 @@ class BillIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/bill/admin/list',
       data: {
         bill_name: this.props.bill.bill_name,
@@ -126,7 +126,7 @@ class BillIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/bill/delete',
       data: {
         bill_id: bill_id

@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 import SceneDetail from './SceneDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -56,7 +56,7 @@ class SceneIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/scene/admin/list',
       data: {
         scene_type: this.props.scene.scene_type,
@@ -126,7 +126,7 @@ class SceneIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/scene/delete',
       data: {
         scene_id: scene_id

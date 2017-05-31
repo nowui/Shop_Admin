@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 import MemberLevelDetail from './MemberLevelDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -56,7 +56,7 @@ class MemberLevelIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/member/level/admin/list',
       data: {
         member_level_name: this.props.member_level.member_level_name,
@@ -126,7 +126,7 @@ class MemberLevelIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/member/level/delete',
       data: {
         member_level_id: member_level_id

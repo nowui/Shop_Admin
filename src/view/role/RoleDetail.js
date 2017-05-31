@@ -4,7 +4,7 @@ import {Modal, Form, Spin, Button, Input, InputNumber, TreeSelect, message} from
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class RoleDetail extends Component {
@@ -49,7 +49,7 @@ class RoleDetail extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/role/admin/find',
       data: {
         role_id: role_id
@@ -83,7 +83,7 @@ class RoleDetail extends Component {
         is_load: true
       });
 
-      request.post({
+      http.request({
         url: '/role/' + this.state.action,
         data: values,
         success: function (json) {

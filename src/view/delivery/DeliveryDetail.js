@@ -4,7 +4,7 @@ import {Modal, Form, Spin, Button, Input, message} from 'antd';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class DeliveryDetail extends Component {
@@ -49,7 +49,7 @@ class DeliveryDetail extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/delivery/admin/find',
       data: {
         delivery_id: delivery_id

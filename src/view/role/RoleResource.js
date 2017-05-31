@@ -4,7 +4,7 @@ import {Modal, Form, Spin, Button, Tree, message} from 'antd';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class RoleResource extends Component {
@@ -41,7 +41,7 @@ class RoleResource extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/role/resource/find',
       data: {
         role_id: role_id
@@ -130,7 +130,7 @@ class RoleResource extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/role/resource/save',
       data: {
         role_id: this.state.role_id,

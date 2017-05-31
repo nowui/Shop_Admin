@@ -4,7 +4,7 @@ import {Modal, Form, Spin, Button, Input, Checkbox, message} from 'antd';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class AdminDetail extends Component {
@@ -50,7 +50,7 @@ class AdminDetail extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/admin/admin/find',
       data: {
         admin_id: admin_id
@@ -86,7 +86,7 @@ class AdminDetail extends Component {
         is_load: true
       });
 
-      request.post({
+      http.request({
         url: '/admin/' + this.state.action,
         data: values,
         success: function (json) {

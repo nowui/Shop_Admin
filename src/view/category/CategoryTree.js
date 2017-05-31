@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
-import {Modal, Row, Col, Button, Table, Popconfirm, message} from 'antd';
+import {Modal, Spin, Row, Col, Button, Table, Popconfirm, message} from 'antd';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class CategoryTree extends Component {
@@ -52,7 +52,7 @@ class CategoryTree extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/category/admin/tree/list',
       data: {
         category_id: this.state.category_id
@@ -131,7 +131,7 @@ class CategoryTree extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/category/delete',
       data: {
         category_id: category_id
@@ -177,7 +177,7 @@ class CategoryTree extends Component {
           <span className={style.divider}/>
           <a onClick={this.handleUpdate.bind(this, record.category_id)}>{constant.update}</a>
           <span className={style.divider}/>
-          <Popconfirm  zIndex={2} title={constant.popconfirm_title} okText={constant.popconfirm_ok}
+          <Popconfirm zIndex={2} title={constant.popconfirm_title} okText={constant.popconfirm_ok}
                       cancelText={constant.popconfirm_cancel}
                       onConfirm={this.handleDelete.bind(this, record.category_id)}>
             <a>{constant.delete}</a>
@@ -187,38 +187,39 @@ class CategoryTree extends Component {
     }];
 
     return (
-      <Modal title={this.state.category_name} maskClosable={false} width={constant.detail_width} zIndex={1}
+      <Modal title={'分类表单'} maskClosable={false} width={constant.detail_width} zIndex={1}
              visible={this.state.is_show} onCancel={this.handleCancel.bind(this)}
              footer={[
                <Button key="back" type="ghost" size="default" icon="cross-circle"
                        onClick={this.handleCancel.bind(this)}>关闭</Button>
              ]}
       >
-        <Row>
-          <Col span={8}>
+        <Spin spinning={this.state.is_load}>
+          <Row>
+            <Col span={8}>
 
-          </Col>
-          <Col span={16} className={style.layoutContentHeaderMenu}>
-            <Button type="primary" icon="plus-circle" size="default"
-                    onClick={this.handleSave.bind(this, this.state.category_id)}>{constant.save}</Button>
-          </Col>
-        </Row>
-        <Table rowKey="category_id"
-               className={style.layoutContentHeaderTable}
-               expandedRowKeys={this.state.expandedRowKeys}
-               onExpand={this.handleExpand.bind(this)}
-               columns={columns}
-               dataSource={this.state.children}
-               pagination={false}
-               bordered/>
+            </Col>
+            <Col span={16} className={style.layoutContentHeaderMenu}>
+              <Button type="primary" icon="plus-circle" size="default"
+                      onClick={this.handleSave.bind(this, this.state.category_id)}>{constant.save}</Button>
+            </Col>
+          </Row>
+          <Table rowKey="category_id"
+                 className={style.layoutContentHeaderTable}
+                 expandedRowKeys={this.state.expandedRowKeys}
+                 onExpand={this.handleExpand.bind(this)}
+                 columns={columns}
+                 dataSource={this.state.children}
+                 pagination={false}
+                 bordered/>
+          <p></p>
+        </Spin>
       </Modal>
     );
   }
 }
 
-CategoryTree.propTypes = {
-
-};
+CategoryTree.propTypes = {};
 
 export default connect(({categorye}) => ({
   categorye

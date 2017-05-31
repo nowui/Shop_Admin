@@ -4,7 +4,7 @@ import {Modal, Form, Spin, Button, Input, message} from 'antd';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class LogDetail extends Component {
@@ -49,7 +49,7 @@ class LogDetail extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/log/admin/find',
       data: {
         log_id: log_id
@@ -90,7 +90,7 @@ class LogDetail extends Component {
         is_load: true
       });
 
-      request.post({
+      http.request({
         url: '/log/' + this.state.action,
         data: values,
         success: function (json) {

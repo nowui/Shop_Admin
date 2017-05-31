@@ -7,7 +7,7 @@ import RoleDetail from './RoleDetail';
 import RoleResource from './RoleResource';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -59,7 +59,7 @@ class RoleIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/role/admin/list',
       data: {
         role_name: this.props.role.role_name,
@@ -84,7 +84,7 @@ class RoleIndex extends Component {
   }
 
   handleCategoryList() {
-    request.post({
+    http.request({
       url: '/role/category/list',
       data: {},
       success: function (json) {
@@ -169,7 +169,7 @@ class RoleIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/role/delete',
       data: {
         role_id: role_id

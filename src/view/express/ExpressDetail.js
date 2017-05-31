@@ -4,7 +4,7 @@ import {Modal, Form, Spin, Button, Input, message} from 'antd';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class ExpressDetail extends Component {
@@ -49,7 +49,7 @@ class ExpressDetail extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/express/admin/find',
       data: {
         express_id: express_id
@@ -81,7 +81,7 @@ class ExpressDetail extends Component {
         is_load: true
       });
 
-      request.post({
+      http.request({
         url: '/express/' + this.state.action,
         data: values,
         success: function (json) {

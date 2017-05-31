@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 import AuthorizationDetail from './AuthorizationDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -56,7 +56,7 @@ class AuthorizationIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/authorization/admin/list',
       data: {
         authorization_token: this.props.authorization.authorization_token,
@@ -126,7 +126,7 @@ class AuthorizationIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/authorization/delete',
       data: {
         authorization_id: authorization_id

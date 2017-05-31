@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 import FileDetail from './FileDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -56,7 +56,7 @@ class FileIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/file/admin/list',
       data: {
         file_name: this.props.file.file_name,
@@ -126,7 +126,7 @@ class FileIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/file/delete',
       data: {
         file_id: file_id

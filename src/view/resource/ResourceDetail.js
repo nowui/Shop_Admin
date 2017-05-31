@@ -4,7 +4,7 @@ import {Modal, Form, Spin, Button, Input, InputNumber, Select, TreeSelect, messa
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class ResourceDetail extends Component {
@@ -49,7 +49,7 @@ class ResourceDetail extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/resource/admin/find',
       data: {
         resource_id: resource_id
@@ -85,7 +85,7 @@ class ResourceDetail extends Component {
         is_load: true
       });
 
-      request.post({
+      http.request({
         url: '/resource/' + this.state.action,
         data: values,
         success: function (json) {

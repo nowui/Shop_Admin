@@ -7,7 +7,7 @@ import CategoryDetail from './CategoryDetail';
 import CategoryTree from './CategoryTree';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -57,7 +57,7 @@ class CategoryIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/category/admin/list',
       data: {
         category_name: this.props.category.category_name,
@@ -137,7 +137,7 @@ class CategoryIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/category/delete',
       data: {
         category_id: category_id

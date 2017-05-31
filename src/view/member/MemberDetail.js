@@ -4,7 +4,7 @@ import {Modal, Form, Spin, Button, Input, Checkbox, Select, message} from 'antd'
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class MemberDetail extends Component {
@@ -51,7 +51,7 @@ class MemberDetail extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/member/admin/find',
       data: {
         member_id: member_id
@@ -92,7 +92,7 @@ class MemberDetail extends Component {
         is_load: true
       });
 
-      request.post({
+      http.request({
         url: '/member/' + this.state.action,
         data: values,
         success: function (json) {

@@ -4,7 +4,7 @@ import {Modal, Form, Spin, Button, Input, InputNumber, message} from 'antd';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class CartDetail extends Component {
@@ -49,7 +49,7 @@ class CartDetail extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/cart/admin/find',
       data: {
         cart_id: cart_id
@@ -81,7 +81,7 @@ class CartDetail extends Component {
         is_load: true
       });
 
-      request.post({
+      http.request({
         url: '/cart/' + this.state.action,
         data: values,
         success: function (json) {

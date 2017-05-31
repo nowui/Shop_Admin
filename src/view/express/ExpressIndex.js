@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 import ExpressDetail from './ExpressDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -56,7 +56,7 @@ class ExpressIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/express/admin/list',
       data: {
         express_name: this.props.express.express_name,
@@ -126,7 +126,7 @@ class ExpressIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/express/delete',
       data: {
         express_id: express_id

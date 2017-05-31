@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, Select, message} from 'antd';
 import LogDetail from './LogDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -58,7 +58,7 @@ class LogIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/log/admin/list',
       data: {
         log_url: this.props.log.log_url,
@@ -130,7 +130,7 @@ class LogIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/log/delete',
       data: {
         log_id: log_id

@@ -28,12 +28,12 @@ import ExpressIndex from './view/express/ExpressIndex';
 
 import ArticleIndex from './view/article/ArticleIndex';
 
-import database from './util/database';
+import storage from './util/storage';
 
 function RouterConfig({history}) {
 
   const validate = function (next, replace, callback) {
-    if ((database.getToken() == '' || database.getToken() == null) && next.location.pathname != '/login') {
+    if ((storage.getToken() == '' || storage.getToken() == null) && next.location.pathname != '/login') {
 
       replace('/login');
     }

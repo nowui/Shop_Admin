@@ -6,7 +6,7 @@ import InputHtml from '../../component/InputHtml';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class ProductDetail extends Component {
@@ -54,7 +54,7 @@ class ProductDetail extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/product/admin/find',
       data: {
         product_id: product_id
@@ -202,7 +202,7 @@ class ProductDetail extends Component {
         is_load: true
       });
 
-      request.post({
+      http.request({
         url: '/product/' + this.state.action,
         data: values,
         success: function (json) {

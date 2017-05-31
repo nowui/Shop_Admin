@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 import ConfigDetail from './ConfigDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -56,7 +56,7 @@ class ConfigIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/config/admin/list',
       data: {
         config_name: this.props.config.config_name,
@@ -126,7 +126,7 @@ class ConfigIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/config/delete',
       data: {
         config_id: config_id

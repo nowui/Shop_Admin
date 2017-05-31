@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 import OrderDetail from './OrderDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class OrderIndex extends Component {
@@ -51,7 +51,7 @@ class OrderIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/order/admin/list',
       data: {
         order_number: this.props.order.order_number,

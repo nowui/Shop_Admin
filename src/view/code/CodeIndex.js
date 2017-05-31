@@ -5,7 +5,7 @@ import {Row, Col, Button, Form, Input, Table, message} from 'antd';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -55,7 +55,7 @@ class CodeIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/code/admin/list',
       data: {
         code_name: this.props.code.code_name,
@@ -121,7 +121,7 @@ class CodeIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/code/save',
       data: {
         name_space: name_space,
@@ -143,7 +143,7 @@ class CodeIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/code/delete',
       data: {
         code_id: code_id

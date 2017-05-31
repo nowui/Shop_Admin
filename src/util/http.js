@@ -2,9 +2,9 @@ import reqwest from 'reqwest';
 import {message} from 'antd';
 
 import constant from './constant';
-import database from '../util/database';
+import storage from '../util/storage';
 
-function post(config) {
+function request(config) {
   reqwest({
     url: constant.host + config.url,
     type: 'json',
@@ -12,7 +12,7 @@ function post(config) {
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-      'Token': database.getToken(),
+      'Token': storage.getToken(),
       'Platform': constant.platform,
       'Version': constant.version
     },
@@ -34,5 +34,5 @@ function post(config) {
 }
 
 module.exports = {
-  post: post
+  request: request
 };

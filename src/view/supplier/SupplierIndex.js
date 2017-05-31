@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 import SupplierDetail from './SupplierDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -56,7 +56,7 @@ class SupplierIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/supplier/admin/list',
       data: {
         supplier_name: this.props.supplier.supplier_name,
@@ -126,7 +126,7 @@ class SupplierIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/supplier/delete',
       data: {
         supplier_id: supplier_id

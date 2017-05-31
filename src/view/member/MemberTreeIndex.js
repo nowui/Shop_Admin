@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Table, message} from 'antd';
 import MemberDetail from './MemberDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -54,7 +54,7 @@ class MemberTreeIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/member/tree/list',
       data: {
         member_tree_name: this.props.member_tree.member_tree_name,
@@ -79,7 +79,7 @@ class MemberTreeIndex extends Component {
   }
 
   handleMemberLevelList() {
-    request.post({
+    http.request({
       url: '/member/level/category/list',
       data: {},
       success: function (json) {

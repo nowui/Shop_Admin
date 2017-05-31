@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 import AttributeDetail from './AttributeDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -56,7 +56,7 @@ class AttributeIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/attribute/admin/list',
       data: {
         attribute_name: this.props.attribute.attribute_name,
@@ -126,7 +126,7 @@ class AttributeIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/attribute/delete',
       data: {
         attribute_id: attribute_id

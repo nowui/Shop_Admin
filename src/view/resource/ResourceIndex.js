@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, TreeSelect, Popconfirm, message} f
 import ResourceDetail from './ResourceDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -60,7 +60,7 @@ class ResourceIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/resource/admin/list',
       data: {
         category_id: this.props.resource.category_id,
@@ -86,7 +86,7 @@ class ResourceIndex extends Component {
   }
 
   handleCategoryList() {
-    request.post({
+    http.request({
       url: '/resource/category/list',
       data: {},
       success: function (json) {
@@ -165,7 +165,7 @@ class ResourceIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/resource/delete',
       data: {
         resource_id: resource_id

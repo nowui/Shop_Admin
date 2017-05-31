@@ -4,7 +4,7 @@ import {Modal, Form, Spin, Button, Input, Table, Steps} from 'antd';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class OrderDetail extends Component {
@@ -37,7 +37,7 @@ class OrderDetail extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/order/admin/find',
       data: {
         order_id: order_id

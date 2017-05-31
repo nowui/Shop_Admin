@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 import ArticleDetail from './ArticleDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -38,7 +38,7 @@ class ArticleIndex extends Component {
   }
 
   handleCategoryList() {
-    request.post({
+    http.request({
       url: '/article/category/list',
       data: {},
       success: function (json) {
@@ -76,7 +76,7 @@ class ArticleIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/article/admin/list',
       data: {
         article_name: this.props.article.article_name,
@@ -146,7 +146,7 @@ class ArticleIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/article/delete',
       data: {
         article_id: article_id

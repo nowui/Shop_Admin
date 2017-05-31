@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import {Modal, Button, message, Upload, Icon, Spin, Pagination} from 'antd';
 
 import constant from '../util/constant';
-import database from '../util/database';
+import storage from '../util/storage';
 import notification from '../util/notification';
-import request from '../util/request';
+import http from '../util/http';
 import style from './ImageHelp.css';
 
 
@@ -52,7 +52,7 @@ class ImageHelp extends Component {
   }
 
   handleLoad(page_index) {
-    request.post({
+    http.request({
       url: '/file/admin/image/list',
       data: {
         file_name: '',
@@ -269,7 +269,7 @@ class ImageHelp extends Component {
       action: constant.host + '/upload/image',
       accept: 'image/jpg,image/jpeg,image/png,image/gif',
       headers: {
-        'Token': database.getToken(),
+        'Token': storage.getToken(),
         'Platform': constant.platform,
         'Version': constant.version
       },

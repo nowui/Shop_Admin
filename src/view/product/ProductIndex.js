@@ -6,7 +6,7 @@ import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
 import ProductDetail from './ProductDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 
@@ -42,7 +42,7 @@ class ProductIndex extends Component {
   }
 
   handleCategoryList() {
-    request.post({
+    http.request({
       url: '/product/category/list',
       data: {},
       success: function (json) {
@@ -60,7 +60,7 @@ class ProductIndex extends Component {
   }
 
   handleBrandList() {
-    request.post({
+    http.request({
       url: '/brand/category/list',
       data: {},
       success: function (json) {
@@ -78,7 +78,7 @@ class ProductIndex extends Component {
   }
 
   handleMemberLevelList() {
-    request.post({
+    http.request({
       url: '/member/level/category/list',
       data: {},
       success: function (json) {
@@ -116,7 +116,7 @@ class ProductIndex extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/product/admin/list',
       data: {
         product_name: this.props.product.product_name,
@@ -188,7 +188,7 @@ class ProductIndex extends Component {
       return;
     }
 
-    request.post({
+    http.request({
       url: '/product/delete',
       data: {
         product_id: product_id

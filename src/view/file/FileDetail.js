@@ -4,7 +4,7 @@ import {Modal, Form, Spin, Button, Input, InputNumber, message} from 'antd';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class FileDetail extends Component {
@@ -49,7 +49,7 @@ class FileDetail extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/file/admin/find',
       data: {
         file_id: file_id

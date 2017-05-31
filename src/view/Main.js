@@ -4,8 +4,8 @@ import {routerRedux, Link} from 'dva/router';
 import {Layout, Menu, Icon} from 'antd';
 
 import constant from '../util/constant';
-import database from '../util/database';
-import request from '../util/request';
+import storage from '../util/storage';
+import http from '../util/http';
 import style from './style.css';
 
 class Main extends Component {
@@ -21,7 +21,7 @@ class Main extends Component {
   }
 
   componentDidMount() {
-    request.post({
+    http.request({
       url: '/admin/menu',
       data: {
 

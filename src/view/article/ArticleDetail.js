@@ -6,7 +6,7 @@ import InputHtml from '../../component/InputHtml';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
-import request from '../../util/request';
+import http from '../../util/http';
 import style from '../style.css';
 
 class ArticleDetail extends Component {
@@ -53,7 +53,7 @@ class ArticleDetail extends Component {
       is_load: true
     });
 
-    request.post({
+    http.request({
       url: '/article/admin/find',
       data: {
         article_id: article_id
@@ -89,7 +89,7 @@ class ArticleDetail extends Component {
         is_load: true
       });
 
-      request.post({
+      http.request({
         url: '/article/' + this.state.action,
         data: values,
         success: function (json) {

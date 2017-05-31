@@ -4,7 +4,7 @@ import {routerRedux} from 'dva/router';
 import {Card, message, Spin, Form, Input, Button} from 'antd';
 
 import constant from '../util/constant';
-import database from '../util/database';
+import storage from '../util/storage';
 import style from './style.css';
 
 class Login extends Component {
@@ -34,13 +34,13 @@ class Login extends Component {
         is_load: true
       });
 
-      request.post({
+      http.request({
         url: '/admin/login',
         data: values,
         success: function (json) {
           message.success("登录成功");
 
-          database.setToken(json.data.token);
+          storage.setToken(json.data.token);
 
           setTimeout(function () {
             this.props.dispatch(routerRedux.push({
