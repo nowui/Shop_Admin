@@ -127,7 +127,7 @@ class AdminIndex extends Component {
     });
 
     http.request({
-      url: '/admin/delete',
+      url: '/admin/admin/delete',
       data: {
         admin_id: admin_id
       },

@@ -87,7 +87,7 @@ class ResourceIndex extends Component {
 
   handleCategoryList() {
     http.request({
-      url: '/resource/category/list',
+      url: '/resource/admin/category/list',
       data: {},
       success: function (json) {
         this.handleFormat(json.data);
@@ -166,7 +166,7 @@ class ResourceIndex extends Component {
     });
 
     http.request({
-      url: '/resource/delete',
+      url: '/resource/admin/delete',
       data: {
         resource_id: resource_id
       },
@@ -188,22 +188,22 @@ class ResourceIndex extends Component {
     const {getFieldDecorator} = this.props.form;
 
     const columns = [{
-      width: 130,
+      width: 100,
       title: '分类',
       dataIndex: 'category_name'
     }, {
       title: '名称',
       dataIndex: 'resource_name'
     }, {
-      width: 150,
+      width: 230,
       title: '键值',
       dataIndex: 'resource_key'
     }, {
-      width: 150,
+      width: 230,
       title: '数值',
       dataIndex: 'resource_value'
     }, {
-      width: 50,
+      width: 45,
       title: '排序',
       dataIndex: 'resource_sort'
     }, {
@@ -263,6 +263,9 @@ class ResourceIndex extends Component {
                         allowClear
                         treeDefaultExpandAll
                         treeData={this.props.resource.category_list}
+                        dropdownStyle={{
+                          margin: '0px'
+                        }}
                       />
                     )
                   }

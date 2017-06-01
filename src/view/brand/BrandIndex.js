@@ -127,7 +127,7 @@ class BrandIndex extends Component {
     });
 
     http.request({
-      url: '/brand/delete',
+      url: '/brand/admin/delete',
       data: {
         brand_id: brand_id
       },

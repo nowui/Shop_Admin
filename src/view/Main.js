@@ -22,7 +22,7 @@ class Main extends Component {
 
   componentDidMount() {
     http.request({
-      url: '/admin/menu',
+      url: '/admin/admin/menu',
       data: {
 
       },

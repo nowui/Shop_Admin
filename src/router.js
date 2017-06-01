@@ -18,7 +18,7 @@ import ProductIndex from './view/product/ProductIndex';
 import DeliveryIndex from './view/delivery/DeliveryIndex';
 import MemberIndex from './view/member/MemberIndex';
 import MemberTreeIndex from './view/member/MemberTreeIndex';
-import MemberLevelIndex from './view/member/MemberLevelIndex';
+import MemberLevelIndex from './view/memberlevel/MemberLevelIndex';
 import OrderIndex from './view/order/OrderIndex';
 import SupplierIndex from './view/supplier/SupplierIndex';
 import SceneIndex from './view/scene/SceneIndex';

@@ -98,7 +98,7 @@ class CategoryDetail extends Component {
       });
 
       http.request({
-        url: '/category/' + this.state.action,
+        url: '/category/admin/' + this.state.action,
         data: values,
         success: function (json) {
           message.success(constant.success);

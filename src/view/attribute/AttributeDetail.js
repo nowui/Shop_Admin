@@ -82,7 +82,7 @@ class AttributeDetail extends Component {
       });
 
       http.request({
-        url: '/attribute/' + this.state.action,
+        url: '/attribute/admin/' + this.state.action,
         data: values,
         success: function (json) {
           message.success(constant.success);

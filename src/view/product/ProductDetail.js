@@ -203,7 +203,7 @@ class ProductDetail extends Component {
       });
 
       http.request({
-        url: '/product/' + this.state.action,
+        url: '/product/admin/' + this.state.action,
         data: values,
         success: function (json) {
           message.success(constant.success);

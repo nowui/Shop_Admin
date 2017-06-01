@@ -87,7 +87,7 @@ class AdminDetail extends Component {
       });
 
       http.request({
-        url: '/admin/' + this.state.action,
+        url: '/admin/admin/' + this.state.action,
         data: values,
         success: function (json) {
           message.success(constant.success);

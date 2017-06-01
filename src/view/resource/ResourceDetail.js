@@ -86,7 +86,7 @@ class ResourceDetail extends Component {
       });
 
       http.request({
-        url: '/resource/' + this.state.action,
+        url: '/resource/admin/' + this.state.action,
         data: values,
         success: function (json) {
           message.success(constant.success);

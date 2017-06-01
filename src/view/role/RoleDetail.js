@@ -84,7 +84,7 @@ class RoleDetail extends Component {
       });
 
       http.request({
-        url: '/role/' + this.state.action,
+        url: '/role/admin/' + this.state.action,
         data: values,
         success: function (json) {
           message.success(constant.success);

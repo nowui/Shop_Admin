@@ -189,7 +189,7 @@ class ProductIndex extends Component {
     }
 
     http.request({
-      url: '/product/delete',
+      url: '/product/admin/delete',
       data: {
         product_id: product_id
       },

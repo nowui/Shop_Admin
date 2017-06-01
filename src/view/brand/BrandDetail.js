@@ -102,7 +102,7 @@ class BrandDetail extends Component {
       });
 
       http.request({
-        url: '/brand/' + this.state.action,
+        url: '/brand/admin/' + this.state.action,
         data: values,
         success: function (json) {
           message.success(constant.success);

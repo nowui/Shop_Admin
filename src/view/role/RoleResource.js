@@ -42,7 +42,7 @@ class RoleResource extends Component {
     });
 
     http.request({
-      url: '/role/resource/find',
+      url: '/role/admin/resource/find',
       data: {
         role_id: role_id
       },
@@ -131,7 +131,7 @@ class RoleResource extends Component {
     });
 
     http.request({
-      url: '/role/resource/save',
+      url: '/role/admin/resource/save',
       data: {
         role_id: this.state.role_id,
         resource_id_list: resource_id_list

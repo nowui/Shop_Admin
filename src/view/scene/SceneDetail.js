@@ -82,7 +82,7 @@ class SceneDetail extends Component {
       });
 
       http.request({
-        url: '/scene/' + this.state.action,
+        url: '/scene/admin/' + this.state.action,
         data: values,
         success: function (json) {
           message.success(constant.success);

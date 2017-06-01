@@ -127,7 +127,7 @@ class SceneIndex extends Component {
     });
 
     http.request({
-      url: '/scene/delete',
+      url: '/scene/admin/delete',
       data: {
         scene_id: scene_id
       },

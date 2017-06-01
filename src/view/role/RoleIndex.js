@@ -85,7 +85,7 @@ class RoleIndex extends Component {
 
   handleCategoryList() {
     http.request({
-      url: '/role/category/list',
+      url: '/role/admin/category/list',
       data: {},
       success: function (json) {
         this.handleFormat(json.data);
@@ -170,7 +170,7 @@ class RoleIndex extends Component {
     });
 
     http.request({
-      url: '/role/delete',
+      url: '/role/admin/delete',
       data: {
         role_id: role_id
       },

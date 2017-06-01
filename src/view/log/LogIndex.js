@@ -230,6 +230,7 @@ class LogIndex extends Component {
                 <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="请求状态">
                   {
                     getFieldDecorator('log_code', {
+                      initialValue: ''
                     })(
                       <Select allowClear placeholder="请选择请求状态" className={style.formItemInput}>
                         <Option key="200" value="200">200</Option>
@@ -244,6 +245,7 @@ class LogIndex extends Component {
                 <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="请求平台">
                   {
                     getFieldDecorator('log_platform', {
+                      initialValue: ''
                     })(
                       <Select allowClear placeholder="请选择请求平台" className={style.formItemInput}>
                         <Option key="IOS" value="IOS">IOS</Option>

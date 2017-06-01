@@ -127,7 +127,7 @@ class AttributeIndex extends Component {
     });
 
     http.request({
-      url: '/attribute/delete',
+      url: '/attribute/admin/delete',
       data: {
         attribute_id: attribute_id
       },

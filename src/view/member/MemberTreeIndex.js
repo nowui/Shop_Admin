@@ -55,7 +55,7 @@ class MemberTreeIndex extends Component {
     });
 
     http.request({
-      url: '/member/tree/list',
+      url: '/member/admin/tree/list',
       data: {
         member_tree_name: this.props.member_tree.member_tree_name,
         page_index: this.props.member_tree.page_index,
@@ -80,7 +80,7 @@ class MemberTreeIndex extends Component {
 
   handleMemberLevelList() {
     http.request({
-      url: '/member/level/category/list',
+      url: '/member/level/list',
       data: {},
       success: function (json) {
         this.props.dispatch({

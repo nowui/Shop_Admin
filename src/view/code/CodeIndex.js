@@ -122,7 +122,7 @@ class CodeIndex extends Component {
     });
 
     http.request({
-      url: '/code/save',
+      url: '/code/admin/save',
       data: {
         name_space: name_space,
         table_name: table_name
@@ -139,26 +139,7 @@ class CodeIndex extends Component {
   }
 
   handleDelete(code_id) {
-    this.setState({
-      is_load: true
-    });
 
-    http.request({
-      url: '/code/delete',
-      data: {
-        code_id: code_id
-      },
-      success: function (json) {
-        message.success(constant.success);
-
-        this.handleLoad();
-      }.bind(this),
-      complete: function () {
-        this.setState({
-          is_load: false
-        });
-      }.bind(this)
-    });
   }
 
   render() {
