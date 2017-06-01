@@ -84,8 +84,12 @@ class MemberIndex extends Component {
 
   handleMemberLevelList() {
     http.request({
-      url: '/member/level/category/list',
-      data: {},
+      url: '/member/level/admin/list',
+      data: {
+        page_index: 0,
+        page_size: 0,
+        member_level_name: ''
+      },
       success: function (json) {
         this.props.dispatch({
           type: 'member/fetch',

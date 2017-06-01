@@ -164,6 +164,10 @@ class RoleDetail extends Component {
                       style={{width: constant.detail_form_item_width}} label="角色键值">
               {
                 getFieldDecorator('role_key', {
+                  rules: [{
+                    required: true,
+                    message: constant.required
+                  }],
                   initialValue: ''
                 })(
                   <Input type="text" placeholder={constant.placeholder + '角色键值'}/>

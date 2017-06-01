@@ -26,7 +26,7 @@ class DashboardIndex extends Component {
         <div key="0">
           <Row className={style.layoutContentHeader}>
             <Col span={8}>
-              <div className={style.layoutContentHeaderTitle}>仪表盘</div>
+              <div className={style.layoutContentHeaderTitle}>系统首页</div>
             </Col>
           </Row>
           <Row className={style.boxes}>
