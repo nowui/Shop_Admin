@@ -14,6 +14,8 @@ class OrderDetail extends Component {
     this.state = {
       is_load: false,
       is_show: false,
+      current: 0,
+      order_flow: '',
       product_list: []
     }
   }
@@ -56,7 +58,22 @@ class OrderDetail extends Component {
           json.data.product_list[i].order_product_commission = JSON.parse(json.data.product_list[i].order_product_commission);
         }
 
+        var current = 0;
+        if (json.data.order_flow == 'WAIT_PAY') {
+          current = 0;
+        } else if (json.data.order_flow == 'WAIT_SEND') {
+          current = 1;
+        } else if (json.data.order_flow == 'WAIT_RECEIVE') {
+          current = 2;
+        } else if (json.data.order_flow == 'FINISH') {
+          current = 3;
+        } else if (json.data.order_flow == 'CANCEL') {
+          current = 4;
+        }
+
         this.setState({
+          current: current,
+          order_flow: json.data.order_flow,
           product_list: json.data.product_list,
         });
       }.bind(this),
@@ -75,7 +92,10 @@ class OrderDetail extends Component {
 
   handleCancel() {
     this.setState({
-      is_show: false
+      is_load: false,
+      is_show: false,
+      current: 0,
+      order_flow: ''
     });
 
     this.props.form.resetFields();
@@ -129,9 +149,6 @@ class OrderDetail extends Component {
                 );
               })
           }
-          {
-
-          }
         </div>
       )
     }];
@@ -149,7 +166,7 @@ class OrderDetail extends Component {
       >
         <Spin spinning={this.state.is_load}>
 
-          <Steps current={1} className={style.formStep}>
+          <Steps current={this.state.current} className={style.formStep}>
             <Step title="待付款" />
             <Step title="待发货" />
             <Step title="待收货" />
@@ -254,7 +271,9 @@ class OrderDetail extends Component {
             rowKey={record => record.product_id}
             bordered
           />
-          <br/>
+          <Button key="submit" type="primary" size="default" icon="plus-circle" className={style.marginTop}
+                  loading={this.state.is_load}
+                  onClick={this.handleSubmit.bind(this)}>填写快递单号</Button>
 
         </Spin>
       </Modal>
