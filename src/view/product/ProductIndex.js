@@ -43,7 +43,7 @@ class ProductIndex extends Component {
 
   handleCategoryList() {
     http.request({
-      url: '/product/category/list',
+      url: '/product/admin/category/list',
       data: {},
       success: function (json) {
         this.props.dispatch({
@@ -61,7 +61,7 @@ class ProductIndex extends Component {
 
   handleBrandList() {
     http.request({
-      url: '/brand/category/list',
+      url: '/brand/admin/category/list',
       data: {},
       success: function (json) {
         this.props.dispatch({

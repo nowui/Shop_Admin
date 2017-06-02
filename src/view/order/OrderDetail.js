@@ -110,7 +110,7 @@ class OrderDetail extends Component {
         </div>
       )
     }, {
-      title: '佣金',
+      title: '分成',
       dataIndex: 'order_product_commission',
       render: (text, record, index) => (
         <div>

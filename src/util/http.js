@@ -2,7 +2,7 @@ import reqwest from 'reqwest';
 import {message} from 'antd';
 
 import constant from './constant';
-import storage from '../util/storage';
+import storage from './storage';
 
 function request(config) {
   reqwest({
@@ -21,11 +21,11 @@ function request(config) {
       if (response.code == 200) {
         config.success(response);
       } else {
-        message.error(response.message, constant.timeout);
+        message.error(response.message);
       }
     },
     error: function () {
-      message.error(constant.error, constant.timeout);
+      message.error(constant.error);
     },
     complete: function () {
       config.complete();

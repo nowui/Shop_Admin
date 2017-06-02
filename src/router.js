@@ -25,6 +25,7 @@ import SceneIndex from './view/scene/SceneIndex';
 import BillIndex from './view/bill/BillIndex';
 import CartIndex from './view/cart/CartIndex';
 import ExpressIndex from './view/express/ExpressIndex';
+import ConfigIndex from './view/config/ConfigIndex';
 
 import ArticleIndex from './view/article/ArticleIndex';
 
@@ -70,6 +71,7 @@ function RouterConfig({history}) {
           <Route path="bill/index" component={BillIndex}/>
           <Route path="cart/index" component={CartIndex}/>
           <Route path="express/index" component={ExpressIndex}/>
+          <Route path="config/index" component={ConfigIndex}/>
 
           <Route path="article/index" component={ArticleIndex}/>
         </Route>
