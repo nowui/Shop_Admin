@@ -7,7 +7,7 @@ import notification from '../../util/notification';
 import http from '../../util/http';
 import style from '../style.css';
 
-class ExpressDetail extends Component {
+class OrderExpress extends Component {
   constructor(props) {
     super(props);
 
@@ -15,19 +15,21 @@ class ExpressDetail extends Component {
       is_load: false,
       is_show: false,
       action: '',
-      express_id: ''
+      express_id: '',
+      order_id: ''
     }
   }
 
   componentDidMount() {
-    notification.on('notification_express_detail_save', this, function (data) {
+    notification.on('notification_order_express_save', this, function (data) {
       this.setState({
         is_show: true,
-        action: 'save'
+        action: 'save',
+        order_id: data.order_id
       });
     });
 
-    notification.on('notification_express_detail_update', this, function (data) {
+    notification.on('notification_order_express_update', this, function (data) {
       this.setState({
         is_show: true,
         action: 'update',
@@ -39,9 +41,9 @@ class ExpressDetail extends Component {
   }
 
   componentWillUnmount() {
-    notification.remove('notification_express_detail_save', this);
+    notification.remove('notification_order_express_save', this);
 
-    notification.remove('notification_express_detail_update', this);
+    notification.remove('notification_order_express_update', this);
   }
 
   handleLoad(express_id) {
@@ -56,8 +58,8 @@ class ExpressDetail extends Component {
       },
       success: function (json) {
         this.props.form.setFieldsValue({
-          category_id: json.data.category_id,
-          express_name: json.data.express_name
+          express_type: json.data.express_type,
+          express_number: json.data.express_number
         });
       }.bind(this),
       complete: function () {
@@ -70,7 +72,35 @@ class ExpressDetail extends Component {
   }
 
   handleSubmit() {
-    this.handleCancel();
+    this.props.form.validateFieldsAndScroll((errors, values) => {
+      if (!!errors) {
+        return;
+      }
+
+      values.express_id = this.state.express_id;
+      values.order_id = this.state.order_id;
+
+      this.setState({
+        is_load: true
+      });
+
+      http.request({
+        url: '/express/admin/' + this.state.action,
+        data: values,
+        success: function (json) {
+          message.success(constant.success);
+
+          this.handleCancel();
+
+          notification.emit('notification_order_detail_load', {});
+        }.bind(this),
+        complete: function () {
+          this.setState({
+            is_load: false
+          });
+        }.bind(this)
+      });
+    });
   }
 
   handleCancel() {
@@ -99,20 +129,6 @@ class ExpressDetail extends Component {
       >
         <Spin spinning={this.state.is_load}>
           <from>
-            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="订单编号">
-              {
-                getFieldDecorator('order_id', {
-                  rules: [{
-                    required: true,
-                    message: constant.required
-                  }],
-                  initialValue: ''
-                })(
-                  <Input type="text" placeholder={constant.placeholder + '订单编号'}/>
-                )
-              }
-            </FormItem>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="快递类型">
               {
@@ -149,46 +165,6 @@ class ExpressDetail extends Component {
                 )
               }
             </FormItem>
-            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="快递结果">
-              {
-                getFieldDecorator('express_result', {
-                  initialValue: ''
-                })(
-                  <Input type="text" placeholder={constant.placeholder + '快递结果'}/>
-                )
-              }
-            </FormItem>
-            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="快递流程">
-              {
-                getFieldDecorator('express_flow', {
-                  initialValue: ''
-                })(
-                  <Input type="text" placeholder={constant.placeholder + '快递流程'}/>
-                )
-              }
-            </FormItem>
-            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="快递状态">
-              {
-                getFieldDecorator('express_status', {
-                  initialValue: ''
-                })(
-                  <Input type="text" placeholder={constant.placeholder + '快递状态'}/>
-                )
-              }
-            </FormItem>
-            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="快递跟踪">
-              {
-                getFieldDecorator('express_trace', {
-                  initialValue: ''
-                })(
-                  <Input type="text" placeholder={constant.placeholder + '快递跟踪'}/>
-                )
-              }
-            </FormItem>
           </from>
         </Spin>
       </Modal>
@@ -196,10 +172,10 @@ class ExpressDetail extends Component {
   }
 }
 
-ExpressDetail.propTypes = {};
+OrderExpress.propTypes = {};
 
-ExpressDetail = Form.create({})(ExpressDetail);
+OrderExpress = Form.create({})(OrderExpress);
 
-export default connect(({express}) => ({
-  express
-}))(ExpressDetail);
+export default connect(({}) => ({
+
+}))(OrderExpress);

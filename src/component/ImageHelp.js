@@ -266,7 +266,7 @@ class ImageHelp extends Component {
       name: 'file',
       multiple: true,
       showUploadList: false,
-      action: constant.host + '/upload/image',
+      action: constant.host + '/file/admin/image/upload',
       accept: 'image/jpg,image/jpeg,image/png,image/gif',
       headers: {
         'Token': storage.getToken(),

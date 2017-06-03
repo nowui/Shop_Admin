@@ -99,7 +99,7 @@
     }
 
     .ant-popover-message-title {
-      white-space : nowrap;
+      white-space: nowrap;
     }
 
     .ant-select-tree li {
@@ -131,12 +131,25 @@
     .progress .progress-bar {
       border-radius: 20px;
       position: relative;
+      animation: animate-positive 10s;
     }
 
     .progress-bar-info {
       width: 10%;
       height: 5px;
       background-color: #108ee9;
+    }
+
+    @-webkit-keyframes animate-positive {
+      0% {
+        width: 0;
+      }
+    }
+
+    @keyframes animate-positive {
+      0% {
+        width: 0;
+      }
     }
   </style>
 </head>
@@ -170,7 +183,15 @@
   function handleProgress(event) {
     var progressBar = document.getElementById("progressBar");
     if (progressBar != null) {
-      document.getElementById("progressBar").style.width = preload.progress * 100 + "%";
+      var progress = preload.progress;
+
+      if (progress == 0.5) {
+        progress = 0.9;
+      } else {
+        document.getElementById("progressBar").style.animation = "animate-positive 0.3s";
+      }
+
+      document.getElementById("progressBar").style.width = progress * 100 + "%";
     }
   }
 

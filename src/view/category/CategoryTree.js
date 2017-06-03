@@ -205,6 +205,7 @@ class CategoryTree extends Component {
             </Col>
           </Row>
           <Table rowKey="category_id"
+                 size="middle"
                  className={style.layoutContentHeaderTable}
                  expandedRowKeys={this.state.expandedRowKeys}
                  onExpand={this.handleExpand.bind(this)}
@@ -212,7 +213,7 @@ class CategoryTree extends Component {
                  dataSource={this.state.children}
                  pagination={false}
                  bordered/>
-          <p></p>
+          <br/>
         </Spin>
       </Modal>
     );

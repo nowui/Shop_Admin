@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'dva';
 import {Modal, Form, Spin, Button, Input, Table, Steps} from 'antd';
 
+import OrderExpress from './OrderExpress';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
 import http from '../../util/http';
@@ -14,16 +15,23 @@ class OrderDetail extends Component {
     this.state = {
       is_load: false,
       is_show: false,
+      order_id: '',
       current: 0,
       order_flow: '',
-      product_list: []
+      product_list: [],
+      express_list: []
     }
   }
 
   componentDidMount() {
+    notification.on('notification_order_detail_load', this, function (data) {
+      this.handleLoadExpress();
+    });
+
     notification.on('notification_order_detail_update', this, function (data) {
       this.setState({
-        is_show: true
+        is_show: true,
+        order_id: data.order_id
       });
 
       this.handleLoad(data.order_id);
@@ -31,6 +39,8 @@ class OrderDetail extends Component {
   }
 
   componentWillUnmount() {
+    notification.remove('notification_order_detail_load', this);
+
     notification.remove('notification_order_detail_update', this);
   }
 
@@ -75,6 +85,31 @@ class OrderDetail extends Component {
           current: current,
           order_flow: json.data.order_flow,
           product_list: json.data.product_list,
+          express_list: json.data.express_list
+        });
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+
+      }.bind(this)
+    });
+  }
+
+  handleLoadExpress() {
+    this.setState({
+      is_load: true
+    });
+
+    http.request({
+      url: '/order/admin/express/list',
+      data: {
+        order_id: this.state.order_id
+      },
+      success: function (json) {
+        this.setState({
+          express_list: json.data
         });
       }.bind(this),
       complete: function () {
@@ -95,10 +130,28 @@ class OrderDetail extends Component {
       is_load: false,
       is_show: false,
       current: 0,
-      order_flow: ''
+      order_flow: '',
+      product_list: [],
+      express_list: []
     });
 
     this.props.form.resetFields();
+  }
+
+  handleExpressSave() {
+    notification.emit('notification_order_express_save', {
+      order_id: this.state.order_id
+    });
+  }
+
+  handleExpressUpdate(express_id) {
+    notification.emit('notification_order_express_update', {
+      express_id: express_id
+    });
+  }
+
+  handleExpressFind(express_id) {
+
   }
 
   render() {
@@ -106,20 +159,20 @@ class OrderDetail extends Component {
     const {getFieldDecorator} = this.props.form;
     const Step = Steps.Step;
 
-    const columns = [{
+    const productColumns = [{
       width: 120,
       title: '商品名称',
       dataIndex: 'product_name'
     }, {
-      width: 100,
+      width: 80,
       title: '价格',
       dataIndex: 'order_product_price'
     }, {
-      width: 100,
+      width: 80,
       title: '数量',
       dataIndex: 'order_product_quantity'
     }, {
-      width: 100,
+      width: 80,
       title: '合计',
       dataIndex: 'order_amount',
       render: (text, record, index) => (
@@ -150,6 +203,30 @@ class OrderDetail extends Component {
               })
           }
         </div>
+      )
+    }];
+
+    const expressColumns = [{
+      width: 120,
+      title: '单号',
+      dataIndex: 'express_number'
+    }, {
+      width: 80,
+      title: '类型',
+      dataIndex: 'express_type'
+    }, {
+      title: '流程',
+      dataIndex: 'express_flow'
+    }, {
+      width: 120,
+      title: constant.action,
+      dataIndex: '',
+      render: (text, record, index) => (
+        <span>
+          <a onClick={this.handleExpressFind.bind(this, record.express_id)}>{constant.find}</a>
+          <span className={style.divider}/>
+          <a onClick={this.handleExpressUpdate.bind(this, record.express_id)}>{constant.update}</a>
+        </span>
       )
     }];
 
@@ -264,17 +341,32 @@ class OrderDetail extends Component {
             }
           </FormItem>
 
-          <Table
-            columns={columns}
-            dataSource={this.state.product_list}
-            pagination={false}
-            rowKey={record => record.product_id}
-            bordered
-          />
-          <Button key="submit" type="primary" size="default" icon="plus-circle" className={style.marginTop}
-                  loading={this.state.is_load}
-                  onClick={this.handleSubmit.bind(this)}>填写快递单号</Button>
+          <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
+                    style={{width: constant.detail_form_item_full_width}} label="商品列表">
+            <Table rowKey="product_id"
+              size="middle"
+              columns={productColumns}
+              dataSource={this.state.product_list}
+              pagination={false}
+              bordered
+            />
+          </FormItem>
 
+          <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
+                    style={{width: constant.detail_form_item_full_width}} label="快递单列表">
+            <Table rowKey="express_id"
+              size="middle"
+              columns={expressColumns}
+              dataSource={this.state.express_list}
+              pagination={false}
+              bordered
+            />
+            <Button key="submit" type="primary" size="default" icon="plus-circle" style={{marginTop: '5px'}}
+                    loading={this.state.is_load}
+                    onClick={this.handleExpressSave.bind(this)}>填写快递单号</Button>
+          </FormItem>
+
+          <OrderExpress/>
         </Spin>
       </Modal>
     );

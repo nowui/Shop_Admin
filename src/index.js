@@ -37,11 +37,13 @@ app.model(require('./model/cart'));
 app.model(require('./model/express'));
 
 app.model(require('./model/article'));
+app.model(require('./model/doctor'));
 
 // 4. Router
 app.router(require('./router'));
 
-document.getElementById("loading").remove();
+setTimeout(() => {
+  document.getElementById("loading").remove();
 
-// 5. Start
-app.start('#root');
+  app.start('#root');
+}, 0.3);

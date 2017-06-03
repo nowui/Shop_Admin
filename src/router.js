@@ -28,6 +28,7 @@ import ExpressIndex from './view/express/ExpressIndex';
 import ConfigIndex from './view/config/ConfigIndex';
 
 import ArticleIndex from './view/article/ArticleIndex';
+import DoctorIndex from './view/doctor/DoctorIndex';
 
 import storage from './util/storage';
 
@@ -74,6 +75,7 @@ function RouterConfig({history}) {
           <Route path="config/index" component={ConfigIndex}/>
 
           <Route path="article/index" component={ArticleIndex}/>
+          <Route path="doctor/index" component={DoctorIndex}/>
         </Route>
       </Route>
     </Router>
