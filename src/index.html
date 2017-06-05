@@ -106,6 +106,10 @@
       margin: 2px 0 !important;
     }
 
+    .ant-timeline-item-content {
+      line-height: 20px;
+    }
+
     #loading {
       position: absolute;
       top: 0px;
@@ -122,22 +126,19 @@
       margin-top: -12px;
       margin-left: -100px;
       width: 200px;
-      background: #404040;
+      background: #108ee9;
       padding: 3px;
       overflow: visible;
       border-radius: 20px;
     }
 
-    .progress .progress-bar {
-      border-radius: 20px;
-      position: relative;
-      animation: animate-positive 10s;
-    }
-
-    .progress-bar-info {
+    #progressBar {
       width: 10%;
       height: 5px;
-      background-color: #108ee9;
+      border-radius: 20px;
+      position: relative;
+      animation: animate-positive 0.3s;
+      background-color: #ffffff;
     }
 
     @-webkit-keyframes animate-positive {
@@ -184,12 +185,6 @@
     var progressBar = document.getElementById("progressBar");
     if (progressBar != null) {
       var progress = preload.progress;
-
-      if (progress == 0.5) {
-        progress = 0.9;
-      } else {
-        document.getElementById("progressBar").style.animation = "animate-positive 0.3s";
-      }
 
       document.getElementById("progressBar").style.width = progress * 100 + "%";
     }

@@ -150,10 +150,6 @@ class OrderDetail extends Component {
     });
   }
 
-  handleExpressFind(express_id) {
-
-  }
-
   render() {
     const FormItem = Form.Item;
     const {getFieldDecorator} = this.props.form;
@@ -215,6 +211,10 @@ class OrderDetail extends Component {
       title: '类型',
       dataIndex: 'express_type'
     }, {
+      width: 80,
+      title: '状态',
+      dataIndex: 'express_status'
+    }, {
       title: '流程',
       dataIndex: 'express_flow'
     }, {
@@ -223,8 +223,6 @@ class OrderDetail extends Component {
       dataIndex: '',
       render: (text, record, index) => (
         <span>
-          <a onClick={this.handleExpressFind.bind(this, record.express_id)}>{constant.find}</a>
-          <span className={style.divider}/>
           <a onClick={this.handleExpressUpdate.bind(this, record.express_id)}>{constant.update}</a>
         </span>
       )

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
-import {Modal, Form, Spin, Button, Input, Select, message} from 'antd';
+import {Modal, Form, Spin, Button, Input, Select, Timeline, message} from 'antd';
 
 import constant from '../../util/constant';
 import notification from '../../util/notification';
@@ -16,7 +16,8 @@ class OrderExpress extends Component {
       is_show: false,
       action: '',
       express_id: '',
-      order_id: ''
+      order_id: '',
+      express_trace: []
     }
   }
 
@@ -59,7 +60,13 @@ class OrderExpress extends Component {
       success: function (json) {
         this.props.form.setFieldsValue({
           express_type: json.data.express_type,
-          express_number: json.data.express_number
+          express_number: json.data.express_number,
+          express_flow: json.data.express_flow,
+          express_status: json.data.express_status
+        });
+
+        this.setState({
+          express_trace: JSON.parse(json.data.express_trace)
         });
       }.bind(this),
       complete: function () {
@@ -105,7 +112,8 @@ class OrderExpress extends Component {
 
   handleCancel() {
     this.setState({
-      is_show: false
+      is_show: false,
+      express_trace: []
     });
 
     this.props.form.resetFields();
@@ -164,6 +172,52 @@ class OrderExpress extends Component {
                   <Input type="text" placeholder={constant.placeholder + '快递单号'}/>
                 )
               }
+            </FormItem>
+            {
+              this.state.action == 'update' ?
+                <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                          style={{width: constant.detail_form_item_width}} label="快递流程">
+                  {
+                    getFieldDecorator('express_flow', {
+                      initialValue: ''
+                    })(
+                      <Input type="text" placeholder={constant.placeholder + '快递流程'}/>
+                    )
+                  }
+                </FormItem>
+                :
+                ''
+            }
+            {
+              this.state.action == 'update' ?
+                <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                          style={{width: constant.detail_form_item_width}} label="快递状态">
+                  {
+                    getFieldDecorator('express_status', {
+                      initialValue: ''
+                    })(
+                      <Input type="text" placeholder={constant.placeholder + '快递状态'}/>
+                    )
+                  }
+                </FormItem>
+                :
+                ''
+            }
+            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="快递单号">
+              <Timeline>
+                {
+                  this.state.express_trace.map(function (item, index) {
+                    return (
+                      <Timeline.Item key={index}>
+                        {item.AcceptStation}
+                        <p></p>
+                        {item.AcceptTime}
+                      </Timeline.Item>
+                    )
+                  })
+                }
+              </Timeline>
             </FormItem>
           </from>
         </Spin>

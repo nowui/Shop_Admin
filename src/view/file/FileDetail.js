@@ -56,8 +56,14 @@ class FileDetail extends Component {
       },
       success: function (json) {
         this.props.form.setFieldsValue({
-          category_id: json.data.category_id,
-          file_name: json.data.file_name
+          file_type: json.data.file_type,
+          file_name: json.data.file_name,
+          file_suffix: json.data.file_suffix,
+          file_size: json.data.file_size,
+          file_path: json.data.file_path,
+          file_thumbnail_path: json.data.file_thumbnail_path,
+          file_original_path: json.data.file_original_path,
+          file_image: json.data.file_image
         });
       }.bind(this),
       complete: function () {
@@ -97,23 +103,9 @@ class FileDetail extends Component {
              ]}
       >
         <Spin spinning={this.state.is_load}>
-          <from>
+          <form>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="">
-              {
-                getFieldDecorator('file_id', {
-                  rules: [{
-                    required: true,
-                    message: constant.required
-                  }],
-                  initialValue: ''
-                })(
-                  <Input type="text" placeholder={constant.placeholder + ''}/>
-                )
-              }
-            </FormItem>
-            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="">
+                      style={{width: constant.detail_form_item_width}} label="文件类型">
               {
                 getFieldDecorator('file_type', {
                   rules: [{
@@ -122,12 +114,12 @@ class FileDetail extends Component {
                   }],
                   initialValue: ''
                 })(
-                  <Input type="text" placeholder={constant.placeholder + ''}/>
+                  <Input type="text" placeholder={constant.placeholder + '文件类型'}/>
                 )
               }
             </FormItem>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="">
+                      style={{width: constant.detail_form_item_width}} label="文件名称">
               {
                 getFieldDecorator('file_name', {
                   rules: [{
@@ -136,12 +128,12 @@ class FileDetail extends Component {
                   }],
                   initialValue: ''
                 })(
-                  <Input type="text" placeholder={constant.placeholder + ''}/>
+                  <Input type="text" placeholder={constant.placeholder + '文件名称'}/>
                 )
               }
             </FormItem>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="">
+                      style={{width: constant.detail_form_item_width}} label="文件后缀">
               {
                 getFieldDecorator('file_suffix', {
                   rules: [{
@@ -150,12 +142,12 @@ class FileDetail extends Component {
                   }],
                   initialValue: ''
                 })(
-                  <Input type="text" placeholder={constant.placeholder + ''}/>
+                  <Input type="text" placeholder={constant.placeholder + '文件后缀'}/>
                 )
               }
             </FormItem>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="">
+                      style={{width: constant.detail_form_item_width}} label="文件大小">
               {
                 getFieldDecorator('file_size', {
                   rules: [{
@@ -164,13 +156,13 @@ class FileDetail extends Component {
                   }],
                   initialValue: 0
                 })(
-                  <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + ''}
+                  <InputNumber type="text" className={style.formItemInput} placeholder={constant.placeholder + '文件大小'}
                              min={0} max={999}/>
                 )
               }
             </FormItem>
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="">
+                      style={{width: constant.detail_form_item_width}} label="文件路径">
               {
                 getFieldDecorator('file_path', {
                   rules: [{
@@ -179,20 +171,60 @@ class FileDetail extends Component {
                   }],
                   initialValue: ''
                 })(
-                  <Input type="text" placeholder={constant.placeholder + ''}/>
+                  <Input type="text" placeholder={constant.placeholder + '文件路径'}/>
                 )
               }
             </FormItem>
-          </from>
+            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="文件路径">
+              {
+                getFieldDecorator('file_thumbnail_path', {
+                  rules: [{
+                    required: true,
+                    message: constant.required
+                  }],
+                  initialValue: ''
+                })(
+                  <Input type="text" placeholder={constant.placeholder + '文件路径'}/>
+                )
+              }
+            </FormItem>
+            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="文件路径">
+              {
+                getFieldDecorator('file_original_path', {
+                  rules: [{
+                    required: true,
+                    message: constant.required
+                  }],
+                  initialValue: ''
+                })(
+                  <Input type="text" placeholder={constant.placeholder + '文件路径'}/>
+                )
+              }
+            </FormItem>
+            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_width}} label="文件封面">
+              {
+                getFieldDecorator('file_image', {
+                  rules: [{
+                    required: true,
+                    message: constant.required
+                  }],
+                  initialValue: ''
+                })(
+                  <Input type="text" placeholder={constant.placeholder + '文件封面'}/>
+                )
+              }
+            </FormItem>
+          </form>
         </Spin>
       </Modal>
     );
   }
 }
 
-FileDetail.propTypes = {
-
-};
+FileDetail.propTypes = {};
 
 FileDetail = Form.create({})(FileDetail);
 

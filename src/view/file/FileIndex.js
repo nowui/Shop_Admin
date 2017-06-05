@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
-import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
+import {Row, Col, Button, Form, Input, Table, Upload, Icon, message} from 'antd';
 
 import FileDetail from './FileDetail';
 import constant from '../../util/constant';
+import storage from '../../util/storage';
 import notification from '../../util/notification';
 import http from '../../util/http';
 import style from '../style.css';
@@ -144,25 +145,42 @@ class FileIndex extends Component {
     });
   }
 
+  handleChange(info) {
+    if (info.file.status === 'done') {
+      if (info.file.response.code == 200) {
+        message.success(constant.success);
+      } else {
+        message.error(info.file.response.message);
+      }
+
+      this.setState({
+        is_load: false
+      });
+
+      this.handleLoad(1);
+    } else if (info.file.status == 'uploading') {
+      this.setState({
+        is_load: true
+      });
+    } else if (info.file.status === 'error') {
+      message.error(info.file.name + ' file upload failed');
+    }
+  }
+
   render() {
     const FormItem = Form.Item;
     const {getFieldDecorator} = this.props.form;
 
     const columns = [{
-      title: '名称',
-      dataIndex: 'file_name'
+      title: '路径',
+      dataIndex: 'file_path'
     }, {
       width: 90,
       title: constant.action,
       dataIndex: '',
       render: (text, record, index) => (
         <span>
-          <a onClick={this.handleUpdate.bind(this, record.file_id)}>{constant.update}</a>
-          <span className={style.divider}/>
-          <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
-                      cancelText={constant.popconfirm_cancel} onConfirm={this.handleDelete.bind(this, record.file_id)}>
-            <a>{constant.delete}</a>
-          </Popconfirm>
+          <a onClick={this.handleUpdate.bind(this, record.file_id)}>{constant.find}</a>
         </span>
       )
     }];
@@ -180,19 +198,35 @@ class FileIndex extends Component {
       onChange: this.handleChangeIndex.bind(this)
     };
 
+    const props = {
+      name: 'file',
+      multiple: true,
+      showUploadList: false,
+      action: constant.host + '/file/admin/upload',
+      headers: {
+        'Token': storage.getToken(),
+        'Platform': constant.platform,
+        'Version': constant.version
+      },
+      onChange: this.handleChange.bind(this)
+    };
+
     return (
       <QueueAnim>
         <div key="0">
           <Row className={style.layoutContentHeader}>
             <Col span={8}>
-              <div className={style.layoutContentHeaderTitle}>列表</div>
+              <div className={style.layoutContentHeaderTitle}>文件列表</div>
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
                       loading={this.state.is_load}
                       onClick={this.handleSearch.bind(this)}>{constant.search}</Button>
-              <Button type="primary" icon="plus-circle" size="default"
-                      onClick={this.handleSave.bind(this)}>{constant.save}</Button>
+              <Upload {...props}>
+                <Button type="primary" loading={this.state.is_load}>
+                  <Icon type="cloud-upload"/>上传文件
+                </Button>
+              </Upload>
             </Col>
           </Row>
           <Form className={style.layoutContentHeaderSearch}>

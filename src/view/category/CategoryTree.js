@@ -132,7 +132,7 @@ class CategoryTree extends Component {
     });
 
     http.request({
-      url: '/category/delete',
+      url: '/category/admin/delete',
       data: {
         category_id: category_id
       },
