@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'dva';
 import {Modal, Form, Spin, Button, Input, Select, message} from 'antd';
 
+import InputImage from '../../component/InputImage';
 import InputHtml from '../../component/InputHtml';
 
 import constant from '../../util/constant';
@@ -61,8 +62,15 @@ class ArticleDetail extends Component {
       success: function (json) {
         this.props.form.setFieldsValue({
           category_id: json.data.category_id,
-          article_name: json.data.article_name
+          article_name: json.data.article_name,
+          article_summary: json.data.article_summary
         });
+
+        var article_image = [];
+        if (json.data.article_image_file != '') {
+          article_image.push(json.data.article_image_file);
+        }
+        this.refs.article_image.handleSetValue(article_image);
 
         this.refs.article_content.handleSetValue(json.data.article_content);
       }.bind(this),
@@ -82,6 +90,13 @@ class ArticleDetail extends Component {
       }
 
       values.article_id = this.state.article_id;
+
+      var article_image_file = this.refs.article_image.handleGetValue();
+      if (article_image_file.length == 0) {
+        values.article_image = '';
+      } else {
+        values.article_image = article_image_file[0].file_id;
+      }
 
       values.article_content = this.refs.article_content.handleGetValue();
 
@@ -114,6 +129,8 @@ class ArticleDetail extends Component {
     });
 
     this.props.form.resetFields();
+
+    this.refs.article_image.handleReset();
 
     this.refs.article_content.handleReset();
   }
@@ -173,9 +190,27 @@ class ArticleDetail extends Component {
               )
             }
           </FormItem>
+          <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItemInputImageMarginBottom}
+                    style={{width: constant.detail_form_item_full_width}} label="文章图片">
+            <InputImage name="article_image" limit={1} ref="article_image"/>
+          </FormItem>
+          <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
+                    style={{width: constant.detail_form_item_full_width}} label="文章摘要">
+            {
+              getFieldDecorator('article_summary', {
+                rules: [{
+                  required: true,
+                  message: constant.required
+                }],
+                initialValue: ''
+              })(
+                <Input type="textarea" rows={4} placeholder={constant.placeholder + '文章摘要'}/>
+              )
+            }
+          </FormItem>
           <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_full_width}} label="文章内容">
-            <InputHtml ref="article_content"/>
+            <InputHtml name="article_content" ref="article_content"/>
           </FormItem>
         </Spin>
       </Modal>

@@ -43,12 +43,12 @@ export default {
   popconfirm_ok: '确定',
   popconfirm_cancel: '取消',
   required: '不能为空',
-  name: '上海星销信息技术有限公司',
-  host: 'http://localhost:8080',
   // name: '上海星销信息技术有限公司',
+  // host: 'http://localhost:8080',
+  name: '上海星销信息技术有限公司',
   // host: 'http://api.xingxiao.nowui.com',
   // name: '广州市济颐馆贸易有限公司',
-  // host: 'http://api.jiyiguan.nowui.com',
+  host: 'http://api.jiyiguan.nowui.com',
   placeholder: '请输入',
   platform: 'Admin',
   version: '1.0.0',
@@ -85,10 +85,16 @@ export default {
     label: '已取消'
   }],
   express_type: [{
-    value: 'SF',
-    label: '顺风'
+    value: 'DBL',
+    label: '德邦'
+  }, {
+    value: 'ZTO',
+    label: '中通'
   }, {
     value: 'STO',
-    label: '申通快递'
+    label: '申通'
+  }, {
+    value: 'SF',
+    label: '顺风'
   }]
 };

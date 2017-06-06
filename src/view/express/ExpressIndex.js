@@ -127,7 +127,7 @@ class ExpressIndex extends Component {
     });
 
     http.request({
-      url: '/express/delete',
+      url: '/express/admin/delete',
       data: {
         express_id: express_id
       },

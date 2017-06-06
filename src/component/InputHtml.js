@@ -72,9 +72,9 @@ class InputHtml extends Component {
             keep_values: false,
             show_system_default_font: false,
             forced_root_block: 'div',
-            plugins: 'code image imagetools autoresize media',
+            plugins: 'code image imagetools autoresize media preview',
             imagetools_toolbar: "rotateleft rotateright | flipv fliph | editimage imageoptions",
-            toolbar: 'fontselect fontsizeselect | bold italic underline strikethrough removeformat | alignleft aligncenter alignright | media | mybutton image | code',
+            toolbar: 'fontselect fontsizeselect | bold italic underline strikethrough removeformat | alignleft aligncenter alignright | media | mybutton image | code | preview',
             setup: function (editor) {
               this.editor = editor;
 

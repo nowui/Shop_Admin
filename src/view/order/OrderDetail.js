@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
-import {Modal, Form, Spin, Button, Input, Table, Steps} from 'antd';
+import {Modal, Form, Spin, Button, Input, Table, Steps, Popconfirm, message} from 'antd';
 
 import OrderExpress from './OrderExpress';
 import constant from '../../util/constant';
@@ -25,7 +25,7 @@ class OrderDetail extends Component {
 
   componentDidMount() {
     notification.on('notification_order_detail_load', this, function (data) {
-      this.handleLoadExpress();
+      this.handleExpressLoad();
     });
 
     notification.on('notification_order_detail_update', this, function (data) {
@@ -97,7 +97,24 @@ class OrderDetail extends Component {
     });
   }
 
-  handleLoadExpress() {
+  handleSubmit() {
+    this.handleCancel();
+  }
+
+  handleCancel() {
+    this.setState({
+      is_load: false,
+      is_show: false,
+      current: 0,
+      order_flow: '',
+      product_list: [],
+      express_list: []
+    });
+
+    this.props.form.resetFields();
+  }
+
+  handleExpressLoad() {
     this.setState({
       is_load: true
     });
@@ -121,23 +138,6 @@ class OrderDetail extends Component {
     });
   }
 
-  handleSubmit() {
-    this.handleCancel();
-  }
-
-  handleCancel() {
-    this.setState({
-      is_load: false,
-      is_show: false,
-      current: 0,
-      order_flow: '',
-      product_list: [],
-      express_list: []
-    });
-
-    this.props.form.resetFields();
-  }
-
   handleExpressSave() {
     notification.emit('notification_order_express_save', {
       order_id: this.state.order_id
@@ -147,6 +147,29 @@ class OrderDetail extends Component {
   handleExpressUpdate(express_id) {
     notification.emit('notification_order_express_update', {
       express_id: express_id
+    });
+  }
+
+  handleExpressDelete(express_id) {
+    this.setState({
+      is_load: true
+    });
+
+    http.request({
+      url: '/express/admin/delete',
+      data: {
+        express_id: express_id
+      },
+      success: function (json) {
+        message.success(constant.success);
+
+        this.handleExpressLoad();
+      }.bind(this),
+      complete: function () {
+        this.setState({
+          is_load: false
+        });
+      }.bind(this)
     });
   }
 
@@ -223,7 +246,12 @@ class OrderDetail extends Component {
       dataIndex: '',
       render: (text, record, index) => (
         <span>
-          <a onClick={this.handleExpressUpdate.bind(this, record.express_id)}>{constant.update}</a>
+          <a onClick={this.handleExpressUpdate.bind(this, record.express_id)}>{constant.find}</a>
+          <span className={style.divider}/>
+          <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
+                      cancelText={constant.popconfirm_cancel} onConfirm={this.handleExpressDelete.bind(this, record.express_id)}>
+            <a>{constant.delete}</a>
+          </Popconfirm>
         </span>
       )
     }];
@@ -351,7 +379,7 @@ class OrderDetail extends Component {
           </FormItem>
 
           <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_full_width}} label="快递单列表">
+                    style={{width: constant.detail_form_item_full_width}} label="快递列表">
             <Table rowKey="express_id"
               size="middle"
               columns={expressColumns}

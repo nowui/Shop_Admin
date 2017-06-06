@@ -61,8 +61,7 @@ class OrderExpress extends Component {
         this.props.form.setFieldsValue({
           express_type: json.data.express_type,
           express_number: json.data.express_number,
-          express_flow: json.data.express_flow,
-          express_status: json.data.express_status
+          express_flow: json.data.express_flow
         });
 
         this.setState({
@@ -81,6 +80,12 @@ class OrderExpress extends Component {
   handleSubmit() {
     this.props.form.validateFieldsAndScroll((errors, values) => {
       if (!!errors) {
+        return;
+      }
+
+      if (this.state.action == 'update') {
+        this.handleCancel();
+
         return;
       }
 
@@ -188,24 +193,9 @@ class OrderExpress extends Component {
                 :
                 ''
             }
-            {
-              this.state.action == 'update' ?
-                <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                          style={{width: constant.detail_form_item_width}} label="快递状态">
-                  {
-                    getFieldDecorator('express_status', {
-                      initialValue: ''
-                    })(
-                      <Input type="text" placeholder={constant.placeholder + '快递状态'}/>
-                    )
-                  }
-                </FormItem>
-                :
-                ''
-            }
-            <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
-                      style={{width: constant.detail_form_item_width}} label="快递单号">
-              <Timeline>
+            <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_full_width}} label="快递跟踪">
+              <Timeline style={{marginTop: '10px'}}>
                 {
                   this.state.express_trace.map(function (item, index) {
                     return (
