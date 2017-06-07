@@ -226,7 +226,7 @@ class OrderDetail extends Component {
     }];
 
     const expressColumns = [{
-      width: 120,
+      width: 200,
       title: '单号',
       dataIndex: 'express_number'
     }, {

@@ -202,7 +202,7 @@ class ArticleIndex extends Component {
         <div key="0">
           <Row className={style.layoutContentHeader}>
             <Col span={8}>
-              <div className={style.layoutContentHeaderTitle}>列表</div>
+              <div className={style.layoutContentHeaderTitle}>文章列表</div>
             </Col>
             <Col span={16} className={style.layoutContentHeaderMenu}>
               <Button type="default" icon="search" size="default" className={style.layoutContentHeaderMenuButton}
@@ -215,7 +215,7 @@ class ArticleIndex extends Component {
           <Form className={style.layoutContentHeaderSearch}>
             <Row>
               <Col span={8}>
-                <FormItem hasFeedback {...constant.formItemLayout} className={style.formItem} label="名称">
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="名称">
                   {
                     getFieldDecorator('article_name', {
                       initialValue: ''
