@@ -6,6 +6,8 @@ export default {
 
   state: {
     product_name: '',
+    category_id: '',
+    brand_id: '',
     total: 0,
     page_index: 1,
     page_size: constant.page_size,

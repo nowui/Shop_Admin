@@ -182,6 +182,10 @@ class MemberIndex extends Component {
         </span>
       )
     }, {
+      width: 135,
+      title: '创建时间',
+      dataIndex: 'system_create_time'
+    }, {
       width: 90,
       title: constant.action,
       dataIndex: '',

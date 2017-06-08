@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
-import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
+import {Row, Col, Button, Form, Input, Table, Select} from 'antd';
 
 import OrderDetail from './OrderDetail';
 import constant from '../../util/constant';
@@ -36,6 +36,7 @@ class OrderIndex extends Component {
         type: 'order/fetch',
         data: {
           order_number: this.props.form.getFieldValue('order_number'),
+          order_flow: this.props.form.getFieldValue('order_flow'),
           page_index: 1
         }
       });
@@ -55,6 +56,7 @@ class OrderIndex extends Component {
       url: '/order/admin/list',
       data: {
         order_number: this.props.order.order_number,
+        order_flow: this.props.order.order_flow,
         page_index: this.props.order.page_index,
         page_size: this.props.order.page_size
       },
@@ -122,17 +124,18 @@ class OrderIndex extends Component {
 
   render() {
     const FormItem = Form.Item;
+    const Option = Select.Option;
     const {getFieldDecorator} = this.props.form;
 
     const columns = [{
-      width: 120,
       title: '订单号',
       dataIndex: 'order_number'
     }, {
+      width: 120,
       title: '收货人',
       dataIndex: 'order_delivery_name'
     }, {
-      width: 95,
+      width: 120,
       title: '电话',
       dataIndex: 'order_delivery_phone'
     }, {
@@ -201,6 +204,21 @@ class OrderIndex extends Component {
                 </FormItem>
               </Col>
               <Col span={8}>
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="状态">
+                  {
+                    getFieldDecorator('order_flow', {
+                      initialValue: ''
+                    })(
+                      <Select allowClear placeholder="请选择状态" className={style.formItemInput}>
+                        <Option key="WAIT_PAY" value="WAIT_PAY">待付款</Option>
+                        <Option key="WAIT_SEND" value="WAIT_SEND">待发货</Option>
+                        <Option key="WAIT_RECEIVE" value="WAIT_RECEIVE">待收货</Option>
+                        <Option key="FINISH" value="FINISH">已完成</Option>
+                        <Option key="CANCEL" value="CANCEL">已取消</Option>
+                      </Select>
+                    )
+                  }
+                </FormItem>
               </Col>
               <Col span={8}>
               </Col>

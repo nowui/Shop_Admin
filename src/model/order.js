@@ -6,6 +6,7 @@ export default {
 
   state: {
     order_number: '',
+    order_flow: '',
     total: 0,
     page_index: 1,
     page_size: constant.page_size,

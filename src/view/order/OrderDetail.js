@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'dva';
 import {Modal, Form, Spin, Button, Input, Table, Steps, Popconfirm, message} from 'antd';
 
-import OrderExpress from './OrderExpress';
+import ExpressDetail from '../express/ExpressDetail';
 import constant from '../../util/constant';
 import notification from '../../util/notification';
 import http from '../../util/http';
@@ -115,6 +115,14 @@ class OrderDetail extends Component {
   }
 
   handleExpressLoad() {
+    if (this.state.order_flow == 'WAIT_SEND') {
+      this.setState({
+        current: 2,
+        order_flow: 'WAIT_RECEIVE',
+      });
+    }
+
+
     this.setState({
       is_load: true
     });
@@ -139,13 +147,13 @@ class OrderDetail extends Component {
   }
 
   handleExpressSave() {
-    notification.emit('notification_order_express_save', {
+    notification.emit('notification_express_detail_save', {
       order_id: this.state.order_id
     });
   }
 
   handleExpressUpdate(express_id) {
-    notification.emit('notification_order_express_update', {
+    notification.emit('notification_express_detail_update', {
       express_id: express_id
     });
   }
@@ -249,7 +257,8 @@ class OrderDetail extends Component {
           <a onClick={this.handleExpressUpdate.bind(this, record.express_id)}>{constant.find}</a>
           <span className={style.divider}/>
           <Popconfirm title={constant.popconfirm_title} okText={constant.popconfirm_ok}
-                      cancelText={constant.popconfirm_cancel} onConfirm={this.handleExpressDelete.bind(this, record.express_id)}>
+                      cancelText={constant.popconfirm_cancel}
+                      onConfirm={this.handleExpressDelete.bind(this, record.express_id)}>
             <a>{constant.delete}</a>
           </Popconfirm>
         </span>
@@ -270,11 +279,11 @@ class OrderDetail extends Component {
         <Spin spinning={this.state.is_load}>
 
           <Steps current={this.state.current} className={style.formStep}>
-            <Step title="待付款" />
-            <Step title="待发货" />
-            <Step title="待收货" />
-            <Step title="订单完成" />
-            <Step title="订单取消" />
+            <Step title="待付款"/>
+            <Step title="待发货"/>
+            <Step title="待收货"/>
+            <Step title="订单完成"/>
+            <Step title="订单取消"/>
           </Steps>
 
           <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem + ' ' + style.marginTop}
@@ -370,38 +379,36 @@ class OrderDetail extends Component {
           <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_full_width}} label="商品列表">
             <Table rowKey="product_id"
-              size="middle"
-              columns={productColumns}
-              dataSource={this.state.product_list}
-              pagination={false}
-              bordered
+                   size="middle"
+                   columns={productColumns}
+                   dataSource={this.state.product_list}
+                   pagination={false}
+                   bordered
             />
           </FormItem>
 
           <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
                     style={{width: constant.detail_form_item_full_width}} label="快递列表">
             <Table rowKey="express_id"
-              size="middle"
-              columns={expressColumns}
-              dataSource={this.state.express_list}
-              pagination={false}
-              bordered
+                   size="middle"
+                   columns={expressColumns}
+                   dataSource={this.state.express_list}
+                   pagination={false}
+                   bordered
             />
             <Button key="submit" type="primary" size="default" icon="plus-circle" style={{marginTop: '5px'}}
                     loading={this.state.is_load}
                     onClick={this.handleExpressSave.bind(this)}>填写快递单号</Button>
           </FormItem>
 
-          <OrderExpress/>
+          <ExpressDetail notification="notification_order_detail_load"/>
         </Spin>
       </Modal>
     );
   }
 }
 
-OrderDetail.propTypes = {
-
-};
+OrderDetail.propTypes = {};
 
 OrderDetail = Form.create({})(OrderDetail);
 

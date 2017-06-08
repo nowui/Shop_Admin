@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
-import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
+import {Row, Col, Button, Form, Input, Table, Select, Popconfirm, message} from 'antd';
 
 import ProductDetail from './ProductDetail';
 import constant from '../../util/constant';
@@ -21,7 +21,9 @@ class ProductIndex extends Component {
 
   componentDidMount() {
     this.props.form.setFieldsValue({
-      product_name: this.props.product.product_name
+      product_name: this.props.product.product_name,
+      category_id: this.props.product.category_id,
+      brand_id: this.props.product.brand_id
     });
 
     this.handleLoad();
@@ -105,6 +107,8 @@ class ProductIndex extends Component {
         type: 'product/fetch',
         data: {
           product_name: this.props.form.getFieldValue('product_name'),
+          category_id: this.props.form.getFieldValue('category_id'),
+          brand_id: this.props.form.getFieldValue('brand_id'),
           page_index: 1
         }
       });
@@ -124,6 +128,8 @@ class ProductIndex extends Component {
       url: '/product/admin/list',
       data: {
         product_name: this.props.product.product_name,
+        category_id: this.props.product.category_id,
+        brand_id: this.props.product.brand_id,
         page_index: this.props.product.page_index,
         page_size: this.props.product.page_size
       },
@@ -210,6 +216,7 @@ class ProductIndex extends Component {
 
   render() {
     const FormItem = Form.Item;
+    const Option = Select.Option;
     const {getFieldDecorator} = this.props.form;
 
     const columns = [{
@@ -278,8 +285,42 @@ class ProductIndex extends Component {
                 </FormItem>
               </Col>
               <Col span={8}>
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="分类">
+                  {
+                    getFieldDecorator('category_id', {
+                      initialValue: ''
+                    })(
+                      <Select allowClear placeholder="请选择分类" className={style.formItemInput}>
+                        {
+                          this.props.product.category_list.map(function (item) {
+                            return (
+                              <Option key={item.category_id} value={item.category_id}>{item.category_name}</Option>
+                            )
+                          })
+                        }
+                      </Select>
+                    )
+                  }
+                </FormItem>
               </Col>
               <Col span={8}>
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="品牌">
+                  {
+                    getFieldDecorator('brand_id', {
+                      initialValue: ''
+                    })(
+                      <Select allowClear placeholder="请选择品牌" className={style.formItemInput}>
+                        {
+                          this.props.product.brand_list.map(function (item) {
+                            return (
+                              <Option key={item.brand_id} value={item.brand_id}>{item.brand_name}</Option>
+                            )
+                          })
+                        }
+                      </Select>
+                    )
+                  }
+                </FormItem>
               </Col>
             </Row>
           </Form>

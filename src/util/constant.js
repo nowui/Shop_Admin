@@ -67,7 +67,7 @@ export default {
     label: '待付款'
   }, {
     value: 'EXPIRE',
-    label: '待时未付款'
+    label: '超时未付款'
   }, {
     value: 'WAIT_CONFIRM',
     label: '已付款，待确认'

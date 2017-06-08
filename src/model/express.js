@@ -5,7 +5,7 @@ export default {
   namespace: 'express',
 
   state: {
-    express_name: '',
+    express_number: '',
     total: 0,
     page_index: 1,
     page_size: constant.page_size,

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
 import QueueAnim from 'rc-queue-anim';
-import {Row, Col, Button, Form, Input, Table, Popconfirm, message} from 'antd';
+import {Row, Col, Button, Form, Input, Table, message} from 'antd';
 
 import ExpressDetail from './ExpressDetail';
 import constant from '../../util/constant';
@@ -21,7 +21,7 @@ class ExpressIndex extends Component {
 
   componentDidMount() {
     this.props.form.setFieldsValue({
-      express_name: this.props.express.express_name
+      express_number: this.props.express.express_number
     });
 
     this.handleLoad();
@@ -40,7 +40,7 @@ class ExpressIndex extends Component {
       this.props.dispatch({
         type: 'express/fetch',
         data: {
-          express_name: this.props.form.getFieldValue('express_name'),
+          express_number: this.props.form.getFieldValue('express_number'),
           page_index: 1
         }
       });
@@ -59,7 +59,7 @@ class ExpressIndex extends Component {
     http.request({
       url: '/express/admin/list',
       data: {
-        express_name: this.props.express.express_name,
+        express_number: this.props.express.express_number,
         page_index: this.props.express.page_index,
         page_size: this.props.express.page_size
       },
@@ -149,8 +149,20 @@ class ExpressIndex extends Component {
     const {getFieldDecorator} = this.props.form;
 
     const columns = [{
+      title: '单号',
+      dataIndex: 'express_number'
+    }, {
+      width: 80,
       title: '类型',
       dataIndex: 'express_type'
+    }, {
+      width: 80,
+      title: '状态',
+      dataIndex: 'express_status'
+    }, {
+      width: 80,
+      title: '流程',
+      dataIndex: 'express_flow'
     }, {
       width: 90,
       title: constant.action,
@@ -187,12 +199,12 @@ class ExpressIndex extends Component {
           <Form className={style.layoutContentHeaderSearch}>
             <Row>
               <Col span={8}>
-                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="名称">
+                <FormItem hasFeedback {...constant.formItemLayout} className={style.formSearchItem} label="单号">
                   {
-                    getFieldDecorator('express_name', {
+                    getFieldDecorator('express_number', {
                       initialValue: ''
                     })(
-                      <Input type="text" placeholder="请输入名称" className={style.formItemInput}/>
+                      <Input type="text" placeholder="请输入单号" className={style.formItemInput}/>
                     )
                   }
                 </FormItem>
@@ -208,7 +220,7 @@ class ExpressIndex extends Component {
                  loading={this.state.is_load} columns={columns}
                  dataSource={this.props.express.list} pagination={pagination}
                  bordered/>
-          <ExpressDetail/>
+          <ExpressDetail notification="notification_express_index_load"/>
         </div>
       </QueueAnim>
     );
