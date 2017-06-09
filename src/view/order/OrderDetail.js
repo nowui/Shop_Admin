@@ -25,7 +25,11 @@ class OrderDetail extends Component {
 
   componentDidMount() {
     notification.on('notification_order_detail_load', this, function (data) {
-      this.handleExpressLoad();
+      if (this.state.order_flow == 'WAIT_SEND') {
+        this.handleLoad(this.state.order_id);
+      } else {
+        this.handleExpressLoad();
+      }
     });
 
     notification.on('notification_order_detail_update', this, function (data) {
@@ -115,14 +119,6 @@ class OrderDetail extends Component {
   }
 
   handleExpressLoad() {
-    if (this.state.order_flow == 'WAIT_SEND') {
-      this.setState({
-        current: 2,
-        order_flow: 'WAIT_RECEIVE',
-      });
-    }
-
-
     this.setState({
       is_load: true
     });
