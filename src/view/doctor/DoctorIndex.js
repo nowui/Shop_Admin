@@ -170,12 +170,12 @@ class DoctorIndex extends Component {
 
     const pagination = {
       size: 'defalut',
-      total: this.state.total,
+      total: this.props.doctor.total,
       showTotal: function (total, range) {
         return '总共' + total + '条数据';
       },
-      current: this.state.page_index,
-      pageSize: this.state.page_size,
+      current: this.props.doctor.page_index,
+      pageSize: this.props.doctor.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
       onChange: this.handleChangeIndex.bind(this)

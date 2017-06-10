@@ -170,12 +170,12 @@ class AttributeIndex extends Component {
 
     const pagination = {
       size: 'defalut',
-      total: this.state.total,
+      total: this.props.attribute.total,
       showTotal: function (total, range) {
         return '总共' + total + '条数据';
       },
-      current: this.state.page_index,
-      pageSize: this.state.page_size,
+      current: this.props.attribute.page_index,
+      pageSize: this.props.attribute.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
       onChange: this.handleChangeIndex.bind(this)

@@ -189,9 +189,13 @@ class ArticleIndex extends Component {
     }];
 
     const pagination = {
-      total: this.state.total,
-      current: this.state.page_index,
-      pageSize: this.state.page_size,
+      size: 'defalut',
+      total: this.props.article.total,
+      showTotal: function (total, range) {
+        return '总共' + total + '条数据';
+      },
+      current: this.props.article.page_index,
+      pageSize: this.props.article.page_size,
       showSizeChanger: true,
       onShowSizeChange: this.handleChangeSize.bind(this),
       onChange: this.handleChangeIndex.bind(this)
