@@ -17,8 +17,7 @@ class ProductDetail extends Component {
       is_load: false,
       is_show: false,
       action: '',
-      product_id: '',
-      income: ''
+      product_id: ''
     }
   }
 
@@ -86,24 +85,17 @@ class ProductDetail extends Component {
           }
         }
 
-        this.setState({
-          income: json.data.income
-        });
+        var commission_list = json.data.commission_list;
+        for (var i = 0; i < commission_list.length; i++) {
+          var commission = commission_list[i];
 
-        if (json.data.income == 'commission') {
-          var commission_list = json.data.commission_list;
-
-          for (var i = 0; i < commission_list.length; i++) {
-            var commission = commission_list[i];
-
-            if (commission.product_attribute = '[]') {
-              var product_commission = JSON.parse(commission.product_commission);
-              for (var j = 0; j < product_commission.length; j++) {
-                if (product_price[j].member_level_id != '') {
-                  var object = {};
-                  object['product_commission_list_' + product_commission[j].member_level_id] = product_commission[j].product_commission;
-                  this.props.form.setFieldsValue(object);
-                }
+          if (commission.product_attribute = '[]') {
+            var product_commission = JSON.parse(commission.product_commission);
+            for (var j = 0; j < product_commission.length; j++) {
+              if (product_price[j].member_level_id != '') {
+                var object = {};
+                object['product_commission_list_' + product_commission[j].member_level_id] = product_commission[j].product_commission;
+                this.props.form.setFieldsValue(object);
               }
             }
           }
@@ -183,20 +175,18 @@ class ProductDetail extends Component {
       var commission_list = [];
       var product_commission = [];
 
-      if (this.state.income == 'commission') {
-        product_commission.push({
-          member_level_id: '',
-          member_level_name: '',
-          product_commission: values.product_commission
-        });
+      product_commission.push({
+        member_level_id: '',
+        member_level_name: '',
+        product_commission: values.product_commission
+      });
 
-        for (var i = 0; i < this.props.product.member_level_list.length; i++) {
-          product_commission.push({
-            member_level_id: this.props.product.member_level_list[i].member_level_id,
-            member_level_name: this.props.product.member_level_list[i].member_level_name,
-            product_commission: this.props.form.getFieldValue('product_commission_list_' + this.props.product.member_level_list[i].member_level_id)
-          });
-        }
+      for (var i = 0; i < this.props.product.member_level_list.length; i++) {
+        product_commission.push({
+          member_level_id: this.props.product.member_level_list[i].member_level_id,
+          member_level_name: this.props.product.member_level_list[i].member_level_name,
+          product_commission: this.props.form.getFieldValue('product_commission_list_' + this.props.product.member_level_list[i].member_level_id)
+        });
       }
 
       commission_list.push({
@@ -384,40 +374,35 @@ class ProductDetail extends Component {
               }
             </FormItem>
 
-            {
-              this.state.income == 'commission' ?
-                <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
-                          style={{width: constant.detail_form_item_full_width}} label="会员佣金">
-                  {
-                    this.props.product.member_level_list.map(function (item) {
-                      return (
-                        <div className={style.productMemberPrice} key={item.member_level_id}>
-                          <FormItem hasFeedback {...constant.formItemFullLayoutProductPrice} className={style.formItem}
-                                    label={item.member_level_name + '(%)'}
-                          >
-                            {
-                              getFieldDecorator('product_commission_list_' + item.member_level_id, {
-                                rules: [{
-                                  type: 'number',
-                                  required: true,
-                                  message: constant.required
-                                }],
-                                initialValue: 0
-                              })(
-                                <InputNumber type="text" className={style.formItemInput}
-                                             placeholder={constant.placeholder + '商品价格'}
-                                             min={0} max={100} step={1}/>
-                              )
-                            }
-                          </FormItem>
-                        </div>
-                      )
-                    })
-                  }
-                </FormItem>
-                :
-                ''
-            }
+            <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
+                      style={{width: constant.detail_form_item_full_width}} label="会员佣金">
+              {
+                this.props.product.member_level_list.map(function (item) {
+                  return (
+                    <div className={style.productMemberPrice} key={item.member_level_id}>
+                      <FormItem hasFeedback {...constant.formItemFullLayoutProductPrice} className={style.formItem}
+                                label={item.member_level_name + '(%)'}
+                      >
+                        {
+                          getFieldDecorator('product_commission_list_' + item.member_level_id, {
+                            rules: [{
+                              type: 'number',
+                              required: true,
+                              message: constant.required
+                            }],
+                            initialValue: 0
+                          })(
+                            <InputNumber type="text" className={style.formItemInput}
+                                         placeholder={constant.placeholder + '商品价格'}
+                                         min={0} max={100} step={1}/>
+                          )
+                        }
+                      </FormItem>
+                    </div>
+                  )
+                })
+              }
+            </FormItem>
 
             <FormItem hasFeedback {...constant.formItemLayoutDetail} className={style.formItem}
                       style={{width: constant.detail_form_item_width}} label="商品库存">
