@@ -397,7 +397,7 @@ class OrderDetail extends Component {
                        bordered
                 />
                 {
-                  this.state.order_flow == 'WAIT_SEND' ?
+                  this.state.order_flow == 'WAIT_SEND' || this.state.order_flow == 'WAIT_RECEIVE' ?
                     <Button key="submit" type="primary" size="default" icon="plus-circle" style={{marginTop: '5px'}}
                             loading={this.state.is_load}
                             onClick={this.handleExpressSave.bind(this)}>填写快递单号</Button>
