@@ -383,19 +383,30 @@ class OrderDetail extends Component {
             />
           </FormItem>
 
-          <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
-                    style={{width: constant.detail_form_item_full_width}} label="快递列表">
-            <Table rowKey="express_id"
-                   size="middle"
-                   columns={expressColumns}
-                   dataSource={this.state.express_list}
-                   pagination={false}
-                   bordered
-            />
-            <Button key="submit" type="primary" size="default" icon="plus-circle" style={{marginTop: '5px'}}
-                    loading={this.state.is_load}
-                    onClick={this.handleExpressSave.bind(this)}>填写快递单号</Button>
-          </FormItem>
+          {
+            this.state.order_flow == 'WAIT_PAY' ?
+              ''
+              :
+              <FormItem hasFeedback {...constant.formItemFullLayoutDetail} className={style.formItem}
+                        style={{width: constant.detail_form_item_full_width}} label="快递列表">
+                <Table rowKey="express_id"
+                       size="middle"
+                       columns={expressColumns}
+                       dataSource={this.state.express_list}
+                       pagination={false}
+                       bordered
+                />
+                {
+                  this.state.order_flow == 'WAIT_SEND' ?
+                    <Button key="submit" type="primary" size="default" icon="plus-circle" style={{marginTop: '5px'}}
+                            loading={this.state.is_load}
+                            onClick={this.handleExpressSave.bind(this)}>填写快递单号</Button>
+                    :
+                    ''
+                }
+              </FormItem>
+          }
+
 
           <ExpressDetail notification="notification_order_detail_load"/>
         </Spin>

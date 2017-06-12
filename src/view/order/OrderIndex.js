@@ -141,7 +141,7 @@ class OrderIndex extends Component {
     }, {
       width: 80,
       title: '金额',
-      dataIndex: 'order_product_amount'
+      dataIndex: 'order_amount'
     }, {
       width: 80,
       title: '状态',
